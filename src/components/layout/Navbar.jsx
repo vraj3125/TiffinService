@@ -4,8 +4,8 @@ import { UtensilsCrossed, Menu, X, User, LogOut } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext.jsx'
 
 const customerLinks = [
-  { to: '/discover', label: 'Discover' },
-  { to: '/orders', label: 'My Orders' },
+  { to: '/discover', label: 'Explore' },
+  { to: '/orders', label: 'Subscriptions' },
   { to: '/profile', label: 'Profile' },
 ]
 
@@ -26,81 +26,79 @@ export default function Navbar() {
 
   const links = user?.role === 'provider' ? providerLinks : user?.role === 'customer' ? customerLinks : []
 
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    await logout()
     navigate('/')
   }
 
   return (
-    <header className="sticky top-0 z-40 bg-cream-50/95 backdrop-blur border-b border-mustard-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 shrink-0">
-          <div className="w-9 h-9 rounded-full bg-terracotta-500 flex items-center justify-center">
-            <UtensilsCrossed size={18} className="text-white" />
+    <>
+      <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[calc(100%-32px)] sm:w-[calc(100%-64px)] lg:w-[calc(100%-128px)] max-w-container-max rounded-full bg-white/80 backdrop-blur-xl border border-surface-variant/50 shadow-xl shadow-terracotta/5 z-50">
+        <div className="flex justify-between items-center px-5 sm:px-8 lg:px-12 py-3.5 w-full">
+          <Link to="/" className="flex items-center gap-2 shrink-0">
+            <UtensilsCrossed size={22} className="text-terracotta" />
+            <span className="text-headline-md font-display font-bold text-terracotta tracking-tight">TiffinConnect</span>
+          </Link>
+
+          <div className="hidden md:flex items-center gap-8">
+            {links.map((l) => (
+              <NavLink
+                key={l.to}
+                to={l.to}
+                className={({ isActive }) =>
+                  `text-label-lg transition-colors ${
+                    isActive ? 'text-terracotta font-bold border-b-2 border-terracotta pb-1' : 'text-on-surface-variant hover:text-terracotta'
+                  }`
+                }
+              >
+                {l.label}
+              </NavLink>
+            ))}
           </div>
-          <span className="font-display font-bold text-lg text-forest-700">Tiffinly</span>
-        </Link>
 
-        <nav className="hidden md:flex items-center gap-1">
-          {links.map((l) => (
-            <NavLink
-              key={l.to}
-              to={l.to}
-              className={({ isActive }) =>
-                `px-3 py-2 rounded-full text-sm font-medium transition-colors ${
-                  isActive ? 'bg-terracotta-50 text-terracotta-600' : 'text-forest-600 hover:bg-forest-50'
-                }`
-              }
-            >
-              {l.label}
-            </NavLink>
-          ))}
-        </nav>
+          <div className="hidden md:flex items-center gap-4">
+            {user ? (
+              <div className="flex items-center gap-4">
+                <span className="flex items-center gap-1.5 text-label-lg text-on-surface">
+                  <User size={16} /> {user.name}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-1.5 text-label-lg text-on-surface-variant hover:text-terracotta transition-colors"
+                >
+                  <LogOut size={16} /> Logout
+                </button>
+              </div>
+            ) : (
+              <>
+                <Link to="/login" className="text-label-lg text-terracotta hover:text-primary transition-colors">
+                  Sign In
+                </Link>
+                <Link
+                  to="/login?tab=signup&role=provider"
+                  className="bg-terracotta text-on-primary text-label-lg px-6 py-3 rounded-full hover:bg-primary transition-colors shadow-sm hover:shadow-md hover:-translate-y-0.5 duration-200"
+                >
+                  Join as Provider
+                </Link>
+              </>
+            )}
+          </div>
 
-        <div className="hidden md:flex items-center gap-3">
-          {user ? (
-            <div className="flex items-center gap-3">
-              <span className="flex items-center gap-1.5 text-sm font-medium text-forest-700">
-                <User size={16} /> {user.name}
-              </span>
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-terracotta-600"
-              >
-                <LogOut size={16} /> Logout
-              </button>
-            </div>
-          ) : (
-            <>
-              <Link to="/login" className="text-sm font-semibold text-forest-700 hover:text-terracotta-600">
-                Log in
-              </Link>
-              <Link
-                to="/login?tab=signup"
-                className="bg-terracotta-500 text-white text-sm font-semibold px-4 py-2 rounded-full hover:bg-terracotta-600 shadow-soft"
-              >
-                Sign up
-              </Link>
-            </>
-          )}
+          <button className="md:hidden p-2 text-terracotta" onClick={() => setOpen((o) => !o)}>
+            {open ? <X size={22} /> : <Menu size={22} />}
+          </button>
         </div>
-
-        <button className="md:hidden p-2 text-forest-700" onClick={() => setOpen((o) => !o)}>
-          {open ? <X size={22} /> : <Menu size={22} />}
-        </button>
-      </div>
+      </nav>
 
       {open && (
-        <div className="md:hidden border-t border-mustard-100 bg-cream-50 px-4 py-3 space-y-1">
+        <div className="fixed top-[88px] left-1/2 -translate-x-1/2 w-[calc(100%-32px)] max-w-container-max md:hidden bg-white/95 backdrop-blur-xl border border-surface-variant/50 shadow-xl shadow-terracotta/5 rounded-lg z-40 px-5 py-4 space-y-1">
           {links.map((l) => (
             <NavLink
               key={l.to}
               to={l.to}
               onClick={() => setOpen(false)}
               className={({ isActive }) =>
-                `block px-3 py-2.5 rounded-xl text-sm font-medium ${
-                  isActive ? 'bg-terracotta-50 text-terracotta-600' : 'text-forest-600'
-                }`
+                `block px-3 py-2.5 rounded-DEFAULT text-label-lg ${isActive ? 'bg-surface-container-low text-terracotta' : 'text-on-surface-variant'}`
               }
             >
               {l.label}
@@ -112,7 +110,7 @@ export default function Navbar() {
                 setOpen(false)
                 handleLogout()
               }}
-              className="block w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-terracotta-600"
+              className="block w-full text-left px-3 py-2.5 rounded-DEFAULT text-label-lg text-terracotta"
             >
               Logout
             </button>
@@ -121,21 +119,21 @@ export default function Navbar() {
               <Link
                 to="/login"
                 onClick={() => setOpen(false)}
-                className="flex-1 text-center border border-terracotta-500 text-terracotta-600 text-sm font-semibold px-4 py-2 rounded-full"
+                className="flex-1 text-center border border-terracotta text-terracotta text-label-lg px-4 py-2.5 rounded-full"
               >
-                Log in
+                Sign In
               </Link>
               <Link
                 to="/login?tab=signup"
                 onClick={() => setOpen(false)}
-                className="flex-1 text-center bg-terracotta-500 text-white text-sm font-semibold px-4 py-2 rounded-full"
+                className="flex-1 text-center bg-terracotta text-white text-label-lg px-4 py-2.5 rounded-full"
               >
-                Sign up
+                Join
               </Link>
             </div>
           )}
         </div>
       )}
-    </header>
+    </>
   )
 }
