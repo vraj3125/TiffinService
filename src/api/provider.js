@@ -3,6 +3,7 @@
 // All of it is scoped to the signed-in provider and starts empty. A new kitchen
 // sees zeros and blank forms, not another kitchen's numbers.
 import { readAccount, writeAccount } from '../lib/accountStore.js'
+import { DEFAULT_RADIUS_KM } from '../config/locations.js'
 
 const delay = (ms = 300) => new Promise((res) => setTimeout(res, ms))
 
@@ -109,6 +110,50 @@ export async function saveMyPlans(uid, plans) {
   return writeAccount(uid, 'plans', plans)
 }
 
+// --- kitchen branches ------------------------------------------------------
+//
+// A provider can cook from more than one place -- a second kitchen in another
+// part of the city, say. Each branch has its own address and its own delivery
+// radius, and a customer is covered if ANY branch reaches them.
+//
+// The area chosen at signup becomes the first branch, so an existing single-
+// location account is migrated on first read rather than losing its location.
+
+export const newBranch = (place, label = '') => ({
+  id: `b${Date.now()}${Math.floor(Math.random() * 1000)}`,
+  label: label || place?.name || 'Kitchen',
+  area: place?.name || '',
+  pincode: place?.pincode || '',
+  address: '',
+  lat: place?.lat ?? null,
+  lng: place?.lng ?? null,
+  radiusKm: DEFAULT_RADIUS_KM,
+})
+
+export async function fetchBranches(uid) {
+  await delay()
+  const stored = readAccount(uid, 'branches', null)
+  if (stored) return stored
+
+  // Migrate: promote the signup location to branch one.
+  const profile = readAccount(uid, 'kitchenProfile', null)
+  if (!profile?.area) return []
+  const first = {
+    ...newBranch(
+      { name: profile.area, pincode: profile.pincode, lat: profile.lat, lng: profile.lng },
+      'Main kitchen'
+    ),
+    address: profile.address || '',
+    radiusKm: profile.radiusKm ?? DEFAULT_RADIUS_KM,
+  }
+  return writeAccount(uid, 'branches', [first])
+}
+
+export async function saveBranches(uid, branches) {
+  await delay(150)
+  return writeAccount(uid, 'branches', branches)
+}
+
 export async function fetchMyZones(uid) {
   await delay()
   return readAccount(uid, 'zones', [])
@@ -121,7 +166,9 @@ export async function saveMyZones(uid, zones) {
 
 export async function fetchKitchenProfile(uid) {
   await delay()
-  return readAccount(uid, 'kitchenProfile', { name: '', area: '', pincode: '', phone: '', fssai: '' })
+  return readAccount(uid, 'kitchenProfile', {
+    name: '', area: '', pincode: '', phone: '', fssai: '', owner: '', address: '',
+  })
 }
 
 export async function saveKitchenProfile(uid, profile) {

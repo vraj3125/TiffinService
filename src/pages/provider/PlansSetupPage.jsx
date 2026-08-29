@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Plus, Trash2, MapPinned } from 'lucide-react'
 import Card from '../../components/ui/Card.jsx'
 import Button from '../../components/ui/Button.jsx'
@@ -7,10 +8,9 @@ import { Input, Select } from '../../components/ui/Input.jsx'
 import LocationPicker from '../../components/ui/LocationPicker.jsx'
 import { CITY, DEFAULT_RADIUS_KM, MAX_RADIUS_KM, distanceKm, findLocation } from '../../config/locations.js'
 import {
-  fetchKitchenProfile,
+  fetchBranches,
   fetchMyPlans,
   fetchMyZones,
-  saveKitchenProfile,
   saveMyPlans,
   saveMyZones,
 } from '../../api/provider.js'
@@ -22,7 +22,7 @@ export default function PlansSetupPage() {
   // Plans and delivery zones belong to this kitchen, and a new one has neither.
   const [plans, setPlans] = useState([])
   const [zones, setZones] = useState([])
-  const [profile, setProfile] = useState(null)
+  const [branches, setBranches] = useState([])
   const [newPlan, setNewPlan] = useState({ type: '', duration: '', price: '', mealsPerDay: 1, description: '' })
   const { showToast } = useToast()
 
@@ -30,7 +30,7 @@ export default function PlansSetupPage() {
     if (!user) return
     fetchMyPlans(user.uid).then(setPlans)
     fetchMyZones(user.uid).then(setZones)
-    fetchKitchenProfile(user.uid).then(setProfile)
+    fetchBranches(user.uid).then(setBranches)
   }, [user])
 
   const commitPlans = (next) => {
@@ -70,18 +70,25 @@ export default function PlansSetupPage() {
     showToast(`${place.name} added to your delivery areas`)
   }
 
-  const setRadius = (radiusKm) => {
-    const next = { ...profile, radiusKm }
-    setProfile(next)
-    saveKitchenProfile(user.uid, next)
+  // Radius is set per branch on the Business Profile screen. Here we only need
+  // to know whether ANY branch already covers a given area, so the provider can
+  // see which extra zones are actually doing work.
+  const nearestBranch = (name) => {
+    const place = findLocation(name)
+    if (!place) return null
+    let best = null
+    for (const b of branches) {
+      if (b.lat == null) continue
+      const d = distanceKm({ lat: b.lat, lng: b.lng }, place)
+      if (d == null) continue
+      if (!best || d < best.distance) best = { branch: b, distance: d }
+    }
+    return best
   }
 
-  // Distance from the kitchen to each area it has taken on, so a provider can
-  // see when a zone sits outside the radius they set.
-  const base = profile?.lat != null ? { lat: profile.lat, lng: profile.lng } : null
-  const zoneDistance = (name) => {
-    const place = findLocation(name)
-    return base && place ? distanceKm(base, place) : null
+  const coveredByRadius = (name) => {
+    const near = nearestBranch(name)
+    return Boolean(near && near.distance <= (near.branch.radiusKm ?? DEFAULT_RADIUS_KM))
   }
 
   return (
@@ -132,41 +139,38 @@ export default function PlansSetupPage() {
           radius. We serve {CITY.name} and the towns around it.
         </p>
 
-        {profile?.area && (
-          <div className="mb-5 rounded-DEFAULT border border-outline-variant bg-surface-container-low p-4">
-            <p className="text-label-md text-on-surface-variant mb-1">Your kitchen is in</p>
-            <p className="text-label-lg text-on-surface">
-              {profile.area}
-              {profile.pincode ? ` — ${profile.pincode}` : ''}
+        {/* Branches and their radii are edited on Business Profile; showing them
+            read-only here avoids two screens fighting over the same number. */}
+        {branches.length > 0 ? (
+          <div className="mb-6 rounded-DEFAULT border border-outline-variant bg-surface-container-low p-4">
+            <p className="text-label-md text-on-surface-variant mb-2">
+              Your kitchen{branches.length > 1 ? 's' : ''}
+            </p>
+            <ul className="space-y-1.5">
+              {branches.map((b) => (
+                <li key={b.id} className="text-body-sm text-on-surface">
+                  <span className="text-label-lg">{b.label || b.area}</span>{' '}
+                  <span className="text-on-surface-variant">
+                    — {b.area}, delivers up to {b.radiusKm ?? DEFAULT_RADIUS_KM} km
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <Link to="/provider/verification" className="inline-block mt-3 text-label-lg text-terracotta hover:underline">
+              Add a branch or change a radius
+            </Link>
+          </div>
+        ) : (
+          <div className="mb-6 rounded-DEFAULT border border-outline-variant bg-surface-container-low p-4">
+            <p className="text-body-sm text-on-surface-variant">
+              No kitchen location set yet.{' '}
+              <Link to="/provider/verification" className="text-terracotta font-semibold hover:underline">
+                Add one on your Business Profile
+              </Link>{' '}
+              so customers can find you.
             </p>
           </div>
         )}
-
-        {/* How far the kitchen is willing to travel. */}
-        <div className="mb-6">
-          <div className="flex justify-between mb-2">
-            <label htmlFor="radius" className="text-label-lg text-on-surface">
-              How far will you deliver?
-            </label>
-            <span className="text-label-lg text-terracotta">
-              {profile?.radiusKm ?? DEFAULT_RADIUS_KM} km
-            </span>
-          </div>
-          <input
-            id="radius"
-            type="range"
-            min="1"
-            max={MAX_RADIUS_KM}
-            step="1"
-            value={profile?.radiusKm ?? DEFAULT_RADIUS_KM}
-            onChange={(e) => setRadius(Number(e.target.value))}
-            disabled={!profile}
-            className="w-full accent-terracotta"
-          />
-          <p className="text-body-sm text-on-surface-variant mt-2">
-            Straight-line distance from your kitchen. Customers further out will not see you.
-          </p>
-        </div>
 
         {zones.length === 0 && (
           <p className="text-body-sm text-on-surface-variant mb-4">
@@ -175,12 +179,12 @@ export default function PlansSetupPage() {
         )}
         <div className="flex flex-wrap gap-2 mb-5">
           {zones.map((z) => {
-            const d = zoneDistance(z)
-            const outside = d != null && d > (profile?.radiusKm ?? DEFAULT_RADIUS_KM)
+            const near = nearestBranch(z)
+            const covered = coveredByRadius(z)
             return (
-              <Badge key={z} tone={outside ? 'pending' : 'info'} className="pr-1">
+              <Badge key={z} tone={covered ? 'info' : 'pending'} className="pr-1">
                 {z}
-                {d != null ? ` · ${d} km` : ''}
+                {near ? ` · ${near.distance} km` : ''}
                 <button
                   onClick={() => commitZones(zones.filter((x) => x !== z))}
                   aria-label={`Remove ${z}`}
@@ -193,13 +197,10 @@ export default function PlansSetupPage() {
           })}
         </div>
 
-        {zones.some((z) => {
-          const d = zoneDistance(z)
-          return d != null && d > (profile?.radiusKm ?? DEFAULT_RADIUS_KM)
-        }) && (
+        {zones.some((z) => !coveredByRadius(z)) && (
           <p className="text-body-sm text-secondary mb-4">
-            Areas marked in amber are further away than your radius. Widen the radius above or
-            remove them.
+            Areas in amber sit outside every branch radius. They are still served — listing an area
+            here covers it explicitly — but widening a radius or adding a branch may be simpler.
           </p>
         )}
 

@@ -5,23 +5,45 @@ import { DEFAULT_RADIUS_KM, distanceKm, findLocation } from '../config/locations
 
 const delay = (ms = 300) => new Promise((res) => setTimeout(res, ms))
 
+// A kitchen may cook from several places. Catalogue entries carry a single
+// location; accounts created in the app carry a `branches` array. Treat both
+// the same way so one code path covers them.
+const branchesOf = (p) =>
+  p.branches?.length
+    ? p.branches
+    : [{ area: p.area, pincode: p.pincode, lat: p.lat, lng: p.lng, radiusKm: p.radiusKm }]
+
 export async function fetchProviders(filters = {}) {
   await delay()
   let list = [...providers]
-  // Location filter: a kitchen matches if the customer is in the same area, or
-  // if their address falls inside the radius that kitchen set for itself.
+  // Location filter. A kitchen matches if the customer is in the same area as
+  // any of its branches, or falls inside any branch's delivery radius -- a
+  // provider with a second kitchen across town covers both neighbourhoods.
   if (filters.area) {
     const here = findLocation(filters.area)
+
+    const nearest = (p) => {
+      if (!here) return null
+      let best = null
+      for (const b of branchesOf(p)) {
+        if (b.lat == null) continue
+        const d = distanceKm({ lat: b.lat, lng: b.lng }, here)
+        if (d == null) continue
+        if (!best || d < best.d) best = { d, radiusKm: b.radiusKm ?? DEFAULT_RADIUS_KM }
+      }
+      return best
+    }
+
     list = list.filter((p) => {
-      if (p.area === filters.area) return true
-      if (!here || p.lat == null) return false
-      const d = distanceKm({ lat: p.lat, lng: p.lng }, here)
-      return d != null && d <= (p.radiusKm ?? DEFAULT_RADIUS_KM)
+      if (branchesOf(p).some((b) => b.area === filters.area)) return true
+      const near = nearest(p)
+      return Boolean(near && near.d <= near.radiusKm)
     })
-    // Show the nearest kitchens first once a location is chosen.
+
+    // Nearest branch first once a location is chosen.
     if (here) {
       list = list
-        .map((p) => ({ ...p, distance: distanceKm({ lat: p.lat, lng: p.lng }, here) ?? p.distance }))
+        .map((p) => ({ ...p, distance: nearest(p)?.d ?? p.distance }))
         .sort((a, b) => a.distance - b.distance)
     }
   }
