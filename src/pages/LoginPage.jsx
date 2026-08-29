@@ -11,6 +11,7 @@ import {
   Utensils,
 } from 'lucide-react'
 import Button from '../components/ui/Button.jsx'
+import Modal from '../components/ui/Modal.jsx'
 import GoogleIcon from '../components/ui/GoogleIcon.jsx'
 import IndiaFlag from '../components/ui/IndiaFlag.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
@@ -44,6 +45,8 @@ export default function LoginPage() {
   const [phone, setPhone] = useState('')
   const [otp, setOtp] = useState('')
 
+  // Set when a signup hits an email that already has an account.
+  const [existingAccount, setExistingAccount] = useState(null)
   const [busy, setBusy] = useState(null) // 'email' | 'google' | 'otp' | 'verify'
   const [secondsLeft, setSecondsLeft] = useState(0)
 
@@ -53,7 +56,6 @@ export default function LoginPage() {
     loginWithGoogle,
     sendOtp,
     verifyOtp,
-    resetPassword,
     isFirebaseConfigured,
   } = useAuth()
   const { showToast } = useToast()
@@ -131,23 +133,28 @@ export default function LoginPage() {
         navigate(landFor(resolved))
       }
     } catch (err) {
-      showToast(authErrorMessage(err), 'error')
+      // Signing up with an address that already has an account is a wrong turn,
+      // not an error -- offer the way out instead of a red toast.
+      if (err?.code === 'auth/email-already-in-use') {
+        setExistingAccount(form.email)
+      } else {
+        showToast(authErrorMessage(err), 'error')
+      }
     } finally {
       setBusy(null)
     }
   }
 
-  const onForgotPassword = async () => {
-    if (!form.email) {
-      showToast('Enter your email above first, then tap Forgot password.', 'info')
-      return
-    }
-    try {
-      await resetPassword(form.email)
-      showToast('Password reset link sent. Check your inbox.')
-    } catch (err) {
-      showToast(authErrorMessage(err), 'error')
-    }
+  const switchToLogin = () => {
+    setExistingAccount(null)
+    setMode('login')
+    setMethod('email')
+    setForm((f) => ({ ...f, password: '', confirmPassword: '', name: '' }))
+  }
+
+  const onForgotPassword = () => {
+    const q = form.email ? `?email=${encodeURIComponent(form.email)}` : ''
+    navigate(`/forgot-password${q}`)
   }
 
   // --- Google --------------------------------------------------------------
@@ -652,6 +659,41 @@ export default function LoginPage() {
 
         {/* Firebase renders the invisible reCAPTCHA challenge here. */}
         <div id="recaptcha-container" />
+
+        <Modal
+          open={Boolean(existingAccount)}
+          onClose={() => setExistingAccount(null)}
+          title="You already have an account"
+          footer={
+            <>
+              <Button variant="ghost" onClick={() => setExistingAccount(null)}>
+                Use another email
+              </Button>
+              <Button onClick={switchToLogin}>
+                Log in instead <ArrowRight size={18} />
+              </Button>
+            </>
+          }
+        >
+          <p className="text-body-md text-on-surface-variant mb-4">
+            <span className="text-on-surface font-semibold">{existingAccount}</span> is already
+            registered, so there is no need to sign up again.
+          </p>
+          <p className="text-body-md text-on-surface-variant">
+            Log in with your password, or{' '}
+            <button
+              type="button"
+              onClick={() => {
+                setExistingAccount(null)
+                navigate(`/forgot-password?email=${encodeURIComponent(existingAccount)}`)
+              }}
+              className="text-terracotta font-semibold hover:underline"
+            >
+              reset it
+            </button>{' '}
+            if you have forgotten it.
+          </p>
+        </Modal>
       </main>
     </div>
   )

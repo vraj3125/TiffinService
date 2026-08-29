@@ -4,6 +4,8 @@ import ProtectedRoute from './components/layout/ProtectedRoute.jsx'
 
 import LandingPage from './pages/LandingPage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
+import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx'
+import ResetPasswordPage from './pages/ResetPasswordPage.jsx'
 
 import AboutPage from './pages/company/AboutPage.jsx'
 import FoodSafetyPage from './pages/company/FoodSafetyPage.jsx'
@@ -37,6 +39,9 @@ export default function App() {
       <Route element={<AppLayout />}>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        {/* Where Firebase's password-reset email lands, carrying its oobCode. */}
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
 
         {/* Public content pages -- every footer link resolves to one of these. */}
         <Route path="/how-it-works" element={<HowItWorksPage />} />

@@ -5,7 +5,9 @@ import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
   sendEmailVerification,
+  confirmPasswordReset,
   sendPasswordResetEmail,
+  verifyPasswordResetCode,
   signInWithEmailAndPassword,
   signInWithPhoneNumber,
   signInWithPopup,
@@ -161,8 +163,13 @@ export function AuthProvider({ children }) {
 
   const signupWithEmail = async ({ name, email, password, role, area }) => {
     if (!isFirebaseConfigured) {
-      // No backend to create an account in -- remember it locally so the login
-      // that follows knows who this is.
+      // Mirror Firebase's behaviour so the caller handles a repeat signup the
+      // same way in both modes.
+      if (readDemoAccount(email)) {
+        const e = new Error('That email already has an account.')
+        e.code = 'auth/email-already-in-use'
+        throw e
+      }
       saveDemoAccount(email, { role, name, area })
       return { verificationSent: false }
     }
@@ -197,9 +204,34 @@ export function AuthProvider({ children }) {
     return { role: resolved }
   }
 
+  // --- password reset ------------------------------------------------------
+  //
+  // Firebase mails a one-time code (its oobCode) inside a link. Point the
+  // Authentication > Templates > Password reset "action URL" at
+  // <your-domain>/reset-password and the link lands on our own screens, where
+  // verifyResetCode/completeReset finish the job. Without that console setting
+  // the mail still works, it just uses Firebase's own reset page.
   const resetPassword = async (email) => {
-    if (!isFirebaseConfigured) return
-    await sendPasswordResetEmail(auth, email)
+    if (!isFirebaseConfigured) {
+      const e = new Error('Password reset needs Firebase configured.')
+      e.code = 'auth/operation-not-supported-in-this-environment'
+      throw e
+    }
+    await sendPasswordResetEmail(auth, email, {
+      url: `${window.location.origin}/login`,
+      handleCodeInApp: false,
+    })
+  }
+
+  // Confirms the code is real and unexpired, and tells us whose account it is.
+  const verifyResetCode = async (code) => {
+    if (!isFirebaseConfigured) throw new Error('Password reset needs Firebase configured.')
+    return verifyPasswordResetCode(auth, code)
+  }
+
+  const completeReset = async (code, newPassword) => {
+    if (!isFirebaseConfigured) throw new Error('Password reset needs Firebase configured.')
+    await confirmPasswordReset(auth, code, newPassword)
   }
 
   // --- Google --------------------------------------------------------------
@@ -286,6 +318,8 @@ export function AuthProvider({ children }) {
         user,
         loading,
         isFirebaseConfigured,
+        verifyResetCode,
+        completeReset,
         login: demoLogin,
         signupWithEmail,
         loginWithEmail,

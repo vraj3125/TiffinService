@@ -154,6 +154,23 @@ export async function saveBranches(uid, branches) {
   return writeAccount(uid, 'branches', branches)
 }
 
+export async function fetchKitchenPhotos(uid) {
+  await delay()
+  return readAccount(uid, 'kitchenPhotos', [])
+}
+
+// Throws when the browser's storage budget is full, so the caller can say so
+// rather than silently dropping the photo the user just picked.
+export async function saveKitchenPhotos(uid, photos) {
+  await delay(100)
+  try {
+    localStorage.setItem(`tc:data:${uid}:kitchenPhotos`, JSON.stringify(photos))
+  } catch {
+    throw new Error('Storage is full. Remove a photo before adding another.')
+  }
+  return photos
+}
+
 export async function fetchMyZones(uid) {
   await delay()
   return readAccount(uid, 'zones', [])
