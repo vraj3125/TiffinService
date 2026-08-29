@@ -23,15 +23,15 @@ export function ToastProvider({ children }) {
         {toasts.map((t) => (
           <div
             key={t.id}
-            className="flex items-start gap-2 bg-forest-700 text-cream-50 shadow-card rounded-xl px-4 py-3 animate-[fadeIn_0.2s_ease-out]"
+            className="flex items-start gap-2 bg-inverse-surface text-inverse-on-surface ambient-shadow-lg rounded-DEFAULT px-4 py-3 animate-[fadeIn_0.2s_ease-out]"
           >
             {t.type === 'success' ? (
-              <CheckCircle2 size={18} className="text-mustard-300 mt-0.5 shrink-0" />
+              <CheckCircle2 size={18} className="text-mustard mt-0.5 shrink-0" />
             ) : (
-              <Info size={18} className="text-terracotta-300 mt-0.5 shrink-0" />
+              <Info size={18} className="text-primary-fixed-dim mt-0.5 shrink-0" />
             )}
-            <p className="text-sm flex-1">{t.message}</p>
-            <button onClick={() => dismiss(t.id)} className="text-cream-100/70 hover:text-cream-50">
+            <p className="text-body-sm flex-1">{t.message}</p>
+            <button onClick={() => dismiss(t.id)} className="text-inverse-on-surface/70 hover:text-inverse-on-surface">
               <X size={16} />
             </button>
           </div>

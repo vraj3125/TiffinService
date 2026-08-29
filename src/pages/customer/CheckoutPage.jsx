@@ -1,9 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { MapPin, Plus, CreditCard, Smartphone, Wallet, Check } from 'lucide-react'
-import Card from '../../components/ui/Card.jsx'
+import { MapPin, Plus, CreditCard, QrCode, Wallet, CheckCircle2, ReceiptText, Clock, Home, Briefcase, ArrowRight, Sun, Moon } from 'lucide-react'
 import Button from '../../components/ui/Button.jsx'
-import Badge from '../../components/ui/Badge.jsx'
 import EmptyState from '../../components/ui/EmptyState.jsx'
 import { useCart } from '../../context/CartContext.jsx'
 import { useToast } from '../../context/ToastContext.jsx'
@@ -14,7 +12,8 @@ const timeSlotsByMeal = {
   lunch: ['12:30 PM – 1:30 PM', '1:30 PM – 2:30 PM'],
   dinner: ['7:30 PM – 8:30 PM', '8:30 PM – 9:30 PM'],
 }
-const paymentIcons = { UPI: Smartphone, Card: CreditCard, Wallet: Wallet }
+const paymentIcons = { UPI: QrCode, Card: CreditCard, Wallet: Wallet }
+const addressIcons = { Home, Work: Briefcase }
 
 export default function CheckoutPage() {
   const { checkoutItem, clearCheckout } = useCart()
@@ -28,7 +27,7 @@ export default function CheckoutPage() {
 
   if (!checkoutItem) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-16">
+      <div className="max-w-3xl mx-auto px-6 py-16">
         <EmptyState
           icon={MapPin}
           title="No plan selected yet"
@@ -53,105 +52,167 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-      <h1 className="font-display text-2xl font-bold text-forest-700 mb-6">Checkout</h1>
-      <div className="grid lg:grid-cols-[1fr_360px] gap-6">
-        <div className="space-y-6">
-          <Card className="p-5">
-            <h3 className="font-semibold text-forest-700 mb-3">Delivery Address</h3>
-            <div className="space-y-2">
-              {savedAddresses.map((addr) => (
-                <label
-                  key={addr.id}
-                  className={`flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition-colors ${
-                    addressId === addr.id ? 'border-terracotta-500 bg-terracotta-50' : 'border-gray-200'
-                  }`}
-                >
-                  <input type="radio" checked={addressId === addr.id} onChange={() => setAddressId(addr.id)} className="mt-1 accent-terracotta-500" />
-                  <div>
-                    <p className="text-sm font-semibold text-forest-700">{addr.label}</p>
-                    <p className="text-xs text-gray-500">{addr.line}, {addr.area} – {addr.pincode}</p>
+    <div className="max-w-container-max mx-auto px-6 sm:px-margin-desktop pb-section-gap">
+      <div className="mb-12">
+        <div className="flex items-center gap-2 text-leaf-success mb-4">
+          <CheckCircle2 size={18} />
+          <span className="text-label-md">Secure Checkout</span>
+        </div>
+        <h1 className="text-headline-lg text-on-surface">Checkout</h1>
+        <p className="text-body-md text-on-surface-variant mt-2">Almost there! Please review your details to complete the order.</p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+        <div className="lg:col-span-7 flex flex-col gap-12">
+          <section className="bg-surface-container-lowest rounded-lg p-8 ambient-shadow border border-surface-variant/50">
+            <h2 className="text-headline-md mb-6 flex items-center gap-3">
+              <ReceiptText size={22} className="text-terracotta" /> Order Summary
+            </h2>
+            <div className="flex flex-col md:flex-row gap-6 items-start">
+              <div className="w-full md:w-48 h-32 rounded-DEFAULT overflow-hidden relative shrink-0">
+                <img src={provider.photos[0]} alt={provider.name} className="w-full h-full object-cover" />
+              </div>
+              <div className="flex-grow flex flex-col justify-between h-full">
+                <div>
+                  <div className="flex justify-between items-start mb-2 gap-2">
+                    <h3 className="text-headline-md text-on-surface">{plan.type} Plan</h3>
+                    <span className="text-headline-md text-terracotta shrink-0">₹{plan.price}</span>
                   </div>
-                </label>
-              ))}
-              <button className="flex items-center gap-2 text-sm text-terracotta-600 font-semibold px-3 py-2">
-                <Plus size={16} /> Add new address
+                  <p className="text-body-sm text-on-surface-variant mb-4">Provided by <span className="font-semibold text-primary">{provider.name}</span></p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <span className="bg-surface-container text-terracotta px-4 py-1.5 rounded-full text-label-md border border-outline-variant/30">{plan.duration} · {meal}</span>
+                  <span className={`px-4 py-1.5 rounded-full text-label-md ${provider.dietType === 'veg' ? 'bg-leaf-success/10 text-leaf-success' : 'bg-terracotta/10 text-terracotta'}`}>
+                    {provider.dietType === 'veg' ? 'Vegetarian' : 'Veg & Non-Veg'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-headline-md flex items-center gap-3">
+                <MapPin size={22} className="text-terracotta" /> Delivery Address
+              </h2>
+              <button className="text-terracotta text-label-lg hover:underline flex items-center gap-1">
+                <Plus size={18} /> Add New
               </button>
             </div>
-          </Card>
-
-          <Card className="p-5">
-            <h3 className="font-semibold text-forest-700 mb-3">Delivery Time Slot ({meal})</h3>
-            <div className="grid grid-cols-2 gap-2">
-              {timeSlotsByMeal[meal].map((s) => (
-                <button
-                  key={s}
-                  onClick={() => setSlot(s)}
-                  className={`text-sm px-3 py-2.5 rounded-xl border-2 transition-colors ${
-                    slot === s ? 'border-terracotta-500 bg-terracotta-50 text-terracotta-700 font-semibold' : 'border-gray-200 text-gray-600'
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-          </Card>
-
-          <Card className="p-5">
-            <h3 className="font-semibold text-forest-700 mb-3">Payment Method</h3>
-            <div className="space-y-2">
-              {paymentMethods.map((pm) => {
-                const Icon = paymentIcons[pm.type]
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {savedAddresses.map((addr) => {
+                const Icon = addressIcons[addr.label] ?? Home
+                const selected = addressId === addr.id
                 return (
-                  <label
-                    key={pm.id}
-                    className={`flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-colors ${
-                      paymentId === pm.id ? 'border-terracotta-500 bg-terracotta-50' : 'border-gray-200'
+                  <div
+                    key={addr.id}
+                    onClick={() => setAddressId(addr.id)}
+                    className={`relative rounded-lg p-6 cursor-pointer transition-all duration-300 ${
+                      selected
+                        ? 'bg-surface-container-low border-2 border-terracotta'
+                        : 'bg-surface-container-lowest border border-outline-variant hover:border-terracotta/50 hover:shadow-lg hover:shadow-terracotta/5'
                     }`}
                   >
-                    <input type="radio" checked={paymentId === pm.id} onChange={() => setPaymentId(pm.id)} className="accent-terracotta-500" />
-                    <Icon size={18} className="text-forest-500" />
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold text-forest-700">{pm.type}</p>
-                      <p className="text-xs text-gray-500">{pm.label}{pm.balance != null ? ` · ₹${pm.balance} available` : ''}</p>
+                    {selected && <div className="absolute top-4 right-4 text-terracotta"><CheckCircle2 size={20} /></div>}
+                    <div className="flex items-center gap-2 mb-3">
+                      <Icon size={20} className="text-on-surface-variant" />
+                      <h4 className="text-label-lg text-on-surface">{addr.label}</h4>
                     </div>
-                    {paymentId === pm.id && <Check size={16} className="text-terracotta-500" />}
-                  </label>
+                    <p className="text-body-sm text-on-surface-variant leading-relaxed">
+                      {addr.line}<br />
+                      {addr.area} – {addr.pincode}
+                    </p>
+                  </div>
                 )
               })}
             </div>
-          </Card>
+          </section>
+
+          <section>
+            <h2 className="text-headline-md mb-6 flex items-center gap-3">
+              <Clock size={22} className="text-terracotta" /> Preferred Delivery Window
+            </h2>
+            <div className="flex flex-wrap gap-4">
+              {timeSlotsByMeal[meal].map((s, i) => (
+                <button
+                  key={s}
+                  onClick={() => setSlot(s)}
+                  className={`px-6 py-4 rounded-full border text-body-md transition-all duration-200 flex items-center gap-2 ${
+                    slot === s
+                      ? 'bg-terracotta text-on-primary border-terracotta shadow-md shadow-terracotta/20'
+                      : 'border-outline-variant bg-surface-container-lowest text-on-surface hover:border-terracotta/50'
+                  }`}
+                >
+                  {meal === 'lunch' ? <Sun size={18} /> : <Moon size={18} />}
+                  {i === 0 ? meal[0].toUpperCase() + meal.slice(1) : ''} ({s})
+                </button>
+              ))}
+            </div>
+            <p className="text-body-sm text-on-surface-variant mt-4 ml-2">Meals are delivered fresh daily within your chosen window.</p>
+          </section>
         </div>
 
-        <div>
-          <Card className="p-5 sticky top-24">
-            <h3 className="font-semibold text-forest-700 mb-3">Order Summary</h3>
-            <div className="flex gap-3 mb-4 pb-4 border-b border-gray-100">
-              <img src={provider.photos[0]} alt="" className="w-16 h-16 rounded-xl object-cover" />
-              <div>
-                <p className="font-semibold text-sm text-forest-700">{provider.name}</p>
-                <p className="text-xs text-gray-500">{provider.area}</p>
-                <Badge tone="info" className="mt-1">{plan.type} · {meal}</Badge>
+        <div className="lg:col-span-5">
+          <div className="lg:sticky lg:top-32 flex flex-col gap-8">
+            <section className="bg-surface-container-lowest rounded-lg p-8 ambient-shadow border border-surface-variant/50">
+              <h2 className="text-headline-md mb-6 flex items-center gap-3">
+                <Wallet size={22} className="text-terracotta" /> Payment Method
+              </h2>
+              <div className="flex flex-col gap-4">
+                {paymentMethods.map((pm) => {
+                  const Icon = paymentIcons[pm.type]
+                  const selected = paymentId === pm.id
+                  return (
+                    <label key={pm.id} className="cursor-pointer group">
+                      <input type="radio" checked={selected} onChange={() => setPaymentId(pm.id)} className="sr-only" />
+                      <div
+                        className={`p-5 rounded-DEFAULT border transition-all duration-200 flex items-center gap-4 ${
+                          selected ? 'border-terracotta bg-surface-container-low' : 'border-outline-variant bg-surface group-hover:border-terracotta/50'
+                        }`}
+                      >
+                        <div className={`w-6 h-6 rounded-full border-2 flex-shrink-0 transition-all ${selected ? 'border-[6px] border-terracotta' : 'border-outline-variant'}`} />
+                        <Icon size={26} className="text-slate-neutral" />
+                        <div className="flex-grow">
+                          <h4 className="text-label-lg text-on-surface">{pm.type === 'UPI' ? 'UPI (Google Pay, PhonePe)' : pm.type === 'Card' ? 'Credit / Debit Card' : 'TiffinConnect Wallet'}</h4>
+                          <p className="text-body-sm text-on-surface-variant">{pm.label}{pm.balance != null ? ` · Balance: ₹${pm.balance}` : ''}</p>
+                        </div>
+                      </div>
+                    </label>
+                  )
+                })}
               </div>
-            </div>
-            <div className="space-y-2 text-sm mb-4">
-              <div className="flex justify-between text-gray-600">
-                <span>{plan.type} plan ({plan.duration})</span>
-                <span>₹{plan.price}</span>
+            </section>
+
+            <section className="bg-surface-container-lowest rounded-lg p-8 ambient-shadow border border-surface-variant/50">
+              <h2 className="text-headline-md mb-6">Price Details</h2>
+              <div className="space-y-4 mb-6">
+                <div className="flex justify-between items-center text-body-md text-on-surface-variant">
+                  <span>{plan.type} Plan ({plan.duration})</span>
+                  <span>₹{plan.price}</span>
+                </div>
+                <div className="flex justify-between items-center text-body-md text-on-surface-variant">
+                  <span>Delivery Fee</span>
+                  <span className="text-leaf-success">Free</span>
+                </div>
+                <div className="flex justify-between items-center text-body-md text-on-surface-variant">
+                  <span>Taxes & Fees</span>
+                  <span>₹{gst}</span>
+                </div>
               </div>
-              <div className="flex justify-between text-gray-600">
-                <span>Taxes & delivery</span>
-                <span>₹{gst}</span>
+              <div className="border-t border-surface-variant pt-6 mb-8">
+                <div className="flex justify-between items-end">
+                  <span className="text-headline-md text-on-surface">Total</span>
+                  <span className="font-display text-[36px] font-bold text-terracotta">₹{total}</span>
+                </div>
               </div>
-            </div>
-            <div className="flex justify-between font-bold text-forest-700 text-lg pt-3 border-t border-gray-100 mb-5">
-              <span>Total</span>
-              <span>₹{total}</span>
-            </div>
-            <Button className="w-full" size="lg" onClick={handlePlace} disabled={placing}>
-              {placing ? 'Placing order…' : 'Place Order'}
-            </Button>
-          </Card>
+              <Button className="w-full" size="lg" onClick={handlePlace} disabled={placing}>
+                {placing ? 'Placing order…' : 'Place Order Securely'} <ArrowRight size={18} />
+              </Button>
+              <p className="text-center text-body-sm text-on-surface-variant mt-4">
+                By placing your order, you agree to our <a className="underline hover:text-terracotta">Terms of Service</a> and <a className="underline hover:text-terracotta">Privacy Policy</a>.
+              </p>
+            </section>
+          </div>
         </div>
       </div>
     </div>

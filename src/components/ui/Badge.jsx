@@ -1,17 +1,17 @@
 const tones = {
-  veg: 'bg-forest-50 text-forest-500 border border-forest-300',
-  nonveg: 'bg-terracotta-50 text-terracotta-600 border border-terracotta-300',
-  verified: 'bg-mustard-50 text-mustard-600 border border-mustard-300',
-  pending: 'bg-yellow-50 text-yellow-700 border border-yellow-300',
-  info: 'bg-forest-50 text-forest-600 border border-forest-200',
-  neutral: 'bg-gray-100 text-gray-600 border border-gray-200',
-  danger: 'bg-red-50 text-red-600 border border-red-200',
-  success: 'bg-green-50 text-green-700 border border-green-200',
+  veg: 'bg-leaf-success/10 text-leaf-success',
+  nonveg: 'bg-terracotta/10 text-terracotta',
+  verified: 'bg-surface-container-low text-terracotta border border-outline-variant/40',
+  pending: 'bg-secondary-container/20 text-secondary',
+  info: 'bg-surface-container text-terracotta',
+  neutral: 'bg-surface-container-high text-on-surface-variant',
+  danger: 'bg-error-container text-on-error-container',
+  success: 'bg-leaf-success/10 text-leaf-success',
 }
 
 export default function Badge({ tone = 'neutral', className = '', children, icon: Icon }) {
   return (
-    <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${tones[tone]} ${className}`}>
+    <span className={`inline-flex items-center gap-1 text-label-md px-2.5 py-1 rounded-full ${tones[tone]} ${className}`}>
       {Icon && <Icon size={12} />}
       {children}
     </span>

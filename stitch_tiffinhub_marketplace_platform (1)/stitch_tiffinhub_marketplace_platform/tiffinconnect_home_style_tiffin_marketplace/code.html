@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TiffinConnect | Home-Style Tiffin, Delivered</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-container": "#ffceb6",
+                    "tertiary-fixed-dim": "#a7c8ff",
+                    "background": "#fff8f6",
+                    "on-background": "#231915",
+                    "outline-variant": "#ddc1b4",
+                    "inverse-on-surface": "#ffede6",
+                    "on-secondary-fixed-variant": "#5a4300",
+                    "inverse-surface": "#392e29",
+                    "surface-tint": "#9d4300",
+                    "tertiary-fixed": "#d5e3ff",
+                    "surface-container": "#feeae1",
+                    "surface-variant": "#f2dfd6",
+                    "surface": "#fff8f6",
+                    "outline": "#897267",
+                    "secondary": "#785a00",
+                    "surface-container-high": "#f8e4dc",
+                    "on-tertiary-fixed": "#001b3c",
+                    "on-primary-fixed": "#341100",
+                    "surface-container-low": "#fff1eb",
+                    "leaf-success": "#006e2f",
+                    "error-container": "#ffdad6",
+                    "on-primary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "secondary-fixed-dim": "#f7be1d",
+                    "primary-container": "#9d4300",
+                    "on-secondary": "#ffffff",
+                    "primary": "#783100",
+                    "surface-container-lowest": "#ffffff",
+                    "slate-neutral": "#334155",
+                    "primary-fixed": "#ffdbca",
+                    "primary-fixed-dim": "#ffb690",
+                    "cream-bg": "#fdfcf0",
+                    "tertiary-container": "#005eb2",
+                    "on-surface": "#231915",
+                    "terracotta": "#9d4300",
+                    "inverse-primary": "#ffb690",
+                    "tertiary": "#004688",
+                    "on-error-container": "#93000a",
+                    "surface-dim": "#e9d6ce",
+                    "secondary-container": "#fdc425",
+                    "secondary-fixed": "#ffdf9a",
+                    "mustard": "#eab308",
+                    "surface-container-highest": "#f2dfd6",
+                    "on-primary-fixed-variant": "#783200",
+                    "on-tertiary-container": "#c5d9ff",
+                    "on-secondary-container": "#6d5200",
+                    "on-tertiary-fixed-variant": "#004788",
+                    "on-secondary-fixed": "#251a00",
+                    "on-error": "#ffffff",
+                    "surface-bright": "#fff8f6",
+                    "on-surface-variant": "#564339",
+                    "on-tertiary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-desktop": "64px",
+                    "container-max": "1440px",
+                    "unit-base": "8px",
+                    "section-gap": "96px",
+                    "gutter": "32px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "display-md": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "label-lg": ["Inter"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "label-md": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "display-lg": ["Plus Jakarta Sans"],
+                    "body-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "26px", "fontWeight": "400"}],
+                    "display-md": ["44px", {"lineHeight": "52px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                    "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-sm": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+                    "display-lg": ["56px", {"lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "30px", "fontWeight": "400"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .ambient-shadow {
+            box-shadow: 0 20px 40px -15px rgba(157, 67, 0, 0.05);
+        }
+        .hover-lift {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .hover-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 24px 48px -12px rgba(157, 67, 0, 0.08);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased font-body-md overflow-x-hidden selection:bg-terracotta selection:text-white">
+<!-- TopNavBar -->
+<nav class="fixed top-6 left-1/2 -translate-x-1/2 w-[calc(100%-128px)] max-w-[1440px] rounded-full bg-white/80 dark:bg-surface-container/80 backdrop-blur-xl border border-surface-variant/50 dark:border-outline-variant/20 shadow-xl shadow-terracotta/5 z-50">
+<div class="flex justify-between items-center px-12 py-4 w-full">
+<!-- Brand -->
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-terracotta text-3xl" data-weight="fill" style="font-variation-settings: 'FILL' 1;">restaurant</span>
+<a class="font-display-md text-headline-md font-bold text-terracotta dark:text-inverse-primary tracking-tight" href="#">TiffinConnect</a>
+</div>
+<!-- Navigation Links (Desktop) -->
+<div class="hidden md:flex items-center gap-8">
+<a class="font-label-lg text-label-lg text-terracotta dark:text-inverse-primary font-bold border-b-2 border-terracotta pb-1 transition-colors" href="#">Explore</a>
+<a class="font-label-lg text-label-lg text-on-surface-variant dark:text-surface-variant hover:text-terracotta transition-colors" href="#">How it Works</a>
+<a class="font-label-lg text-label-lg text-on-surface-variant dark:text-surface-variant hover:text-terracotta transition-colors" href="#">Subscriptions</a>
+<a class="font-label-lg text-label-lg text-on-surface-variant dark:text-surface-variant hover:text-terracotta transition-colors" href="#">Gifting</a>
+</div>
+<!-- Actions (Desktop) -->
+<div class="hidden md:flex items-center gap-4">
+<a class="font-label-lg text-label-lg text-terracotta hover:text-primary transition-colors" href="#">Sign In</a>
+<a class="font-label-lg text-label-lg bg-terracotta text-on-primary px-6 py-3 rounded-full hover:bg-primary transition-colors shadow-sm hover:shadow-md hover:-translate-y-0.5 duration-200" href="#">Join as Provider</a>
+</div>
+</div>
+</nav>
+<!-- Hero Section -->
+<header class="relative pt-40 pb-section-gap px-margin-desktop max-w-container-max mx-auto min-h-[90vh] flex items-center justify-center">
+<!-- Abstract Background Shapes -->
+<div class="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+<div class="absolute top-20 right-10 w-96 h-96 bg-primary-fixed rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+<div class="absolute top-40 left-10 w-72 h-72 bg-secondary-fixed rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+</div>
+<div class="w-full max-w-5xl mx-auto text-center space-y-12 z-10">
+<div class="space-y-6">
+<div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface-container-low border border-surface-variant text-terracotta font-label-md text-label-md uppercase tracking-wider mb-4 shadow-sm">
+<span class="material-symbols-outlined text-sm">local_dining</span>
+                    Authentic Kitchens, Daily Delivery
+                </div>
+<h1 class="font-display-lg text-display-lg text-on-background max-w-4xl mx-auto leading-tight">
+                    Home-Style Tiffin,<br/>
+<span class="text-terracotta relative inline-block">
+                        Delivered Near You
+                        <svg class="absolute w-full h-4 -bottom-1 left-0 text-secondary-fixed-dim/40 -z-10" preserveaspectratio="none" viewbox="0 0 100 10"><path d="M0 5 Q 50 10 100 5" fill="none" stroke="currentColor" stroke-width="8"></path></svg>
+</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">
+                    Discover artisanal home kitchens in your neighborhood. Subscribe to healthy, fresh, and authentic daily meals prepared with love.
+                </p>
+</div>
+<!-- Search Bar (Glassmorphism Bento) -->
+<div class="glass-panel p-4 rounded-xl max-w-3xl mx-auto ambient-shadow">
+<form class="flex flex-col sm:flex-row gap-3 w-full">
+<div class="relative flex-grow flex items-center bg-white rounded-lg px-4 h-14 border border-outline-variant focus-within:border-terracotta focus-within:ring-1 focus-within:ring-terracotta transition-all">
+<span class="material-symbols-outlined text-outline mr-3">location_on</span>
+<input class="w-full h-full bg-transparent border-none focus:ring-0 text-on-background font-body-md text-body-md placeholder-outline p-0" placeholder="Enter your area or pincode..." type="text"/>
+</div>
+<button class="h-14 px-8 bg-terracotta text-white rounded-lg font-label-lg text-label-lg flex items-center justify-center gap-2 hover:bg-primary transition-colors hover:shadow-lg hover:shadow-terracotta/20" type="submit">
+<span class="material-symbols-outlined">search</span>
+                        Find Tiffins
+                    </button>
+</form>
+</div>
+<div class="flex items-center justify-center gap-6 text-on-surface-variant font-label-md text-label-md opacity-80 pt-4">
+<span><span class="material-symbols-outlined text-sm align-middle mr-1">check_circle</span> No hidden fees</span>
+<span><span class="material-symbols-outlined text-sm align-middle mr-1">check_circle</span> Flexible pausing</span>
+<span><span class="material-symbols-outlined text-sm align-middle mr-1">check_circle</span> Authentic recipes</span>
+</div>
+</div>
+</header>
+<!-- Featured Providers Section (Bento Grid) -->
+<section class="py-section-gap px-margin-desktop bg-surface-container-lowest relative">
+<div class="max-w-container-max mx-auto">
+<div class="flex justify-between items-end mb-12">
+<div class="max-w-2xl">
+<h2 class="font-headline-lg text-headline-lg text-on-background mb-4">Featured Kitchens in <span class="text-terracotta">San Francisco</span></h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Handpicked home chefs highly rated by your neighbors.</p>
+</div>
+<a class="hidden md:flex items-center gap-2 font-label-lg text-label-lg text-terracotta hover:text-primary transition-colors" href="#">
+                    View all kitchens <span class="material-symbols-outlined">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- Card 1 -->
+<article class="bg-white rounded-lg border border-surface-variant ambient-shadow hover-lift overflow-hidden group flex flex-col h-full">
+<div class="relative h-48 w-full overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A beautifully plated traditional Indian thali with vibrant colors, soft warm lighting, captured in a modern home kitchen setting. High quality food photography, appetizing, rich textures." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgA61fQ8M7tXyURCJuczZlw9XJ6ZHNiV06m2y4tH68BTX7gFwWDGmvoGklJwEFqoNgBZ-sIKmBg-cKdB9RG0IA4LtSiOW8zbjKGy20nAZstSsLoCepfudvLixvKpxeIXvmmSszxBB7Tyj_3hH6Hwmfr7xaWoN1hk4EaqjgTV12U1lj6ZHLNT2K-3Ty21vjCrhhrVdE9qC6LTS5eot-W5jq7oHVcO-AutNN2QXKavOCVPtEkwhiWts"/>
+<div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1 font-label-md text-label-md text-on-background shadow-sm">
+<span class="material-symbols-outlined text-mustard text-sm" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span> 4.9
+                        </div>
+</div>
+<div class="p-6 flex-grow flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="px-2 py-1 bg-surface-container text-terracotta rounded-full font-label-md text-[10px] uppercase tracking-wide">North Indian</span>
+<span class="px-2 py-1 bg-leaf-success/10 text-leaf-success rounded-full font-label-md text-[10px] uppercase tracking-wide">Veg Only</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-background mb-1">Sharma's Kitchen</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mb-4">Authentic Punjabi flavors, slow-cooked dal makhani, and fresh rotis made daily.</p>
+</div>
+<div class="flex items-center justify-between mt-auto pt-4 border-t border-surface-variant">
+<div class="font-label-lg text-label-lg text-on-background">From $12/meal</div>
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-outline">
+<span class="material-symbols-outlined text-sm">directions_bike</span> 1.2 mi
+                            </div>
+</div>
+</div>
+</article>
+<!-- Card 2 -->
+<article class="bg-white rounded-lg border border-surface-variant ambient-shadow hover-lift overflow-hidden group flex flex-col h-full">
+<div class="relative h-48 w-full overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A comforting bowl of South Indian sambar and crispy dosa on a banana leaf plate. Warm, inviting natural light, rustic wooden table setting. High-end food styling." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDv6ayCzX5rPu_0UI5qnQZYIszihZrmPDN1QeDfCqwbvG-S7q7z-i_Rv7EK78zv6uZPaRStZBhwRn_s2Xx5sGynEy8ZFWH_d8ayh0teWdF4iYj3E6FJaeurkD_wW7K4yXOb4d7a86rUkleDaNOesiZXkGJJwwqJhikv6R9JILnudcAAXjjik0eTjDcASr5QEEyR0lcR22I9LDLQmCA-0UaUy1QDG2DURMLwkqxan5Nc67cg7Mo84eA"/>
+<div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1 font-label-md text-label-md text-on-background shadow-sm">
+<span class="material-symbols-outlined text-mustard text-sm" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span> 4.8
+                        </div>
+</div>
+<div class="p-6 flex-grow flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="px-2 py-1 bg-surface-container text-terracotta rounded-full font-label-md text-[10px] uppercase tracking-wide">South Indian</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-background mb-1">Malgudi Days</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mb-4">Homestyle meals featuring wholesome millets, fresh coconut chutneys, and classic curries.</p>
+</div>
+<div class="flex items-center justify-between mt-auto pt-4 border-t border-surface-variant">
+<div class="font-label-lg text-label-lg text-on-background">From $14/meal</div>
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-outline">
+<span class="material-symbols-outlined text-sm">directions_bike</span> 2.5 mi
+                            </div>
+</div>
+</div>
+</article>
+<!-- Card 3 -->
+<article class="bg-white rounded-lg border border-surface-variant ambient-shadow hover-lift overflow-hidden group flex flex-col h-full">
+<div class="relative h-48 w-full overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A fresh, colorful Mediterranean lunch bowl with quinoa, roasted vegetables, and a light dressing. Bright, airy setting, minimal modern aesthetic, focusing on healthy ingredients." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDlBLz0p-JmswKvX91-N66CHPZSSKuO0X9Kuj0Ve5EqV9Z_DAgocsjuU_Jf9dIqxgpTUlt-ZRGBX007OFqp8zGLxklxmEFVFVKc1Pt-VkD-zLRD3UTRvoiHdjuGyBnq1CkW_lrE3qOhTta9NDhoQeDFh3YHef2OdCskUKReTc-xDLTHqrbeIEtjmckpDY_wsGEcpCeC9eczSPM4UrDZaWoaVy0HKf3aJ9N3Tgt9C9g-5fsOW4pgao"/>
+<div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1 font-label-md text-label-md text-on-background shadow-sm">
+<span class="material-symbols-outlined text-mustard text-sm" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span> 5.0
+                        </div>
+</div>
+<div class="p-6 flex-grow flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="px-2 py-1 bg-surface-container text-terracotta rounded-full font-label-md text-[10px] uppercase tracking-wide">Fusion / Healthy</span>
+<span class="px-2 py-1 bg-leaf-success/10 text-leaf-success rounded-full font-label-md text-[10px] uppercase tracking-wide">Vegan</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-background mb-1">Green Bowl Co.</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mb-4">Nutrient-dense, macro-balanced daily bowls tailored for busy professionals.</p>
+</div>
+<div class="flex items-center justify-between mt-auto pt-4 border-t border-surface-variant">
+<div class="font-label-lg text-label-lg text-on-background">From $16/meal</div>
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-outline">
+<span class="material-symbols-outlined text-sm">directions_bike</span> 0.8 mi
+                            </div>
+</div>
+</div>
+</article>
+<!-- Card 4 -->
+<article class="bg-white rounded-lg border border-surface-variant ambient-shadow hover-lift overflow-hidden group flex flex-col h-full">
+<div class="relative h-48 w-full overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A comforting plate of homestyle Bengali fish curry with steaming white rice. Rich golden hour lighting, authentic traditional serveware, conveying warmth and comfort." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxjRogDrnIosgQVAvLoe91TseFWdBdm6DnA68sjKnU0jLGA2sgQzqB_RYwkcAXUbpCZ9tmTx5oQE1FciHoAbkGYYY3xXKTKEqQ50h3bPt-fpPJyKMVpNdUUxMq6DQr7npPefExhHeFajApqSTdNIZHeEZYRS1CkruudNJ6nOhy3OPkbcylXSrYoSCsZrECfKVyVVZ3JUwCanY46BtJh7-9dRrzHYqt6qr8T8Snw1BHDigut8QTEys"/>
+<div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1 font-label-md text-label-md text-on-background shadow-sm">
+<span class="material-symbols-outlined text-mustard text-sm" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span> 4.7
+                        </div>
+</div>
+<div class="p-6 flex-grow flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="px-2 py-1 bg-surface-container text-terracotta rounded-full font-label-md text-[10px] uppercase tracking-wide">Bengali</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-background mb-1">Aunty's Kitchen</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mb-4">Traditional coastal recipes passed down through generations. Known for weekend specials.</p>
+</div>
+<div class="flex items-center justify-between mt-auto pt-4 border-t border-surface-variant">
+<div class="font-label-lg text-label-lg text-on-background">From $15/meal</div>
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-outline">
+<span class="material-symbols-outlined text-sm">directions_bike</span> 3.1 mi
+                            </div>
+</div>
+</div>
+</article>
+</div>
+<div class="mt-8 text-center md:hidden">
+<a class="inline-flex items-center gap-2 font-label-lg text-label-lg text-terracotta hover:text-primary px-6 py-3 border border-terracotta rounded-full" href="#">
+                    View all kitchens <span class="material-symbols-outlined">arrow_forward</span>
+</a>
+</div>
+</div>
+</section>
+<!-- How It Works Section -->
+<section class="py-section-gap px-margin-desktop bg-surface">
+<div class="max-w-container-max mx-auto">
+<div class="text-center mb-16 max-w-2xl mx-auto">
+<h2 class="font-headline-lg text-headline-lg text-on-background mb-4">Simple, Daily Joy</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">We've designed the process to be as comforting as the food itself. Setup your subscription once, and enjoy daily deliveries.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
+<!-- Connecting Line (Desktop only) -->
+<div class="hidden md:block absolute top-12 left-1/6 right-1/6 h-0.5 bg-outline-variant/30 -z-10"></div>
+<!-- Step 1 -->
+<div class="flex flex-col items-center text-center group">
+<div class="w-24 h-24 bg-surface-container-high rounded-full flex items-center justify-center mb-6 ambient-shadow group-hover:bg-terracotta group-hover:text-white transition-colors duration-300 text-terracotta">
+<span class="material-symbols-outlined text-4xl" data-weight="fill" style="font-variation-settings: 'FILL' 1;">travel_explore</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-background mb-3">1. Search &amp; Discover</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Enter your zip code to find highly-rated home chefs and artisanal kitchens operating in your local area.</p>
+</div>
+<!-- Step 2 -->
+<div class="flex flex-col items-center text-center group">
+<div class="w-24 h-24 bg-surface-container-high rounded-full flex items-center justify-center mb-6 ambient-shadow group-hover:bg-terracotta group-hover:text-white transition-colors duration-300 text-terracotta">
+<span class="material-symbols-outlined text-4xl" data-weight="fill" style="font-variation-settings: 'FILL' 1;">calendar_month</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-background mb-3">2. Choose Your Plan</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Select a meal plan that fits your schedule (3, 5, or 7 days a week). Easily pause or modify anytime.</p>
+</div>
+<!-- Step 3 -->
+<div class="flex flex-col items-center text-center group">
+<div class="w-24 h-24 bg-surface-container-high rounded-full flex items-center justify-center mb-6 ambient-shadow group-hover:bg-terracotta group-hover:text-white transition-colors duration-300 text-terracotta">
+<span class="material-symbols-outlined text-4xl" data-weight="fill" style="font-variation-settings: 'FILL' 1;">takeout_dining</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-background mb-3">3. Enjoy Daily Tiffin</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Receive fresh, hot, and hygienic meals delivered directly to your doorstep just in time for lunch or dinner.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Provider CTA Banner -->
+<section class="py-section-gap px-margin-desktop bg-surface-container-lowest">
+<div class="max-w-[1200px] mx-auto rounded-xl overflow-hidden relative ambient-shadow border border-surface-variant">
+<!-- Background Image -->
+<div class="absolute inset-0 bg-cover bg-center" data-alt="A warm, inviting overhead shot of a home chef preparing fresh dough on a floured wooden kitchen counter. Soft natural window light illuminating the domestic culinary setting. Focus on the hands working the dough." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDfPtqbSZ6YQuV6NYdz9faHQma5LwZjfDdzmJTBEPvsoWpWNlegHJZsa-NXG8TEpLlY07UwCc8A5-7qfKiAdaExVJGg51CTyhOvgU9lD8PrXuv9REyahyBuH5KksLtXXnYQsmf3h-1myD5HJGBe_Ek5ZN-XcOHcX9_DixCwfK9AlckefHomZ7ecdSypJcf1TJ4JYeAYRGS15WrSIl0FtBOAGaeHGV5DFvBqRstC29BCRjfn1PE1YBM')">
+<div class="absolute inset-0 bg-on-background/70 mix-blend-multiply"></div>
+</div>
+<div class="relative z-10 p-12 md:p-20 flex flex-col md:flex-row items-center justify-between gap-8 text-white">
+<div class="max-w-xl">
+<h2 class="font-display-md text-display-md text-on-primary mb-4">Are you a home chef?</h2>
+<p class="font-body-lg text-body-lg text-surface-container-low mb-0">Turn your passion for cooking into a thriving local business. Join TiffinConnect to manage subscriptions, logistics, and reach hungry neighbors.</p>
+</div>
+<div class="flex-shrink-0 w-full md:w-auto">
+<a class="inline-block w-full md:w-auto text-center font-label-lg text-label-lg bg-white text-terracotta px-8 py-4 rounded-full hover:bg-surface-container-low transition-colors shadow-lg hover:shadow-xl hover:-translate-y-1 duration-200" href="#">
+                        Join as Provider
+                    </a>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="w-full mt-section-gap bg-surface-container-lowest dark:bg-surface-dim border-t border-surface-variant dark:border-outline-variant">
+<div class="max-w-[1440px] mx-auto px-margin-desktop py-24 grid grid-cols-1 md:grid-cols-4 gap-gutter">
+<div class="col-span-1 md:col-span-1 mb-8 md:mb-0">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-terracotta text-2xl" data-weight="fill" style="font-variation-settings: 'FILL' 1;">restaurant</span>
+<span class="font-display-md text-headline-md font-bold text-terracotta dark:text-inverse-primary tracking-tight">TiffinConnect</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Artisanal Home Kitchens, Delivered.</p>
+</div>
+<div class="flex flex-col gap-4">
+<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-surface-variant hover:text-terracotta hover:translate-x-1 transition-transform duration-200 cursor-pointer" href="#">Join as Provider</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-surface-variant hover:text-terracotta hover:translate-x-1 transition-transform duration-200 cursor-pointer" href="#">Sustainability</a>
+</div>
+<div class="flex flex-col gap-4">
+<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-surface-variant hover:text-terracotta hover:translate-x-1 transition-transform duration-200 cursor-pointer" href="#">Gift Cards</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-surface-variant hover:text-terracotta hover:translate-x-1 transition-transform duration-200 cursor-pointer" href="#">Support</a>
+</div>
+<div class="flex flex-col gap-4">
+<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-surface-variant hover:text-terracotta hover:translate-x-1 transition-transform duration-200 cursor-pointer" href="#">Terms of Service</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-surface-variant hover:text-terracotta hover:translate-x-1 transition-transform duration-200 cursor-pointer" href="#">Privacy Policy</a>
+</div>
+</div>
+<div class="max-w-[1440px] mx-auto px-margin-desktop py-6 border-t border-surface-variant dark:border-outline-variant/30 flex justify-between items-center flex-col md:flex-row gap-4">
+<p class="font-body-sm text-body-sm text-on-surface-variant">© 2024 TiffinConnect. Artisanal Home Kitchens, Delivered.</p>
+<div class="flex gap-4">
+<a class="text-on-surface-variant hover:text-terracotta transition-colors" href="#"><span class="material-symbols-outlined text-xl">camera</span></a>
+<a class="text-on-surface-variant hover:text-terracotta transition-colors" href="#"><span class="material-symbols-outlined text-xl">share</span></a>
+</div>
+</div>
+</footer>
+</body></html>

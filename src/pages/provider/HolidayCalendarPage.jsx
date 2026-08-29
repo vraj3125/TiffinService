@@ -50,22 +50,22 @@ export default function HolidayCalendarPage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
-      <h1 className="font-display text-2xl font-bold text-forest-700 mb-1">Leave / Holiday Calendar</h1>
-      <p className="text-gray-500 mb-6">Mark days your kitchen is closed. Customers won't be charged for skipped meals.</p>
+    <div className="max-w-container-max mx-auto px-6 sm:px-margin-desktop pb-section-gap">
+      <h1 className="text-headline-lg text-on-surface mb-1">Leave / Holiday Calendar</h1>
+      <p className="text-body-md text-on-surface-variant mb-8">Mark days your kitchen is closed. Customers won't be charged for skipped meals.</p>
 
-      <Card className="p-5">
+      <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
-          <button onClick={() => setCursor(new Date(year, month - 1, 1))} className="p-2 rounded-full hover:bg-gray-100">
+          <button onClick={() => setCursor(new Date(year, month - 1, 1))} className="p-2 rounded-full hover:bg-surface-container-low text-on-surface-variant">
             <ChevronLeft size={18} />
           </button>
-          <h3 className="font-display font-semibold text-forest-700">{MONTHS[month]} {year}</h3>
-          <button onClick={() => setCursor(new Date(year, month + 1, 1))} className="p-2 rounded-full hover:bg-gray-100">
+          <h3 className="text-headline-md text-on-surface">{MONTHS[month]} {year}</h3>
+          <button onClick={() => setCursor(new Date(year, month + 1, 1))} className="p-2 rounded-full hover:bg-surface-container-low text-on-surface-variant">
             <ChevronRight size={18} />
           </button>
         </div>
 
-        <div className="grid grid-cols-7 gap-1 text-center text-xs text-gray-400 mb-2">
+        <div className="grid grid-cols-7 gap-1 text-center text-body-sm text-on-surface-variant mb-2">
           {WEEKDAYS.map((w, i) => <div key={i}>{w}</div>)}
         </div>
         <div className="grid grid-cols-7 gap-1">
@@ -77,8 +77,8 @@ export default function HolidayCalendarPage() {
               <button
                 key={i}
                 onClick={() => toggleDay(day)}
-                className={`aspect-square rounded-lg text-sm font-medium flex items-center justify-center transition-colors ${
-                  isHoliday ? 'bg-terracotta-500 text-white' : 'hover:bg-forest-50 text-forest-700'
+                className={`aspect-square rounded-DEFAULT text-body-sm font-medium flex items-center justify-center transition-colors ${
+                  isHoliday ? 'bg-terracotta text-white' : 'hover:bg-surface-container-low text-on-surface'
                 }`}
                 title={holidayMap[iso]}
               >
@@ -89,24 +89,24 @@ export default function HolidayCalendarPage() {
         </div>
       </Card>
 
-      <Card className="p-5 mt-6">
-        <h3 className="font-semibold text-forest-700 mb-4">Upcoming Holidays</h3>
+      <Card className="p-6 mt-6">
+        <h3 className="text-headline-md text-on-surface mb-4">Upcoming Holidays</h3>
         {holidays.length === 0 ? (
-          <p className="text-sm text-gray-400">No holidays marked.</p>
+          <p className="text-body-sm text-on-surface-variant">No holidays marked.</p>
         ) : (
           <div className="space-y-2">
             {holidays.sort((a, b) => a.date.localeCompare(b.date)).map((h) => (
-              <div key={h.date} className="flex items-center justify-between p-3 rounded-xl border border-gray-200">
+              <div key={h.date} className="flex items-center justify-between p-4 rounded-DEFAULT border border-outline-variant">
                 <div>
-                  <p className="text-sm font-semibold text-forest-700">{h.date}</p>
-                  <p className="text-xs text-gray-500">{h.note}</p>
+                  <p className="text-label-lg text-on-surface">{h.date}</p>
+                  <p className="text-body-sm text-on-surface-variant">{h.note}</p>
                 </div>
                 <button
                   onClick={() => {
                     setHolidays((hs) => hs.filter((x) => x.date !== h.date))
                     showToast('Holiday removed')
                   }}
-                  className="text-gray-400 hover:text-red-500"
+                  className="text-on-surface-variant hover:text-error"
                 >
                   <X size={16} />
                 </button>

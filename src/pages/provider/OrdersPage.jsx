@@ -29,9 +29,9 @@ export default function ProviderOrdersPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-      <h1 className="font-display text-2xl font-bold text-forest-700 mb-1">Today's Orders</h1>
-      <p className="text-gray-500 mb-6">{orders ? `${orders.length} orders today` : 'Loading…'}</p>
+    <div className="max-w-container-max mx-auto px-6 sm:px-margin-desktop pb-section-gap">
+      <h1 className="text-headline-lg text-on-surface mb-1">Today's Orders</h1>
+      <p className="text-body-md text-on-surface-variant mb-8">{orders ? `${orders.length} orders today` : 'Loading…'}</p>
 
       {!orders ? (
         <div className="space-y-3">
@@ -41,35 +41,35 @@ export default function ProviderOrdersPage() {
         <EmptyState icon={ClipboardList} title="No orders yet today" />
       ) : (
         <Card className="overflow-x-auto">
-          <table className="w-full text-sm min-w-[720px]">
+          <table className="w-full text-body-sm min-w-[720px]">
             <thead>
-              <tr className="text-left text-gray-500 border-b border-gray-100">
-                <th className="px-4 py-3 font-medium">Order</th>
-                <th className="px-4 py-3 font-medium">Customer</th>
-                <th className="px-4 py-3 font-medium">Address</th>
-                <th className="px-4 py-3 font-medium">Items</th>
-                <th className="px-4 py-3 font-medium">Instructions</th>
-                <th className="px-4 py-3 font-medium">Status</th>
+              <tr className="text-left text-on-surface-variant border-b border-surface-variant bg-surface-container-low">
+                <th className="px-6 py-4 text-label-lg">Order</th>
+                <th className="px-6 py-4 text-label-lg">Customer</th>
+                <th className="px-6 py-4 text-label-lg">Address</th>
+                <th className="px-6 py-4 text-label-lg">Items</th>
+                <th className="px-6 py-4 text-label-lg">Instructions</th>
+                <th className="px-6 py-4 text-label-lg">Status</th>
               </tr>
             </thead>
             <tbody>
-              {orders.map((o) => (
-                <tr key={o.id} className="border-b border-gray-50 last:border-0">
-                  <td className="px-4 py-3 font-semibold text-forest-700">#{o.id}</td>
-                  <td className="px-4 py-3">{o.customerName}</td>
-                  <td className="px-4 py-3 text-gray-500 max-w-[180px]">{o.address}</td>
-                  <td className="px-4 py-3 text-gray-500">
-                    <span className="capitalize font-medium text-forest-600">{o.meal}: </span>
+              {orders.map((o, i) => (
+                <tr key={o.id} className={`border-b border-surface-variant last:border-0 ${i % 2 === 1 ? 'bg-secondary-container/5' : ''}`}>
+                  <td className="px-6 py-4 text-label-lg text-on-surface">#{o.id}</td>
+                  <td className="px-6 py-4 text-on-surface">{o.customerName}</td>
+                  <td className="px-6 py-4 text-on-surface-variant max-w-[180px]">{o.address}</td>
+                  <td className="px-6 py-4 text-on-surface-variant">
+                    <span className="capitalize font-semibold text-on-surface">{o.meal}: </span>
                     {o.items.join(', ')}
                   </td>
-                  <td className="px-4 py-3 text-gray-400 italic">{o.instructions || '—'}</td>
-                  <td className="px-4 py-3">
+                  <td className="px-6 py-4 text-on-surface-variant italic">{o.instructions || '—'}</td>
+                  <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <Badge tone={toneOf(o.status)}>{statuses.find((s) => s.value === o.status)?.label}</Badge>
                       <select
                         value={o.status}
                         onChange={(e) => updateStatus(o.id, e.target.value)}
-                        className="text-xs border border-gray-200 rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-terracotta-400"
+                        className="text-body-sm border border-outline-variant rounded-DEFAULT px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-terracotta"
                       >
                         {statuses.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
                       </select>

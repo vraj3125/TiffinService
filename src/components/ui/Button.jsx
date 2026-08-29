@@ -1,16 +1,16 @@
 const variants = {
-  primary: 'bg-terracotta-500 text-white hover:bg-terracotta-600 shadow-soft',
-  secondary: 'bg-forest-500 text-white hover:bg-forest-600 shadow-soft',
-  outline: 'border-2 border-terracotta-500 text-terracotta-500 hover:bg-terracotta-50',
-  ghost: 'text-forest-600 hover:bg-forest-50',
-  mustard: 'bg-mustard-400 text-forest-700 hover:bg-mustard-500 shadow-soft',
-  danger: 'bg-red-500 text-white hover:bg-red-600',
+  primary: 'bg-terracotta text-on-primary hover:bg-primary hover:-translate-y-0.5 hover:shadow-lg hover:shadow-terracotta/20 shadow-sm',
+  secondary: 'bg-surface-container-lowest text-terracotta border border-terracotta hover:bg-surface-container-low',
+  outline: 'border-2 border-mustard text-secondary hover:bg-mustard/10',
+  ghost: 'text-on-surface-variant hover:text-terracotta hover:bg-surface-container-low',
+  mustard: 'bg-mustard text-on-background hover:bg-mustard/90 shadow-sm',
+  danger: 'bg-error text-on-error hover:bg-error/90',
 }
 
 const sizes = {
-  sm: 'px-3 py-1.5 text-sm',
-  md: 'px-4 py-2.5 text-sm',
-  lg: 'px-6 py-3 text-base',
+  sm: 'px-4 py-2 text-label-md',
+  md: 'px-6 py-2.5 text-label-lg',
+  lg: 'px-8 py-4 text-label-lg',
 }
 
 export default function Button({
@@ -23,7 +23,7 @@ export default function Button({
 }) {
   return (
     <Component
-      className={`inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${variants[variant]} ${sizes[size]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${variants[variant]} ${sizes[size]} ${className}`}
       {...props}
     >
       {children}

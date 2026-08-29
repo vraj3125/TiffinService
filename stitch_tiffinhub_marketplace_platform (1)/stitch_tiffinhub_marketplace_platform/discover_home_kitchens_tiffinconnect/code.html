@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TiffinConnect - Explore Providers</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;family=Inter:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary-container": "#ffceb6",
+                      "tertiary-fixed-dim": "#a7c8ff",
+                      "background": "#fff8f6",
+                      "on-background": "#231915",
+                      "outline-variant": "#ddc1b4",
+                      "inverse-on-surface": "#ffede6",
+                      "on-secondary-fixed-variant": "#5a4300",
+                      "inverse-surface": "#392e29",
+                      "surface-tint": "#9d4300",
+                      "tertiary-fixed": "#d5e3ff",
+                      "surface-container": "#feeae1",
+                      "surface-variant": "#f2dfd6",
+                      "surface": "#fff8f6",
+                      "outline": "#897267",
+                      "secondary": "#785a00",
+                      "surface-container-high": "#f8e4dc",
+                      "on-tertiary-fixed": "#001b3c",
+                      "on-primary-fixed": "#341100",
+                      "surface-container-low": "#fff1eb",
+                      "leaf-success": "#006e2f",
+                      "error-container": "#ffdad6",
+                      "on-primary": "#ffffff",
+                      "error": "#ba1a1a",
+                      "secondary-fixed-dim": "#f7be1d",
+                      "primary-container": "#9d4300",
+                      "on-secondary": "#ffffff",
+                      "primary": "#783100",
+                      "surface-container-lowest": "#ffffff",
+                      "slate-neutral": "#334155",
+                      "primary-fixed": "#ffdbca",
+                      "primary-fixed-dim": "#ffb690",
+                      "cream-bg": "#fdfcf0",
+                      "tertiary-container": "#005eb2",
+                      "on-surface": "#231915",
+                      "terracotta": "#9d4300",
+                      "inverse-primary": "#ffb690",
+                      "tertiary": "#004688",
+                      "on-error-container": "#93000a",
+                      "surface-dim": "#e9d6ce",
+                      "secondary-container": "#fdc425",
+                      "secondary-fixed": "#ffdf9a",
+                      "mustard": "#eab308",
+                      "surface-container-highest": "#f2dfd6",
+                      "on-primary-fixed-variant": "#783200",
+                      "on-tertiary-container": "#c5d9ff",
+                      "on-secondary-container": "#6d5200",
+                      "on-tertiary-fixed-variant": "#004788",
+                      "on-secondary-fixed": "#251a00",
+                      "on-error": "#ffffff",
+                      "surface-bright": "#fff8f6",
+                      "on-surface-variant": "#564339",
+                      "on-tertiary": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "1rem",
+                      "lg": "2rem",
+                      "xl": "3rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-desktop": "64px",
+                      "container-max": "1440px",
+                      "unit-base": "8px",
+                      "section-gap": "96px",
+                      "gutter": "32px"
+              },
+              "fontFamily": {
+                      "body-md": ["Inter"],
+                      "display-md": ["Plus Jakarta Sans"],
+                      "headline-lg": ["Plus Jakarta Sans"],
+                      "label-lg": ["Inter"],
+                      "headline-md": ["Plus Jakarta Sans"],
+                      "label-md": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "display-lg": ["Plus Jakarta Sans"],
+                      "body-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "body-md": ["16px", {"lineHeight": "26px", "fontWeight": "400"}],
+                      "display-md": ["44px", {"lineHeight": "52px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                      "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "body-sm": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+                      "display-lg": ["56px", {"lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-lg": ["18px", {"lineHeight": "30px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        /* Ambient lift shadows */
+        .ambient-shadow {
+            box-shadow: 0 20px 40px -10px rgba(157, 67, 0, 0.05);
+        }
+        .ambient-shadow-hover:hover {
+            box-shadow: 0 30px 50px -15px rgba(157, 67, 0, 0.08);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen pt-[120px] pb-section-gap">
+<!-- TopNavBar -->
+<nav class="fixed top-6 left-1/2 -translate-x-1/2 w-[calc(100%-128px)] max-w-[1440px] rounded-full z-50 bg-white/80 dark:bg-surface-container/80 backdrop-blur-xl border border-surface-variant/50 dark:border-outline-variant/20 shadow-xl shadow-terracotta/5">
+<div class="flex justify-between items-center px-12 py-4 w-full">
+<div class="font-display-md text-headline-md font-bold text-terracotta dark:text-inverse-primary cursor-pointer hover:scale-105 transition-transform duration-300 active:scale-95 transition-all">
+                TiffinConnect
+            </div>
+<div class="flex space-x-8 items-center hidden md:flex">
+<a class="text-terracotta dark:text-inverse-primary font-bold border-b-2 border-terracotta pb-1 cursor-pointer hover:scale-105 transition-transform duration-300 active:scale-95 transition-all" href="#">Explore</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-terracotta cursor-pointer hover:scale-105 transition-transform duration-300 active:scale-95 transition-all" href="#">How it Works</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-terracotta cursor-pointer hover:scale-105 transition-transform duration-300 active:scale-95 transition-all" href="#">Subscriptions</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-terracotta cursor-pointer hover:scale-105 transition-transform duration-300 active:scale-95 transition-all" href="#">Gifting</a>
+</div>
+<div class="flex items-center space-x-4">
+<button class="hidden lg:block text-on-surface-variant dark:text-surface-variant hover:text-terracotta font-body-md text-body-md cursor-pointer hover:scale-105 transition-transform duration-300 active:scale-95 transition-all">
+                    Sign In
+                </button>
+<button class="bg-terracotta text-on-primary rounded-full px-6 py-2 font-label-lg text-label-lg hover:bg-primary transition-colors duration-200 ambient-shadow-hover cursor-pointer hover:scale-105 transition-transform duration-300 active:scale-95 transition-all">
+                    Join as Provider
+                </button>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="max-w-container-max mx-auto px-margin-desktop">
+<!-- Page Header & Filters -->
+<header class="mb-gutter flex flex-col gap-6">
+<div class="flex justify-between items-end">
+<div>
+<h1 class="font-display-lg text-display-lg text-on-surface mb-2">Explore Providers</h1>
+<div class="flex items-center text-on-surface-variant gap-2 cursor-pointer hover:text-terracotta transition-colors group">
+<span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform" style="font-variation-settings: 'FILL' 1;">location_on</span>
+<span class="font-headline-md text-headline-md">Indiranagar, Bangalore</span>
+<span class="material-symbols-outlined text-[16px]">expand_more</span>
+</div>
+</div>
+<!-- Search & Global Filter -->
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-80 h-14 pl-12 pr-4 rounded-full border-outline-variant bg-surface-container-lowest focus:ring-2 focus:ring-terracotta focus:border-terracotta transition-shadow placeholder-on-surface-variant/60 font-body-md text-body-md shadow-sm" placeholder="Search cuisines, dishes..." type="text"/>
+</div>
+<button class="h-14 px-6 rounded-full border-2 border-mustard text-secondary hover:bg-mustard/10 transition-colors flex items-center gap-2 font-label-lg text-label-lg">
+<span class="material-symbols-outlined">tune</span>
+                        Filters
+                    </button>
+</div>
+</div>
+<!-- Quick Filter Chips -->
+<div class="flex flex-wrap gap-3 mt-4">
+<button class="px-5 py-2 rounded-full bg-terracotta text-on-primary font-label-md text-label-md transition-transform hover:scale-105 shadow-sm">All</button>
+<button class="px-5 py-2 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-variant font-label-md text-label-md transition-colors border border-outline-variant/30">Veg</button>
+<button class="px-5 py-2 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-variant font-label-md text-label-md transition-colors border border-outline-variant/30">Non-Veg</button>
+<button class="px-5 py-2 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-variant font-label-md text-label-md transition-colors border border-outline-variant/30">Jain</button>
+<button class="px-5 py-2 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-variant font-label-md text-label-md transition-colors border border-outline-variant/30">Lunch</button>
+<button class="px-5 py-2 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-variant font-label-md text-label-md transition-colors border border-outline-variant/30">Dinner</button>
+<button class="px-5 py-2 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-variant font-label-md text-label-md transition-colors border border-outline-variant/30">Under ₹150/day</button>
+</div>
+</header>
+<!-- Provider Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Card 1 -->
+<article class="bg-surface-container-lowest rounded-DEFAULT border border-surface-variant ambient-shadow hover:ambient-shadow-hover transition-all duration-300 overflow-hidden group cursor-pointer flex flex-col h-full">
+<div class="relative h-64 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A beautifully plated traditional North Indian thali featuring golden dal, vibrant paneer butter masala, warm rotis, and fluffy rice. The dish is presented on a clean, modern white ceramic plate resting on a rustic wooden table. Warm, natural sunlight streaming from a nearby window creates soft, inviting shadows. The overall aesthetic is earthy, wholesome, and premium, perfectly matching a curated home-kitchen marketplace." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCcvbzlLJAxpGU6zgNJtnH9LSmouMfdeYTHPaMwGTAAvrn1PJ35kOquCN-pyKnqdu3gznNrhA_jdzKuhUA_Os_6hLuVCZI6aAxBeOVWwUDV-rKMrzQ4YT2Kovb3W4pkdJs8oyQFJerfDofz3b4ZVhB4wNtJXnArtl7ZIY3Syo-q-c6kAqnUWQom0_iUVqPU4qZh7EUfshPTTQtB3l9e_HcembpayzajCSNgyfgn8ySF4OJt_-Rr5o"/>
+<div class="absolute top-4 right-4 bg-surface-container-lowest/90 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-mustard text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-md text-label-md text-on-surface">4.8</span>
+</div>
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<h3 class="font-headline-lg text-headline-lg text-on-surface">Aroma Kitchen</h3>
+<span class="material-symbols-outlined text-leaf-success text-[20px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant mb-4">
+<span class="font-label-md text-label-md bg-surface-container px-2 py-1 rounded-md text-terracotta">North Indian</span>
+<span class="font-label-md text-label-md bg-surface-container px-2 py-1 rounded-md text-terracotta">Punjabi</span>
+</div>
+<div class="mt-auto pt-4 border-t border-surface-variant flex justify-between items-end">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Starting from</p>
+<p class="font-headline-md text-headline-md text-on-surface">₹120<span class="font-body-sm text-body-sm text-on-surface-variant">/day</span></p>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant bg-surface-container px-3 py-1 rounded-full">
+<span class="material-symbols-outlined text-[16px]">directions_bike</span>
+<span class="font-label-md text-label-md">1.2 km</span>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 2 -->
+<article class="bg-surface-container-lowest rounded-DEFAULT border border-surface-variant ambient-shadow hover:ambient-shadow-hover transition-all duration-300 overflow-hidden group cursor-pointer flex flex-col h-full">
+<div class="relative h-64 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A steaming hot South Indian meal set consisting of crisp, golden dosas, fluffy idlis, and small stainless steel bowls filled with vibrant orange sambar and pristine white coconut chutney. The food is placed on a fresh green banana leaf over a light, smooth marble countertop. The lighting is bright and clean, emphasizing the freshness and hygienic quality of the artisanal home-cooked food." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5lBGpcMZrON2TAAzCaOI4GjUVO4D1nttv_Usr8VOWyGeMsDQmFyLD45frdmbe2wpBgOdYzwYnAldNtOhIWEnprfp_m6bpu1hVvGYE8yqXSNhn9DHkfxOHVBLD81kVxVcupd2Q3_8-OrpbqkiZ7FtRFKkgo6k6xpY2DwuLmU9svohIzL0exisg5mOBs-C9lR45eGRgMEH0NGUxHHgkiXDYskt2zIOmWO_RE-AjviBTJFiDzsWAku8"/>
+<div class="absolute top-4 right-4 bg-surface-container-lowest/90 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-mustard text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-md text-label-md text-on-surface">4.9</span>
+</div>
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<h3 class="font-headline-lg text-headline-lg text-on-surface">Dakshin Delights</h3>
+<span class="material-symbols-outlined text-leaf-success text-[20px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant mb-4">
+<span class="font-label-md text-label-md bg-surface-container px-2 py-1 rounded-md text-terracotta">South Indian</span>
+<span class="font-label-md text-label-md bg-surface-container px-2 py-1 rounded-md text-terracotta">Healthy</span>
+</div>
+<div class="mt-auto pt-4 border-t border-surface-variant flex justify-between items-end">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Starting from</p>
+<p class="font-headline-md text-headline-md text-on-surface">₹90<span class="font-body-sm text-body-sm text-on-surface-variant">/day</span></p>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant bg-surface-container px-3 py-1 rounded-full">
+<span class="material-symbols-outlined text-[16px]">directions_bike</span>
+<span class="font-label-md text-label-md">2.5 km</span>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 3 -->
+<article class="bg-surface-container-lowest rounded-DEFAULT border border-surface-variant ambient-shadow hover:ambient-shadow-hover transition-all duration-300 overflow-hidden group cursor-pointer flex flex-col h-full">
+<div class="relative h-64 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A comforting bowl of home-style mixed vegetable curry alongside soft, layered parathas in a shallow, rustic ceramic bowl. Next to it sits a small glass of fresh buttermilk with mint. The composition is shot from a slightly high angle on a pale, warm wooden background. The scene is illuminated by gentle, diffused afternoon light, creating a cozy, welcoming atmosphere typical of a premium curated marketplace." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDs6z5LkwtdM1ddW5jjKoxLaTbqHOFsF-00V2fWqipFdtWnVWdu25rpzMgxZ-D8azbHO0h1giUE_-Zd51IfROGQPlcvQHOwMyU3UDGXFELEfH37cPUVDjYIrNhVOI9-Y2TDW7mr5GW4QAMnANQVUSMiYfXIIsWYkWaAZ7wCnQvvSBCupZov2-mWIfKILTHE3ghtjcsmXebLXK8ZLVZVMDHGGQh3BrpTeVeATZQr4ylol_zkezl1uwY"/>
+<div class="absolute top-4 right-4 bg-surface-container-lowest/90 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-mustard text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-md text-label-md text-on-surface">4.6</span>
+</div>
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<h3 class="font-headline-lg text-headline-lg text-on-surface">Maa ki Rasoi</h3>
+<span class="material-symbols-outlined text-leaf-success text-[20px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant mb-4">
+<span class="font-label-md text-label-md bg-surface-container px-2 py-1 rounded-md text-terracotta">Homestyle</span>
+<span class="font-label-md text-label-md bg-surface-container px-2 py-1 rounded-md text-terracotta">Veg</span>
+</div>
+<div class="mt-auto pt-4 border-t border-surface-variant flex justify-between items-end">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Starting from</p>
+<p class="font-headline-md text-headline-md text-on-surface">₹110<span class="font-body-sm text-body-sm text-on-surface-variant">/day</span></p>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant bg-surface-container px-3 py-1 rounded-full">
+<span class="material-symbols-outlined text-[16px]">directions_bike</span>
+<span class="font-label-md text-label-md">0.8 km</span>
+</div>
+</div>
+</div>
+</article>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full mt-section-gap border-t border-surface-variant dark:border-outline-variant bg-surface-container-lowest dark:bg-surface-dim">
+<div class="max-w-[1440px] mx-auto px-margin-desktop py-24 grid grid-cols-4 gap-gutter">
+<div class="col-span-1">
+<div class="font-display-md text-headline-md font-bold text-terracotta dark:text-inverse-primary mb-4">
+                    TiffinConnect
+                </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-6">
+                    © 2024 TiffinConnect. Artisanal Home Kitchens, Delivered.
+                </p>
+</div>
+<div class="col-span-3 grid grid-cols-3 gap-8">
+<div class="flex flex-col gap-3">
+<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-surface-variant hover:text-terracotta hover:translate-x-1 transition-transform duration-200 cursor-pointer" href="#">Join as Provider</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-surface-variant hover:text-terracotta hover:translate-x-1 transition-transform duration-200 cursor-pointer" href="#">Sustainability</a>
+</div>
+<div class="flex flex-col gap-3">
+<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-surface-variant hover:text-terracotta hover:translate-x-1 transition-transform duration-200 cursor-pointer" href="#">Gift Cards</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-surface-variant hover:text-terracotta hover:translate-x-1 transition-transform duration-200 cursor-pointer" href="#">Support</a>
+</div>
+<div class="flex flex-col gap-3">
+<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-surface-variant hover:text-terracotta hover:translate-x-1 transition-transform duration-200 cursor-pointer" href="#">Terms of Service</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-surface-variant hover:text-terracotta hover:translate-x-1 transition-transform duration-200 cursor-pointer" href="#">Privacy Policy</a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

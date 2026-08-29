@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Order Tracking - TiffinConnect</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-primary-container": "#ffceb6",
+                        "tertiary-fixed-dim": "#a7c8ff",
+                        "background": "#fff8f6",
+                        "on-background": "#231915",
+                        "outline-variant": "#ddc1b4",
+                        "inverse-on-surface": "#ffede6",
+                        "on-secondary-fixed-variant": "#5a4300",
+                        "inverse-surface": "#392e29",
+                        "surface-tint": "#9d4300",
+                        "tertiary-fixed": "#d5e3ff",
+                        "surface-container": "#feeae1",
+                        "surface-variant": "#f2dfd6",
+                        "surface": "#fff8f6",
+                        "outline": "#897267",
+                        "secondary": "#785a00",
+                        "surface-container-high": "#f8e4dc",
+                        "on-tertiary-fixed": "#001b3c",
+                        "on-primary-fixed": "#341100",
+                        "surface-container-low": "#fff1eb",
+                        "leaf-success": "#006e2f",
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "secondary-fixed-dim": "#f7be1d",
+                        "primary-container": "#9d4300",
+                        "on-secondary": "#ffffff",
+                        "primary": "#783100",
+                        "surface-container-lowest": "#ffffff",
+                        "slate-neutral": "#334155",
+                        "primary-fixed": "#ffdbca",
+                        "primary-fixed-dim": "#ffb690",
+                        "cream-bg": "#fdfcf0",
+                        "tertiary-container": "#005eb2",
+                        "on-surface": "#231915",
+                        "terracotta": "#9d4300",
+                        "inverse-primary": "#ffb690",
+                        "tertiary": "#004688",
+                        "on-error-container": "#93000a",
+                        "surface-dim": "#e9d6ce",
+                        "secondary-container": "#fdc425",
+                        "secondary-fixed": "#ffdf9a",
+                        "mustard": "#eab308",
+                        "surface-container-highest": "#f2dfd6",
+                        "on-primary-fixed-variant": "#783200",
+                        "on-tertiary-container": "#c5d9ff",
+                        "on-secondary-container": "#6d5200",
+                        "on-tertiary-fixed-variant": "#004788",
+                        "on-secondary-fixed": "#251a00",
+                        "on-error": "#ffffff",
+                        "surface-bright": "#fff8f6",
+                        "on-surface-variant": "#564339",
+                        "on-tertiary": "#ffffff"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "margin-desktop": "64px",
+                        "container-max": "1440px",
+                        "unit-base": "8px",
+                        "section-gap": "96px",
+                        "gutter": "32px"
+                    },
+                    fontFamily: {
+                        "body-md": ["Inter"],
+                        "display-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "label-lg": ["Inter"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "label-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "body-lg": ["Inter"]
+                    },
+                    fontSize: {
+                        "body-md": ["16px", { "lineHeight": "26px", "fontWeight": "400" }],
+                        "display-md": ["44px", { "lineHeight": "52px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }],
+                        "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+                        "display-lg": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "30px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col pt-32 pb-24">
+<!-- TopNavBar (Shared Component) - Rendered as intent is NOT transactional -->
+<nav class="fixed top-6 left-1/2 -translate-x-1/2 w-[calc(100%-128px)] max-w-[1440px] rounded-full bg-white/80 dark:bg-surface-container/80 backdrop-blur-xl border border-surface-variant/50 dark:border-outline-variant/20 shadow-xl shadow-terracotta/5 z-50 flex justify-between items-center px-12 py-4">
+<div class="font-display-md text-headline-md font-bold text-terracotta dark:text-inverse-primary cursor-pointer hover:scale-105 transition-transform duration-300">
+            TiffinConnect
+        </div>
+<div class="hidden md:flex gap-8 items-center font-body-md text-body-md">
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-terracotta cursor-pointer transition-all" href="#">Explore</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-terracotta cursor-pointer transition-all" href="#">How it Works</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-terracotta cursor-pointer transition-all" href="#">Subscriptions</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-terracotta cursor-pointer transition-all" href="#">Gifting</a>
+</div>
+<div class="hidden md:flex gap-4 items-center font-body-md text-body-md">
+<button class="text-terracotta dark:text-inverse-primary font-bold hover:scale-105 transition-transform duration-300">Sign In</button>
+<button class="bg-terracotta text-white px-6 py-2 rounded-full hover:scale-105 transition-transform duration-300 shadow-[0_2px_10px_rgba(157,67,0,0.2)]">Join as Provider</button>
+</div>
+</nav>
+<main class="w-full max-w-container-max mx-auto px-margin-desktop grid grid-cols-12 gap-gutter flex-grow">
+<!-- Tracking Info Column -->
+<div class="col-span-12 lg:col-span-5 flex flex-col gap-12">
+<header>
+<h1 class="font-headline-lg text-headline-lg text-on-background mb-2">Order Tracking</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Order #TC-84920 • Arriving in ~15 mins</p>
+</header>
+<!-- Vertical Stepper -->
+<div class="bg-surface-container-lowest rounded-xl p-8 border border-surface-variant/50 shadow-xl shadow-terracotta/5">
+<div class="relative">
+<!-- Progress Line -->
+<div class="absolute left-[15px] top-4 bottom-8 w-0.5 bg-surface-variant"></div>
+<div class="absolute left-[15px] top-4 h-[60%] w-0.5 bg-terracotta"></div>
+<!-- Stages -->
+<div class="flex flex-col gap-8">
+<!-- Stage 1: Done -->
+<div class="flex items-start gap-6 relative z-10">
+<div class="w-8 h-8 rounded-full bg-terracotta flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-white text-[16px]" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<div class="pt-1">
+<h3 class="font-label-lg text-label-lg text-on-background">Order Placed</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">12:30 PM • Payment confirmed</p>
+</div>
+</div>
+<!-- Stage 2: Done -->
+<div class="flex items-start gap-6 relative z-10">
+<div class="w-8 h-8 rounded-full bg-terracotta flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-white text-[16px]" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<div class="pt-1">
+<h3 class="font-label-lg text-label-lg text-on-background">Being Prepared</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">12:45 PM • Kitchen has started cooking</p>
+</div>
+</div>
+<!-- Stage 3: Active -->
+<div class="flex items-start gap-6 relative z-10">
+<div class="w-8 h-8 rounded-full bg-terracotta ring-4 ring-terracotta/20 flex items-center justify-center shrink-0 shadow-lg shadow-terracotta/20">
+<span class="material-symbols-outlined text-white text-[16px]" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
+</div>
+<div class="pt-1">
+<h3 class="font-label-lg text-label-lg text-terracotta">Out for Delivery</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">1:15 PM • On the way to you</p>
+</div>
+</div>
+<!-- Stage 4: Pending -->
+<div class="flex items-start gap-6 relative z-10 opacity-50">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest border-2 border-surface-variant flex items-center justify-center shrink-0">
+</div>
+<div class="pt-1">
+<h3 class="font-label-lg text-label-lg text-on-background">Delivered</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Estimated 1:30 PM</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Delivery Partner Card -->
+<div class="bg-surface-container-lowest rounded-xl p-6 border border-surface-variant/50 shadow-xl shadow-terracotta/5 flex items-center gap-6">
+<div class="relative w-16 h-16 shrink-0 rounded-full overflow-hidden border-2 border-surface-variant">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a delivery driver wearing a warm terracotta uniform, smiling warmly, natural soft light, friendly expression, set against a clean blurred background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCn-RBr6yiG1LKvd5vKUIigT7z3eJcMMaJtln1FH6P_YWJyTpcEjtdrfgK-SV-YmV0ONpQe2458kky643Zo-x5LPeIY1oUHPs7HgnYO2hy4yC-whYEyxjTN-FCaP8i7gk7kgbRg2fii8sUlhvB_jRRCrABXoZHRCuqULMFEKTWt8Cfm3FwQVkFXYxNyjBggaS_roWhv32wZDIPyhdH23QS2-Y68t7nzCpBcrSPW0sK6MQ7cSie9Uy0"/>
+</div>
+<div class="flex-grow">
+<h4 class="font-label-lg text-label-lg text-on-background">Raj Patel</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Delivery Partner • 4.9 ★</p>
+<p class="font-label-md text-label-md text-secondary mt-1">Honda Activa • MH-12-AB-3456</p>
+</div>
+<button class="w-12 h-12 rounded-full border border-outline flex items-center justify-center text-terracotta hover:bg-surface-container transition-colors shrink-0">
+<span class="material-symbols-outlined">call</span>
+</button>
+</div>
+</div>
+<!-- Map Area -->
+<div class="col-span-12 lg:col-span-7 h-[600px] lg:h-auto min-h-[400px] rounded-[32px] overflow-hidden border border-surface-variant/50 shadow-xl shadow-terracotta/5 relative">
+<img class="absolute inset-0 w-full h-full object-cover" data-alt="A highly detailed overhead map view of a modern city grid with soft terracotta and cream color tones, stylized clean UI aesthetic, showing a route path highlighting delivery progress." data-location="Mumbai" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBolrkRjO8f3eyUmesjj6kLFE4miPQkH0btrRa3NXHpe8mvJcvQvCCZ0Sp_1hDeMXf5C1L7OFj4j9fWq61TmjmsyB5g7glKRbzkRPSk6WF5scTeYfIivYoRnlINtuONj23JSqCNKt7wv5rCOA1ugqF4ZfsNbjpobTqEgr-m-XO7gf0tt1tuvJKaRqKyPTB38E7-nR5pNKqB9LvdMsALnraVn91ETFvKltgMbVYQQ_rfUWWbhoVrwzU"/>
+<!-- Map Overlay UI (Optional detailing) -->
+<div class="absolute bottom-8 left-8 right-8 bg-white/90 backdrop-blur-md rounded-xl p-4 shadow-lg flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-terracotta">pin_drop</span>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant">Delivering to</p>
+<p class="font-label-lg text-label-lg text-on-background">402, Lotus Apartments, Bandra W</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer (Shared Component) -->
+<footer class="w-full mt-section-gap bg-surface-container-lowest dark:bg-surface-dim border-t border-surface-variant dark:border-outline-variant flat no shadows">
+<div class="max-w-[1440px] mx-auto px-margin-desktop py-24 grid grid-cols-1 md:grid-cols-4 gap-gutter">
+<div class="col-span-1">
+<div class="font-display-md text-headline-md font-bold text-terracotta dark:text-inverse-primary mb-4">
+                    TiffinConnect
+                </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                    © 2024 TiffinConnect. Artisanal Home Kitchens, Delivered.
+                </p>
+</div>
+<div class="col-span-3 grid grid-cols-2 md:grid-cols-3 gap-8">
+<div class="flex flex-col gap-4 font-body-sm text-body-sm">
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-terracotta hover:translate-x-1 transition-transform duration-200 cursor-pointer" href="#">Join as Provider</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-terracotta hover:translate-x-1 transition-transform duration-200 cursor-pointer" href="#">Sustainability</a>
+</div>
+<div class="flex flex-col gap-4 font-body-sm text-body-sm">
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-terracotta hover:translate-x-1 transition-transform duration-200 cursor-pointer" href="#">Gift Cards</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-terracotta hover:translate-x-1 transition-transform duration-200 cursor-pointer" href="#">Support</a>
+</div>
+<div class="flex flex-col gap-4 font-body-sm text-body-sm">
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-terracotta hover:translate-x-1 transition-transform duration-200 cursor-pointer" href="#">Terms of Service</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-terracotta hover:translate-x-1 transition-transform duration-200 cursor-pointer" href="#">Privacy Policy</a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

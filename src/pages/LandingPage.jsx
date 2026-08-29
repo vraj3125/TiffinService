@@ -1,24 +1,15 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search, ShieldCheck, CalendarClock, ChefHat, Star, MapPin, ArrowRight, Utensils, Truck } from 'lucide-react'
+import { Search, MapPin, CheckCircle2, Compass, Calendar, Package, ArrowRight, Bike, Star } from 'lucide-react'
 import Button from '../components/ui/Button.jsx'
-import Card from '../components/ui/Card.jsx'
-import ProviderCard from '../components/ProviderCard.jsx'
 import { ProviderCardSkeleton } from '../components/ui/Skeleton.jsx'
 import { fetchFeaturedProviders } from '../api/providers.js'
 import { AREAS } from '../mockData.js'
 
 const steps = [
-  { icon: Search, title: 'Search your area', desc: 'Enter your locality or pincode to see tiffin providers who deliver to you.' },
-  { icon: Utensils, title: 'Pick a plan', desc: 'Browse weekly menus, compare prices, and choose daily, weekly or monthly plans.' },
-  { icon: Truck, title: 'Get fed daily', desc: 'Hot, home-style meals delivered on time — pause or skip whenever you like.' },
-]
-
-const stats = [
-  { label: 'Verified providers', value: '500+' },
-  { label: 'Cities', value: '12' },
-  { label: 'Meals delivered', value: '2M+' },
-  { label: 'Avg. rating', value: '4.6★' },
+  { icon: Compass, title: '1. Search & Discover', desc: 'Enter your zip code to find highly-rated home chefs and artisanal kitchens operating in your local area.' },
+  { icon: Calendar, title: '2. Choose Your Plan', desc: 'Select a meal plan that fits your schedule (daily, weekly or monthly). Easily pause or modify anytime.' },
+  { icon: Package, title: '3. Enjoy Daily Tiffin', desc: 'Receive fresh, hot, and hygienic meals delivered directly to your doorstep just in time for lunch or dinner.' },
 ]
 
 export default function LandingPage() {
@@ -42,26 +33,35 @@ export default function LandingPage() {
   return (
     <div>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-mustard-50 via-cream-50 to-cream-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-14 pb-20 sm:pt-20 sm:pb-28 grid lg:grid-cols-2 gap-10 items-center">
-          <div>
-            <span className="inline-flex items-center gap-1.5 bg-white text-terracotta-600 text-xs font-semibold px-3 py-1.5 rounded-full shadow-soft mb-5">
-              <ChefHat size={14} /> Home-cooked, not fast food
-            </span>
-            <h1 className="font-display text-4xl sm:text-5xl font-bold text-forest-700 leading-tight mb-4">
-              Find Tiffin Services <span className="text-terracotta-500">Near You</span>
+      <header className="relative pt-12 pb-section-gap px-6 sm:px-margin-desktop max-w-container-max mx-auto min-h-[80vh] flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+          <div className="absolute top-20 right-10 w-96 h-96 bg-primary-fixed rounded-full mix-blend-multiply filter blur-3xl opacity-30" />
+          <div className="absolute top-40 left-10 w-72 h-72 bg-secondary-fixed rounded-full mix-blend-multiply filter blur-3xl opacity-30" />
+        </div>
+        <div className="w-full max-w-5xl mx-auto text-center space-y-10 z-10">
+          <div className="space-y-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface-container-low border border-surface-variant text-terracotta text-label-md uppercase tracking-wider shadow-sm">
+              <Package size={14} />
+              Authentic Kitchens, Daily Delivery
+            </div>
+            <h1 className="font-display text-display-md sm:text-display-lg text-on-background max-w-4xl mx-auto leading-tight">
+              Home-Style Tiffin,<br />
+              <span className="text-terracotta">Delivered Near You</span>
             </h1>
-            <p className="text-forest-600/80 text-lg mb-8 max-w-lg">
-              Daily home-style meals from verified local cooks in your neighbourhood. Subscribe once, eat well every day.
+            <p className="text-body-lg text-on-surface-variant max-w-2xl mx-auto">
+              Discover artisanal home kitchens in your neighborhood. Subscribe to healthy, fresh, and authentic daily meals prepared with love.
             </p>
-            <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3 bg-white p-2 rounded-2xl shadow-card max-w-xl">
-              <div className="flex items-center gap-2 flex-1 px-3">
-                <MapPin size={18} className="text-terracotta-500 shrink-0" />
+          </div>
+
+          <div className="glass-panel p-4 rounded-xl max-w-3xl mx-auto ambient-shadow">
+            <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3 w-full">
+              <div className="relative flex-grow flex items-center bg-white rounded-DEFAULT px-4 h-14 border border-outline-variant focus-within:border-terracotta focus-within:ring-1 focus-within:ring-terracotta transition-all">
+                <MapPin size={18} className="text-outline mr-3 shrink-0" />
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Enter area, locality or pincode"
-                  className="w-full py-2.5 text-sm focus:outline-none"
+                  placeholder="Enter your area or pincode..."
+                  className="w-full h-full bg-transparent border-none focus:ring-0 text-on-background text-body-md placeholder-outline p-0 outline-none"
                   list="areas"
                 />
                 <datalist id="areas">
@@ -69,104 +69,119 @@ export default function LandingPage() {
                 </datalist>
               </div>
               <Button type="submit" size="lg" className="shrink-0">
-                <Search size={18} /> Search
+                <Search size={18} /> Find Tiffins
               </Button>
             </form>
-            <div className="flex flex-wrap gap-6 mt-10">
-              {stats.map((s) => (
-                <div key={s.label}>
-                  <p className="font-display font-bold text-2xl text-forest-700">{s.value}</p>
-                  <p className="text-xs text-gray-500">{s.label}</p>
-                </div>
-              ))}
-            </div>
           </div>
-          <div className="relative hidden lg:block">
-            <div className="grid grid-cols-2 gap-4">
-              <img src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=500" className="rounded-2xl shadow-card h-48 w-full object-cover translate-y-6" alt="Tiffin meal" />
-              <img src="https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=500" className="rounded-2xl shadow-card h-48 w-full object-cover" alt="Thali" />
-              <img src="https://images.unsplash.com/photo-1626132647523-66f5bf380027?w=500" className="rounded-2xl shadow-card h-48 w-full object-cover" alt="South Indian food" />
-              <img src="https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=500" className="rounded-2xl shadow-card h-48 w-full object-cover translate-y-6" alt="Home cooked food" />
+          <div className="flex flex-wrap items-center justify-center gap-6 text-on-surface-variant text-label-md opacity-80">
+            <span className="flex items-center gap-1.5"><CheckCircle2 size={16} className="text-leaf-success" /> No hidden fees</span>
+            <span className="flex items-center gap-1.5"><CheckCircle2 size={16} className="text-leaf-success" /> Flexible pausing</span>
+            <span className="flex items-center gap-1.5"><CheckCircle2 size={16} className="text-leaf-success" /> Authentic recipes</span>
+          </div>
+        </div>
+      </header>
+
+      {/* Featured providers */}
+      <section className="py-section-gap px-6 sm:px-margin-desktop bg-surface-container-lowest">
+        <div className="max-w-container-max mx-auto">
+          <div className="flex justify-between items-end mb-12">
+            <div className="max-w-2xl">
+              <h2 className="text-headline-lg text-on-background mb-3">Featured Kitchens Near You</h2>
+              <p className="text-body-md text-on-surface-variant">Handpicked home chefs highly rated by your neighbors.</p>
             </div>
+            <button onClick={() => navigate('/discover')} className="hidden md:flex items-center gap-2 text-label-lg text-terracotta hover:text-primary transition-colors shrink-0">
+              View all kitchens <ArrowRight size={18} />
+            </button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+            {loading
+              ? Array.from({ length: 4 }).map((_, i) => <ProviderCardSkeleton key={i} />)
+              : featured.map((p) => (
+                  <article
+                    key={p.id}
+                    onClick={() => navigate(`/providers/${p.id}`)}
+                    className="bg-white rounded-lg border border-surface-variant ambient-shadow hover-lift overflow-hidden group flex flex-col h-full cursor-pointer"
+                  >
+                    <div className="relative h-48 w-full overflow-hidden">
+                      <img src={p.photos[0]} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1 text-label-md text-on-background shadow-sm">
+                        <Star size={14} className="text-mustard" fill="currentColor" strokeWidth={0} /> {p.rating.toFixed(1)}
+                      </div>
+                    </div>
+                    <div className="p-6 flex-grow flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center gap-2 mb-2 flex-wrap">
+                          <span className="px-2 py-1 bg-surface-container text-terracotta rounded-full text-[10px] font-semibold uppercase tracking-wide">{p.cuisineTags[0]}</span>
+                          {p.dietType === 'veg' && (
+                            <span className="px-2 py-1 bg-leaf-success/10 text-leaf-success rounded-full text-[10px] font-semibold uppercase tracking-wide">Veg Only</span>
+                          )}
+                        </div>
+                        <h3 className="text-headline-md text-on-background mb-1">{p.name}</h3>
+                        <p className="text-body-sm text-on-surface-variant line-clamp-2 mb-4">{p.tagline}</p>
+                      </div>
+                      <div className="flex items-center justify-between mt-auto pt-4 border-t border-surface-variant">
+                        <div className="text-label-lg text-on-background">From ₹{p.priceRange[0]}/meal</div>
+                        <div className="flex items-center gap-1 text-body-sm text-outline">
+                          <Bike size={14} /> {p.distance} km
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+          </div>
+          <div className="mt-8 text-center md:hidden">
+            <button onClick={() => navigate('/discover')} className="inline-flex items-center gap-2 text-label-lg text-terracotta px-6 py-3 border border-terracotta rounded-full">
+              View all kitchens <ArrowRight size={18} />
+            </button>
           </div>
         </div>
       </section>
 
       {/* How it works */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
-        <h2 className="font-display text-2xl sm:text-3xl font-bold text-forest-700 text-center mb-2">How Tiffinly works</h2>
-        <p className="text-center text-gray-500 mb-10">Three simple steps to home-style meals, every day</p>
-        <div className="grid sm:grid-cols-3 gap-6">
-          {steps.map((s, i) => (
-            <Card key={s.title} className="p-6 text-center relative">
-              <div className="w-14 h-14 mx-auto rounded-2xl bg-terracotta-50 flex items-center justify-center mb-4">
-                <s.icon size={26} className="text-terracotta-500" />
-              </div>
-              <h3 className="font-display font-semibold text-forest-700 mb-2">{i + 1}. {s.title}</h3>
-              <p className="text-sm text-gray-500">{s.desc}</p>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      {/* Featured providers */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
-        <div className="flex items-end justify-between mb-8">
-          <div>
-            <h2 className="font-display text-2xl sm:text-3xl font-bold text-forest-700 mb-1">Top-rated tiffin providers</h2>
-            <p className="text-gray-500">Loved by customers across the city</p>
+      <section className="py-section-gap px-6 sm:px-margin-desktop bg-surface">
+        <div className="max-w-container-max mx-auto">
+          <div className="text-center mb-16 max-w-2xl mx-auto">
+            <h2 className="text-headline-lg text-on-background mb-4">Simple, Daily Joy</h2>
+            <p className="text-body-lg text-on-surface-variant">We've designed the process to be as comforting as the food itself. Setup your subscription once, and enjoy daily deliveries.</p>
           </div>
-          <Button variant="ghost" onClick={() => navigate('/discover')} className="hidden sm:inline-flex">
-            View all <ArrowRight size={16} />
-          </Button>
-        </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {loading
-            ? Array.from({ length: 6 }).map((_, i) => <ProviderCardSkeleton key={i} />)
-            : featured.map((p) => <ProviderCard key={p.id} provider={p} />)}
-        </div>
-        <div className="text-center mt-8 sm:hidden">
-          <Button variant="outline" onClick={() => navigate('/discover')}>View all providers</Button>
-        </div>
-      </section>
-
-      {/* Trust */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
-        <div className="grid sm:grid-cols-3 gap-6">
-          <Card className="p-6 flex gap-4 items-start">
-            <ShieldCheck size={28} className="text-forest-500 shrink-0" />
-            <div>
-              <h3 className="font-display font-semibold text-forest-700 mb-1">FSSAI Verified Kitchens</h3>
-              <p className="text-sm text-gray-500">Every provider is background-checked and food-safety verified.</p>
-            </div>
-          </Card>
-          <Card className="p-6 flex gap-4 items-start">
-            <CalendarClock size={28} className="text-forest-500 shrink-0" />
-            <div>
-              <h3 className="font-display font-semibold text-forest-700 mb-1">Flexible Subscriptions</h3>
-              <p className="text-sm text-gray-500">Pause, skip, or cancel meals anytime — no long-term lock-in.</p>
-            </div>
-          </Card>
-          <Card className="p-6 flex gap-4 items-start">
-            <Star size={28} className="text-forest-500 shrink-0" />
-            <div>
-              <h3 className="font-display font-semibold text-forest-700 mb-1">Rated by Real Customers</h3>
-              <p className="text-sm text-gray-500">Transparent reviews and photos from people in your neighbourhood.</p>
-            </div>
-          </Card>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
+            <div className="hidden md:block absolute top-12 left-1/6 right-1/6 h-0.5 bg-outline-variant/30 -z-10" />
+            {steps.map((s) => (
+              <div key={s.title} className="flex flex-col items-center text-center group">
+                <div className="w-24 h-24 bg-surface-container-high rounded-full flex items-center justify-center mb-6 ambient-shadow group-hover:bg-terracotta group-hover:text-white transition-colors duration-300 text-terracotta">
+                  <s.icon size={36} />
+                </div>
+                <h3 className="text-headline-md text-on-background mb-3">{s.title}</h3>
+                <p className="text-body-md text-on-surface-variant">{s.desc}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-20">
-        <div className="bg-forest-700 rounded-3xl px-6 sm:px-12 py-12 text-center relative overflow-hidden">
-          <h2 className="font-display text-2xl sm:text-3xl font-bold text-white mb-3">Are you a home cook or tiffin service?</h2>
-          <p className="text-cream-100/80 mb-8 max-w-xl mx-auto">Join Tiffinly and reach hundreds of customers in your area looking for daily home-cooked meals.</p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button as="a" href="/login?tab=signup&role=provider" variant="mustard" size="lg">Register as a Provider</Button>
-            <Button as="a" href="/login?tab=signup&role=customer" variant="outline" size="lg" className="!text-white !border-white hover:!bg-white/10">
-              Sign up as a Customer
-            </Button>
+      {/* Provider CTA */}
+      <section className="py-section-gap px-6 sm:px-margin-desktop bg-surface-container-lowest">
+        <div className="max-w-[1200px] mx-auto rounded-xl overflow-hidden relative ambient-shadow border border-surface-variant">
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: "url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200')" }}
+          />
+          <div className="absolute inset-0 bg-on-background/70 mix-blend-multiply" />
+          <div className="relative z-10 p-8 sm:p-12 md:p-20 flex flex-col md:flex-row items-center justify-between gap-8 text-white">
+            <div className="max-w-xl">
+              <h2 className="font-display text-display-md text-on-primary mb-4">Are you a home chef?</h2>
+              <p className="text-body-lg text-surface-container-low">Turn your passion for cooking into a thriving local business. Join TiffinConnect to manage subscriptions, logistics, and reach hungry neighbors.</p>
+            </div>
+            <div className="flex-shrink-0 w-full md:w-auto">
+              <Button
+                as="a"
+                href="/login?tab=signup&role=provider"
+                size="lg"
+                className="w-full md:w-auto !bg-white !text-terracotta hover:!bg-surface-container-low"
+              >
+                Join as Provider
+              </Button>
+            </div>
           </div>
         </div>
       </section>

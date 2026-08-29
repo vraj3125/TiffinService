@@ -1,9 +1,9 @@
 export function Input({ label, className = '', ...props }) {
   return (
     <label className="block">
-      {label && <span className="block text-sm font-medium text-forest-700 mb-1">{label}</span>}
+      {label && <span className="block text-label-md text-on-surface-variant mb-2 ml-1">{label}</span>}
       <input
-        className={`w-full rounded-xl border border-gray-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta-400 focus:border-transparent ${className}`}
+        className={`w-full min-h-[56px] rounded-DEFAULT border border-outline-variant bg-surface-container-lowest px-4 py-3 text-body-md text-on-surface placeholder:text-outline focus:border-terracotta focus:ring-1 focus:ring-terracotta outline-none transition-all ${className}`}
         {...props}
       />
     </label>
@@ -13,9 +13,9 @@ export function Input({ label, className = '', ...props }) {
 export function Select({ label, className = '', children, ...props }) {
   return (
     <label className="block">
-      {label && <span className="block text-sm font-medium text-forest-700 mb-1">{label}</span>}
+      {label && <span className="block text-label-md text-on-surface-variant mb-2 ml-1">{label}</span>}
       <select
-        className={`w-full rounded-xl border border-gray-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta-400 focus:border-transparent bg-white ${className}`}
+        className={`w-full min-h-[56px] rounded-DEFAULT border border-outline-variant bg-surface-container-lowest px-4 py-3 text-body-md text-on-surface focus:border-terracotta focus:ring-1 focus:ring-terracotta outline-none transition-all ${className}`}
         {...props}
       >
         {children}
@@ -27,9 +27,9 @@ export function Select({ label, className = '', children, ...props }) {
 export function Textarea({ label, className = '', ...props }) {
   return (
     <label className="block">
-      {label && <span className="block text-sm font-medium text-forest-700 mb-1">{label}</span>}
+      {label && <span className="block text-label-md text-on-surface-variant mb-2 ml-1">{label}</span>}
       <textarea
-        className={`w-full rounded-xl border border-gray-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta-400 focus:border-transparent ${className}`}
+        className={`w-full rounded-DEFAULT border border-outline-variant bg-surface-container-lowest px-4 py-3 text-body-md text-on-surface placeholder:text-outline focus:border-terracotta focus:ring-1 focus:ring-terracotta outline-none transition-all ${className}`}
         {...props}
       />
     </label>

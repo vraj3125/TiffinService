@@ -1,18 +1,16 @@
 import { useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Phone, MessageCircle } from 'lucide-react'
-import Card from '../../components/ui/Card.jsx'
-import Button from '../../components/ui/Button.jsx'
+import { useParams } from 'react-router-dom'
+import { Phone, MapPinned, Star } from 'lucide-react'
 import Stepper from '../../components/Stepper.jsx'
 import { Skeleton } from '../../components/ui/Skeleton.jsx'
 import { fetchOrders } from '../../api/orders.js'
 
 const steps = ['Order Placed', 'Being Prepared', 'Out for Delivery', 'Delivered']
+const stepMeta = ['Payment confirmed', 'Kitchen has started cooking', 'On the way to you', 'Estimated soon']
 const statusIndex = { upcoming: 0, preparing: 1, out_for_delivery: 2, delivered: 3 }
 
 export default function OrderTrackingPage() {
   const { id } = useParams()
-  const navigate = useNavigate()
   const [order, setOrder] = useState(null)
 
   useEffect(() => {
@@ -21,8 +19,8 @@ export default function OrderTrackingPage() {
 
   if (!order) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-10">
-        <Skeleton className="h-64 w-full" />
+      <div className="max-w-container-max mx-auto px-6 sm:px-margin-desktop py-10">
+        <Skeleton className="h-96 w-full" />
       </div>
     )
   }
@@ -30,37 +28,48 @@ export default function OrderTrackingPage() {
   const idx = statusIndex[order.status] ?? 2
 
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
-      <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-sm text-gray-500 mb-4 hover:text-forest-600">
-        <ArrowLeft size={16} /> Back
-      </button>
-      <h1 className="font-display text-2xl font-bold text-forest-700 mb-1">Track your order</h1>
-      <p className="text-sm text-gray-500 mb-8">Order #{order.id} from {order.providerName}</p>
+    <div className="max-w-container-max mx-auto px-6 sm:px-margin-desktop pb-section-gap grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+      <div className="lg:col-span-5 flex flex-col gap-12">
+        <header>
+          <h1 className="text-headline-lg text-on-background mb-2">Order Tracking</h1>
+          <p className="text-body-md text-on-surface-variant">Order #{order.id} · {order.providerName}</p>
+        </header>
 
-      <Card className="p-6 mb-6">
-        <Stepper steps={steps} currentIndex={idx} />
-      </Card>
+        <div className="bg-surface-container-lowest rounded-xl p-8 border border-surface-variant/50 ambient-shadow-lg">
+          <Stepper steps={steps} currentIndex={idx} stepMeta={stepMeta} />
+        </div>
 
-      <Card className="p-5 mb-6">
-        <h3 className="font-semibold text-forest-700 mb-3">Order details</h3>
-        <div className="text-sm text-gray-600 space-y-1">
-          <p>Meal: <span className="capitalize font-medium text-forest-700">{order.meal}</span></p>
+        <div className="bg-surface-container-lowest rounded-xl p-6 border border-surface-variant/50 ambient-shadow-lg flex items-center gap-6">
+          <div className="relative w-16 h-16 shrink-0 rounded-full overflow-hidden border-2 border-surface-variant bg-surface-container flex items-center justify-center text-terracotta font-display font-bold text-headline-md">
+            RP
+          </div>
+          <div className="flex-grow">
+            <h4 className="text-label-lg text-on-background">Raj Patel</h4>
+            <p className="text-body-sm text-on-surface-variant flex items-center gap-1">Delivery Partner · 4.9 <Star size={12} className="text-mustard" fill="currentColor" strokeWidth={0} /></p>
+            <p className="text-label-md text-secondary mt-1">Honda Activa · MH-12-AB-3456</p>
+          </div>
+          <button className="w-12 h-12 rounded-full border border-outline flex items-center justify-center text-terracotta hover:bg-surface-container transition-colors shrink-0">
+            <Phone size={18} />
+          </button>
+        </div>
+
+        <div className="bg-surface-container-lowest rounded-xl p-5 border border-surface-variant/50 ambient-shadow-lg text-body-sm text-on-surface-variant">
+          <p>Meal: <span className="capitalize font-medium text-on-surface">{order.meal}</span></p>
           <p>Items: {order.items.join(', ')}</p>
-          <p>Amount: <span className="font-medium text-forest-700">₹{order.amount}</span></p>
-          <p>Estimated delivery: 12:45 PM – 1:15 PM</p>
+          <p>Amount: <span className="font-medium text-on-surface">₹{order.amount}</span></p>
         </div>
-      </Card>
+      </div>
 
-      <Card className="p-5 flex items-center justify-between">
-        <div>
-          <p className="font-semibold text-forest-700 text-sm">Need help with this order?</p>
-          <p className="text-xs text-gray-500">Contact {order.providerName} directly</p>
+      <div className="lg:col-span-7 min-h-[320px] lg:min-h-[500px] rounded-xl overflow-hidden border border-surface-variant/50 ambient-shadow-lg relative bg-gradient-to-br from-surface-container-low via-surface-container to-surface-container-high">
+        <div className="absolute inset-0 opacity-40" style={{ backgroundImage: 'radial-gradient(circle at 30% 30%, #9d4300 1px, transparent 1px), radial-gradient(circle at 70% 60%, #eab308 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+        <div className="absolute bottom-6 left-6 right-6 bg-white/90 backdrop-blur-md rounded-xl p-4 shadow-lg flex items-center gap-3">
+          <MapPinned size={22} className="text-terracotta shrink-0" />
+          <div>
+            <p className="text-label-md text-on-surface-variant">Delivering to</p>
+            <p className="text-label-lg text-on-background">402, Lotus Apartments, Bandra W</p>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <Button size="sm" variant="outline"><Phone size={14} /> Call</Button>
-          <Button size="sm" variant="ghost"><MessageCircle size={14} /> Chat</Button>
-        </div>
-      </Card>
+      </div>
     </div>
   )
 }

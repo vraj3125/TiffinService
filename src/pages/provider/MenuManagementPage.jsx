@@ -69,22 +69,22 @@ export default function MenuManagementPage() {
 
   if (!menu) {
     return (
-      <div className="max-w-5xl mx-auto px-4 py-10">
+      <div className="max-w-container-max mx-auto px-6 py-10">
         <Skeleton className="h-96 w-full" />
       </div>
     )
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-      <div className="flex items-center justify-between mb-6">
+    <div className="max-w-container-max mx-auto px-6 sm:px-margin-desktop pb-section-gap">
+      <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="font-display text-2xl font-bold text-forest-700">Menu Management</h1>
-          <p className="text-gray-500 text-sm">Build your weekly menu — customers see this on your profile.</p>
+          <h1 className="text-headline-lg text-on-surface">Menu Management</h1>
+          <p className="text-body-md text-on-surface-variant">Build your weekly menu — customers see this on your profile.</p>
         </div>
       </div>
 
-      <Card className="p-5">
+      <Card className="p-6">
         <Tabs
           tabs={DAYS.map((d) => ({ value: d, label: d.slice(0, 3) }))}
           active={activeDay}
@@ -96,11 +96,11 @@ export default function MenuManagementPage() {
           {['lunch', 'dinner'].map((meal) => {
             const dish = menu[activeDay]?.[meal]
             return (
-              <div key={meal} className="rounded-xl border border-gray-200 p-4">
+              <div key={meal} className="rounded-DEFAULT border border-outline-variant p-4">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-semibold text-forest-700 capitalize">{meal}</h3>
+                  <h3 className="text-label-lg text-on-surface capitalize">{meal}</h3>
                   <div className="flex gap-1">
-                    <button onClick={() => openEditor(meal)} className="p-1.5 text-gray-400 hover:text-forest-600">
+                    <button onClick={() => openEditor(meal)} className="p-1.5 text-on-surface-variant hover:text-terracotta">
                       <Pencil size={15} />
                     </button>
                     <button
@@ -108,7 +108,7 @@ export default function MenuManagementPage() {
                         setMenu((prev) => ({ ...prev, [activeDay]: { ...prev[activeDay], [meal]: null } }))
                         showToast(`${meal} removed for ${activeDay}`)
                       }}
-                      className="p-1.5 text-gray-400 hover:text-red-500"
+                      className="p-1.5 text-on-surface-variant hover:text-error"
                     >
                       <Trash2 size={15} />
                     </button>
@@ -116,7 +116,7 @@ export default function MenuManagementPage() {
                 </div>
                 {dish ? (
                   <>
-                    <ul className="text-sm text-gray-600 mb-3 space-y-1">
+                    <ul className="text-body-sm text-on-surface-variant mb-3 space-y-1">
                       {dish.items.map((item) => <li key={item}>• {item}</li>)}
                     </ul>
                     <div className="flex gap-2">
@@ -133,7 +133,7 @@ export default function MenuManagementPage() {
                       setItemInput('')
                       setEditing({ meal })
                     }}
-                    className="flex flex-col items-center justify-center gap-2 text-gray-400 border-2 border-dashed border-gray-200 rounded-xl py-6 w-full hover:border-terracotta-300 hover:text-terracotta-500"
+                    className="flex flex-col items-center justify-center gap-2 text-on-surface-variant border-2 border-dashed border-outline-variant rounded-DEFAULT py-6 w-full hover:border-terracotta/50 hover:text-terracotta"
                   >
                     <Plus size={20} /> Add {meal} menu
                   </button>
@@ -156,11 +156,11 @@ export default function MenuManagementPage() {
         }
       >
         <div className="space-y-4">
-          <div className="flex items-center justify-center border-2 border-dashed border-gray-200 rounded-xl h-28 text-gray-400 gap-2 cursor-pointer hover:border-terracotta-300 hover:text-terracotta-500">
+          <div className="flex items-center justify-center border-2 border-dashed border-outline-variant rounded-DEFAULT h-28 text-on-surface-variant gap-2 cursor-pointer hover:border-terracotta/50 hover:text-terracotta">
             <ImagePlus size={20} /> Upload dish photo
           </div>
           <div>
-            <span className="block text-sm font-medium text-forest-700 mb-1">Dish items</span>
+            <span className="block text-label-md text-on-surface-variant mb-2 ml-1">Dish items</span>
             <div className="flex gap-2">
               <input
                 value={itemInput}
@@ -172,9 +172,9 @@ export default function MenuManagementPage() {
                   }
                 }}
                 placeholder="e.g. Rajma"
-                className="flex-1 rounded-xl border border-gray-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta-400 focus:border-transparent"
+                className="flex-1 min-h-[56px] rounded-DEFAULT border border-outline-variant px-4 py-3 text-body-md focus:outline-none focus:ring-1 focus:ring-terracotta focus:border-terracotta"
               />
-              <Button type="button" variant="outline" onClick={addItem}>
+              <Button type="button" variant="secondary" onClick={addItem}>
                 <Plus size={16} /> Add
               </Button>
             </div>
@@ -186,7 +186,7 @@ export default function MenuManagementPage() {
                     <button
                       type="button"
                       onClick={() => removeItem(item)}
-                      className="ml-1 text-forest-400 hover:text-red-500"
+                      className="ml-1 text-terracotta/60 hover:text-error"
                     >
                       <X size={12} />
                     </button>

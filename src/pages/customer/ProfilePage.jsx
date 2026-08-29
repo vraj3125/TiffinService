@@ -28,13 +28,13 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-      <h1 className="font-display text-2xl font-bold text-forest-700 mb-6">My Profile</h1>
+    <div className="max-w-container-max mx-auto px-6 sm:px-margin-desktop pb-section-gap">
+      <h1 className="text-headline-lg text-on-surface mb-8">My Profile</h1>
 
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid md:grid-cols-3 gap-gutter">
         <div className="md:col-span-2 space-y-6">
-          <Card className="p-5">
-            <h3 className="font-semibold text-forest-700 mb-4 flex items-center gap-2"><User size={18} /> Personal Details</h3>
+          <Card className="p-6">
+            <h3 className="text-headline-md text-on-surface mb-4 flex items-center gap-2"><User size={20} className="text-terracotta" /> Personal Details</h3>
             <form onSubmit={saveProfile} className="grid sm:grid-cols-2 gap-4">
               <Input label="Full name" value={name} onChange={(e) => setName(e.target.value)} />
               <Input label="Email" value={user?.email || 'vraj@example.com'} disabled />
@@ -46,23 +46,23 @@ export default function ProfilePage() {
             </form>
           </Card>
 
-          <Card className="p-5">
+          <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-forest-700 flex items-center gap-2"><MapPin size={18} /> Saved Addresses</h3>
+              <h3 className="text-headline-md text-on-surface flex items-center gap-2"><MapPin size={20} className="text-terracotta" /> Saved Addresses</h3>
               <Button size="sm" variant="ghost"><Plus size={14} /> Add</Button>
             </div>
             <div className="space-y-2">
               {addresses.map((addr) => (
-                <div key={addr.id} className="flex items-start justify-between gap-3 p-3 rounded-xl border border-gray-200">
+                <div key={addr.id} className="flex items-start justify-between gap-3 p-4 rounded-DEFAULT border border-outline-variant">
                   <div>
-                    <p className="text-sm font-semibold text-forest-700 flex items-center gap-2">
+                    <p className="text-label-lg text-on-surface flex items-center gap-2">
                       {addr.label} {addr.isDefault && <Badge tone="info">Default</Badge>}
                     </p>
-                    <p className="text-xs text-gray-500">{addr.line}, {addr.area} – {addr.pincode}</p>
+                    <p className="text-body-sm text-on-surface-variant">{addr.line}, {addr.area} – {addr.pincode}</p>
                   </div>
                   <div className="flex gap-1">
-                    <button className="p-1.5 text-gray-400 hover:text-forest-600"><Pencil size={14} /></button>
-                    <button onClick={() => removeAddress(addr.id)} className="p-1.5 text-gray-400 hover:text-red-500"><Trash2 size={14} /></button>
+                    <button className="p-1.5 text-on-surface-variant hover:text-terracotta"><Pencil size={14} /></button>
+                    <button onClick={() => removeAddress(addr.id)} className="p-1.5 text-on-surface-variant hover:text-error"><Trash2 size={14} /></button>
                   </div>
                 </div>
               ))}
@@ -71,20 +71,20 @@ export default function ProfilePage() {
         </div>
 
         <div className="space-y-6">
-          <Card className="p-5 bg-forest-700 text-white">
-            <h3 className="font-semibold flex items-center gap-2 mb-2"><Wallet size={18} /> Wallet Balance</h3>
-            <p className="font-display text-3xl font-bold mb-3">₹{wallet?.balance ?? 0}</p>
+          <Card className="p-6 bg-terracotta text-white border-none">
+            <h3 className="text-label-lg flex items-center gap-2 mb-2"><Wallet size={18} /> Wallet Balance</h3>
+            <p className="font-display text-display-md mb-3">₹{wallet?.balance ?? 0}</p>
             <Button variant="mustard" size="sm" className="w-full">Add Money</Button>
           </Card>
 
-          <Card className="p-5">
-            <h3 className="font-semibold text-forest-700 flex items-center gap-2 mb-4"><CreditCard size={18} /> Payment Methods</h3>
+          <Card className="p-6">
+            <h3 className="text-headline-md text-on-surface flex items-center gap-2 mb-4"><CreditCard size={20} className="text-terracotta" /> Payment Methods</h3>
             <div className="space-y-2">
               {paymentMethods.map((pm) => (
-                <div key={pm.id} className="flex items-center justify-between p-3 rounded-xl border border-gray-200 text-sm">
+                <div key={pm.id} className="flex items-center justify-between p-4 rounded-DEFAULT border border-outline-variant text-body-sm">
                   <div>
-                    <p className="font-medium text-forest-700">{pm.type}</p>
-                    <p className="text-xs text-gray-500">{pm.label}</p>
+                    <p className="text-label-lg text-on-surface">{pm.type}</p>
+                    <p className="text-body-sm text-on-surface-variant">{pm.label}</p>
                   </div>
                   {pm.isDefault && <Badge tone="info">Default</Badge>}
                 </div>

@@ -1,35 +1,38 @@
 import { Check } from 'lucide-react'
 
-export default function Stepper({ steps, currentIndex }) {
+export default function Stepper({ steps, currentIndex, stepMeta = [] }) {
   return (
-    <div className="flex items-center w-full">
-      {steps.map((step, i) => {
-        const done = i < currentIndex
-        const active = i === currentIndex
-        return (
-          <div key={step} className="flex items-center flex-1 last:flex-none">
-            <div className="flex flex-col items-center gap-2">
+    <div className="relative">
+      <div className="absolute left-4 top-4 bottom-8 w-0.5 bg-surface-variant" />
+      <div
+        className="absolute left-4 top-4 w-0.5 bg-terracotta transition-all"
+        style={{ height: steps.length > 1 ? `${(currentIndex / (steps.length - 1)) * 100}%` : '0%' }}
+      />
+      <div className="flex flex-col gap-8">
+        {steps.map((step, i) => {
+          const done = i < currentIndex
+          const active = i === currentIndex
+          return (
+            <div key={step} className="flex items-start gap-6 relative z-10">
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm shrink-0 transition-colors ${
+                className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
                   done
-                    ? 'bg-forest-500 text-white'
+                    ? 'bg-terracotta'
                     : active
-                    ? 'bg-terracotta-500 text-white ring-4 ring-terracotta-100'
-                    : 'bg-gray-100 text-gray-400'
+                    ? 'bg-terracotta ring-4 ring-terracotta/20 shadow-lg shadow-terracotta/20'
+                    : 'bg-surface-container-highest border-2 border-surface-variant'
                 }`}
               >
-                {done ? <Check size={18} /> : i + 1}
+                {(done || active) && <Check size={16} className="text-white" />}
               </div>
-              <span className={`text-xs font-medium text-center max-w-[5.5rem] ${active ? 'text-terracotta-600' : done ? 'text-forest-600' : 'text-gray-400'}`}>
-                {step}
-              </span>
+              <div className={`pt-1 ${!done && !active ? 'opacity-50' : ''}`}>
+                <h3 className={`text-label-lg ${active ? 'text-terracotta' : 'text-on-background'}`}>{step}</h3>
+                {stepMeta[i] && <p className="text-body-sm text-on-surface-variant mt-1">{stepMeta[i]}</p>}
+              </div>
             </div>
-            {i < steps.length - 1 && (
-              <div className={`h-1 flex-1 mx-1 rounded-full mb-6 ${done ? 'bg-forest-500' : 'bg-gray-100'}`} />
-            )}
-          </div>
-        )
-      })}
+          )
+        })}
+      </div>
     </div>
   )
 }
