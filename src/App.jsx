@@ -6,7 +6,6 @@ import LandingPage from './pages/LandingPage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 
 import AboutPage from './pages/company/AboutPage.jsx'
-import CareersPage from './pages/company/CareersPage.jsx'
 import FoodSafetyPage from './pages/company/FoodSafetyPage.jsx'
 import GiftCardsPage from './pages/company/GiftCardsPage.jsx'
 import HowItWorksPage from './pages/company/HowItWorksPage.jsx'
@@ -46,7 +45,6 @@ export default function App() {
         <Route path="/partner" element={<PartnerPage />} />
         <Route path="/sustainability" element={<SustainabilityPage />} />
         <Route path="/about" element={<AboutPage />} />
-        <Route path="/careers" element={<CareersPage />} />
         <Route path="/support" element={<SupportPage />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />

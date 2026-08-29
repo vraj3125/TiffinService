@@ -1,36 +1,87 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Plus, Trash2, MapPinned } from 'lucide-react'
 import Card from '../../components/ui/Card.jsx'
 import Button from '../../components/ui/Button.jsx'
 import Badge from '../../components/ui/Badge.jsx'
 import { Input, Select } from '../../components/ui/Input.jsx'
-import { makePlansFor, AREAS } from '../../mockData.js'
+import LocationPicker from '../../components/ui/LocationPicker.jsx'
+import { CITY, DEFAULT_RADIUS_KM, MAX_RADIUS_KM, distanceKm, findLocation } from '../../config/locations.js'
+import {
+  fetchKitchenProfile,
+  fetchMyPlans,
+  fetchMyZones,
+  saveKitchenProfile,
+  saveMyPlans,
+  saveMyZones,
+} from '../../api/provider.js'
+import { useAuth } from '../../context/AuthContext.jsx'
 import { useToast } from '../../context/ToastContext.jsx'
 
 export default function PlansSetupPage() {
-  const [plans, setPlans] = useState(makePlansFor('p1'))
-  const [zones, setZones] = useState(['Koramangala', 'BTM Layout', '560034'])
-  const [zoneInput, setZoneInput] = useState('')
+  const { user } = useAuth()
+  // Plans and delivery zones belong to this kitchen, and a new one has neither.
+  const [plans, setPlans] = useState([])
+  const [zones, setZones] = useState([])
+  const [profile, setProfile] = useState(null)
   const [newPlan, setNewPlan] = useState({ type: '', duration: '', price: '', mealsPerDay: 1, description: '' })
   const { showToast } = useToast()
+
+  useEffect(() => {
+    if (!user) return
+    fetchMyPlans(user.uid).then(setPlans)
+    fetchMyZones(user.uid).then(setZones)
+    fetchKitchenProfile(user.uid).then(setProfile)
+  }, [user])
+
+  const commitPlans = (next) => {
+    setPlans(next)
+    saveMyPlans(user.uid, next)
+  }
+
+  const commitZones = (next) => {
+    setZones(next)
+    saveMyZones(user.uid, next)
+  }
 
   const addPlan = (e) => {
     e.preventDefault()
     if (!newPlan.type || !newPlan.price) return
-    setPlans((p) => [...p, { id: `custom-${Date.now()}`, ...newPlan, price: Number(newPlan.price), mealsPerDay: Number(newPlan.mealsPerDay) }])
+    commitPlans([
+      ...plans,
+      {
+        id: `custom-${Date.now()}`,
+        ...newPlan,
+        price: Number(newPlan.price),
+        mealsPerDay: Number(newPlan.mealsPerDay),
+      },
+    ])
     setNewPlan({ type: '', duration: '', price: '', mealsPerDay: 1, description: '' })
     showToast('New plan created')
   }
 
   const removePlan = (id) => {
-    setPlans((p) => p.filter((x) => x.id !== id))
+    commitPlans(plans.filter((x) => x.id !== id))
     showToast('Plan removed')
   }
 
-  const addZone = () => {
-    if (!zoneInput.trim()) return
-    setZones((z) => [...z, zoneInput.trim()])
-    setZoneInput('')
+  const addZone = (place) => {
+    if (!place?.name || zones.includes(place.name)) return
+    commitZones([...zones, place.name])
+    showToast(`${place.name} added to your delivery areas`)
+  }
+
+  const setRadius = (radiusKm) => {
+    const next = { ...profile, radiusKm }
+    setProfile(next)
+    saveKitchenProfile(user.uid, next)
+  }
+
+  // Distance from the kitchen to each area it has taken on, so a provider can
+  // see when a zone sits outside the radius they set.
+  const base = profile?.lat != null ? { lat: profile.lat, lng: profile.lng } : null
+  const zoneDistance = (name) => {
+    const place = findLocation(name)
+    return base && place ? distanceKm(base, place) : null
   }
 
   return (
@@ -40,6 +91,11 @@ export default function PlansSetupPage() {
 
       <Card className="p-6 mb-6">
         <h3 className="text-headline-md text-on-surface mb-4">Current Plans</h3>
+        {plans.length === 0 && (
+          <p className="text-body-sm text-on-surface-variant mb-6">
+            No plans yet. Add your first one below so customers can subscribe.
+          </p>
+        )}
         <div className="grid sm:grid-cols-2 gap-4 mb-6">
           {plans.map((plan) => (
             <div key={plan.id} className="rounded-DEFAULT border border-outline-variant p-4 relative">
@@ -68,28 +124,91 @@ export default function PlansSetupPage() {
       </Card>
 
       <Card className="p-6">
-        <h3 className="text-headline-md text-on-surface mb-4 flex items-center gap-2"><MapPinned size={20} className="text-terracotta" /> Delivery Zones / Pincodes</h3>
-        <div className="flex flex-wrap gap-2 mb-4">
-          {zones.map((z) => (
-            <Badge key={z} tone="info" className="pr-1">
-              {z}
-              <button onClick={() => setZones((zs) => zs.filter((x) => x !== z))} className="ml-1 text-terracotta/60 hover:text-error">×</button>
-            </Badge>
-          ))}
-        </div>
-        <div className="flex gap-2">
+        <h3 className="text-headline-md text-on-surface mb-1 flex items-center gap-2">
+          <MapPinned size={20} className="text-terracotta" /> Delivery Areas
+        </h3>
+        <p className="text-body-sm text-on-surface-variant mb-5">
+          Customers only see your kitchen if their address falls inside these areas or within your
+          radius. We serve {CITY.name} and the towns around it.
+        </p>
+
+        {profile?.area && (
+          <div className="mb-5 rounded-DEFAULT border border-outline-variant bg-surface-container-low p-4">
+            <p className="text-label-md text-on-surface-variant mb-1">Your kitchen is in</p>
+            <p className="text-label-lg text-on-surface">
+              {profile.area}
+              {profile.pincode ? ` — ${profile.pincode}` : ''}
+            </p>
+          </div>
+        )}
+
+        {/* How far the kitchen is willing to travel. */}
+        <div className="mb-6">
+          <div className="flex justify-between mb-2">
+            <label htmlFor="radius" className="text-label-lg text-on-surface">
+              How far will you deliver?
+            </label>
+            <span className="text-label-lg text-terracotta">
+              {profile?.radiusKm ?? DEFAULT_RADIUS_KM} km
+            </span>
+          </div>
           <input
-            list="area-options"
-            value={zoneInput}
-            onChange={(e) => setZoneInput(e.target.value)}
-            placeholder="Add area or pincode"
-            className="flex-1 min-h-[56px] rounded-DEFAULT border border-outline-variant px-4 py-3 text-body-md focus:outline-none focus:ring-1 focus:ring-terracotta focus:border-terracotta"
+            id="radius"
+            type="range"
+            min="1"
+            max={MAX_RADIUS_KM}
+            step="1"
+            value={profile?.radiusKm ?? DEFAULT_RADIUS_KM}
+            onChange={(e) => setRadius(Number(e.target.value))}
+            disabled={!profile}
+            className="w-full accent-terracotta"
           />
-          <datalist id="area-options">
-            {AREAS.map((a) => <option key={a} value={a} />)}
-          </datalist>
-          <Button variant="secondary" onClick={addZone}>Add</Button>
+          <p className="text-body-sm text-on-surface-variant mt-2">
+            Straight-line distance from your kitchen. Customers further out will not see you.
+          </p>
         </div>
+
+        {zones.length === 0 && (
+          <p className="text-body-sm text-on-surface-variant mb-4">
+            No delivery areas yet. Add the localities you can reach.
+          </p>
+        )}
+        <div className="flex flex-wrap gap-2 mb-5">
+          {zones.map((z) => {
+            const d = zoneDistance(z)
+            const outside = d != null && d > (profile?.radiusKm ?? DEFAULT_RADIUS_KM)
+            return (
+              <Badge key={z} tone={outside ? 'pending' : 'info'} className="pr-1">
+                {z}
+                {d != null ? ` · ${d} km` : ''}
+                <button
+                  onClick={() => commitZones(zones.filter((x) => x !== z))}
+                  aria-label={`Remove ${z}`}
+                  className="ml-1 text-terracotta/60 hover:text-error"
+                >
+                  ×
+                </button>
+              </Badge>
+            )
+          })}
+        </div>
+
+        {zones.some((z) => {
+          const d = zoneDistance(z)
+          return d != null && d > (profile?.radiusKm ?? DEFAULT_RADIUS_KM)
+        }) && (
+          <p className="text-body-sm text-secondary mb-4">
+            Areas marked in amber are further away than your radius. Widen the radius above or
+            remove them.
+          </p>
+        )}
+
+        <LocationPicker
+          id="add-zone"
+          label="Add another area"
+          placeholder={`Search an area in ${CITY.name}`}
+          onSelect={addZone}
+        />
       </Card>
     </div>
   )

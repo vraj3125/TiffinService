@@ -3,72 +3,109 @@ import { Heart, HandHeart, ShieldCheck, Sprout, ArrowRight } from 'lucide-react'
 import PageHero, { Section } from '../../components/layout/PageHero.jsx'
 import Button from '../../components/ui/Button.jsx'
 import { COMPANY } from '../../config/company.js'
+import { CITY, DEFAULT_RADIUS_KM } from '../../config/locations.js'
 import { securePath } from '../../lib/secureParams.js'
 
 const values = [
   {
     icon: Heart,
     title: 'Home food, not restaurant food',
-    body: 'We are not trying to be a cloud kitchen. The whole point is the cook who makes forty tiffins the way she makes her own lunch -- less oil, more dal, and the sabzi that was cheapest at the market that morning.',
+    body: 'We are not a cloud kitchen. The whole point is the cook who makes thirty tiffins the way she makes her own lunch — less oil, more dal, and whatever was freshest at the market that morning.',
   },
   {
     icon: HandHeart,
     title: 'The kitchen keeps the margin',
-    body: 'Our commission is a flat 12%. No paid ranking, no ads to bid on, no deep-discount campaigns funded out of a partner payout. A kitchen that cooks well should rise because it cooks well.',
+    body: 'Our commission is a flat 12%. No listing fee, no paid ranking, no ads to bid on, and no discount campaign funded out of a cook\u2019s payout. A kitchen that cooks well should rise because it cooks well.',
   },
   {
     icon: ShieldCheck,
-    title: 'Verified, then trusted',
-    body: 'Every kitchen is FSSAI-registered and audited before its first order goes out. After that we get out of the way -- we do not dictate menus, portion sizes or recipes.',
+    title: 'Verified before the first order',
+    body: 'Every kitchen shows us a valid FSSAI registration and passes a hygiene check before it can take a subscription. After that we stay out of the way — we do not dictate menus, portions or recipes.',
   },
   {
     icon: Sprout,
-    title: 'Small radius, small footprint',
-    body: 'We only match you with kitchens within about five kilometres. That keeps food hot, riders local, and the carbon cost of your lunch closer to a walk than a haul.',
+    title: 'Your own neighbourhood',
+    body: `Kitchens set how far they will deliver, usually about ${DEFAULT_RADIUS_KM} km. Short routes keep food hot without a heated bag and keep the rider local.`,
   },
 ]
 
-const timeline = [
-  { year: '2024', title: 'A spreadsheet and eleven kitchens', body: 'Started in Satellite, Ahmedabad, coordinating tiffins over WhatsApp for hostel students who were tired of paying restaurant prices for weekday lunch.' },
-  { year: '2025', title: 'Subscriptions, properly', body: 'Replaced the spreadsheet with real plans -- pause, skip, holiday calendars -- because the hardest part of a tiffin service was never the cooking, it was the scheduling.' },
-  { year: '2026', title: 'Four cities, still hyperlocal', body: 'Ahmedabad, Pune, Indore and Jaipur. Same rule everywhere: a kitchen serves its own neighbourhood, and nothing travels more than five kilometres.' },
+const facts = [
+  { value: CITY.name, label: 'The one city we serve' },
+  { value: '12%', label: 'Flat commission, no ad auctions' },
+  { value: `${DEFAULT_RADIUS_KM} km`, label: 'Typical delivery radius' },
+  { value: 'FSSAI', label: 'Verified before a kitchen goes live' },
 ]
 
-const stats = [
-  { value: '1,240+', label: 'Home kitchens on the platform' },
-  { value: '38,000', label: 'Tiffins delivered each week' },
-  { value: '12%', label: 'Flat commission, no ad auctions' },
-  { value: '4.6', label: 'Average kitchen rating' },
+const plan = [
+  {
+    title: 'Where we are',
+    body: 'Opening in Vadodara with a small group of home kitchens across Alkapuri, Gotri, Karelibaug, Akota and Manjalpur. Small on purpose — we would rather every early subscriber get a good tiffin than fill a map.',
+  },
+  {
+    title: 'What we are working on',
+    body: 'Getting the everyday things right first: an honest delivery window, a skip that actually works before the cut-off, and a refund that does not need three emails.',
+  },
+  {
+    title: 'What comes next',
+    body: 'More of Vadodara, then the towns around it — Padra, Waghodia, Bajwa, Savli. We will add a new area only once there is a kitchen in it that we would order from ourselves.',
+  },
 ]
 
 export default function AboutPage() {
   return (
     <>
       <PageHero
-        eyebrow={`Since ${COMPANY.foundedYear}`}
-        title="We started because hostel food was terrible"
-        subtitle="TiffinConnect is a marketplace for home cooks who were already feeding their neighbourhood, and needed a way to do it without running the whole operation on WhatsApp."
+        eyebrow={`${CITY.name}, ${CITY.state}`}
+        title="Good home food should not be hard to find"
+        subtitle="TiffinConnect is a marketplace for Vadodara's home cooks — people already feeding their neighbourhood, who needed a way to run it without a notebook and a WhatsApp group."
       />
 
       <Section className="bg-surface-container-lowest">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((s) => (
-            <div key={s.label} className="rounded-lg border border-surface-variant bg-surface-container-low p-8 text-center">
-              <p className="font-display text-headline-lg text-terracotta mb-2">{s.value}</p>
-              <p className="text-body-sm text-on-surface-variant">{s.label}</p>
+          {facts.map((f) => (
+            <div key={f.label} className="rounded-lg border border-surface-variant bg-surface-container-low p-8 text-center">
+              <p className="font-display text-headline-lg text-terracotta mb-2">{f.value}</p>
+              <p className="text-body-sm text-on-surface-variant">{f.label}</p>
             </div>
           ))}
         </div>
-        <p className="text-body-sm text-outline mt-6 text-center">
-          Illustrative figures for this demo build -- no live data sits behind them.
-        </p>
       </Section>
 
       <Section
-        title="What we hold to"
-        lead="Four decisions that shape most of the smaller ones."
+        title="Why we started"
+        lead="Anyone who has moved to a new city for work or a course knows the problem."
         className="bg-surface"
       >
+        <div className="max-w-3xl space-y-5">
+          <p className="text-body-lg text-on-surface-variant">
+            Eating out every day is expensive and, by the second week, exhausting. Cooking after a
+            nine-hour shift is worse. The answer in Gujarat has always been the same one: a tiffin
+            from someone nearby who cooks properly.
+          </p>
+          <p className="text-body-lg text-on-surface-variant">
+            That part already works. What does not work is everything around it — finding a cook
+            with space, agreeing a price over the phone, remembering to tell her you are away on
+            Thursday, and settling up at the end of the month. Those are the bits we built.
+          </p>
+          <p className="text-body-lg text-on-surface-variant">
+            We are new, and deliberately small. Every kitchen on the platform has been visited. If
+            something goes wrong with your tiffin, the person who answers is someone who can fix it.
+          </p>
+        </div>
+      </Section>
+
+      <Section title="Where this is going" className="bg-surface-container-lowest">
+        <div className="grid md:grid-cols-3 gap-6">
+          {plan.map((p) => (
+            <div key={p.title} className="rounded-lg border border-surface-variant bg-surface-container-low p-8">
+              <h3 className="text-headline-md text-on-background mb-3">{p.title}</h3>
+              <p className="text-body-md text-on-surface-variant">{p.body}</p>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      <Section title="What we hold to" className="bg-surface">
         <div className="grid md:grid-cols-2 gap-6">
           {values.map((v) => (
             <div key={v.title} className="rounded-lg border border-surface-variant bg-surface-container-lowest p-8 ambient-shadow hover-lift">
@@ -82,25 +119,12 @@ export default function AboutPage() {
         </div>
       </Section>
 
-      <Section title="How we got here" className="bg-surface-container-lowest">
-        <ol className="relative border-l-2 border-outline-variant/50 ml-3 space-y-10">
-          {timeline.map((t) => (
-            <li key={t.year} className="pl-8 relative">
-              <span className="absolute -left-[11px] top-1 w-5 h-5 rounded-full bg-terracotta ring-4 ring-surface-container-lowest" />
-              <p className="text-label-md uppercase tracking-[0.14em] text-terracotta mb-1">{t.year}</p>
-              <h3 className="text-headline-md text-on-background mb-2">{t.title}</h3>
-              <p className="text-body-md text-on-surface-variant max-w-2xl">{t.body}</p>
-            </li>
-          ))}
-        </ol>
-      </Section>
-
-      <Section className="bg-surface">
+      <Section className="bg-surface-container-lowest">
         <div className="rounded-xl border border-surface-variant bg-surface-container-low p-10 md:p-14 text-center">
-          <h2 className="text-headline-lg text-on-background mb-3">Come cook with us, or come eat</h2>
+          <h2 className="text-headline-lg text-on-background mb-3">Cook with us, or eat with us</h2>
           <p className="text-body-lg text-on-surface-variant max-w-xl mx-auto mb-8">
-            Both sides of the marketplace start in the same place -- a kitchen in your neighbourhood
-            that already makes food you would happily eat every day.
+            If you already cook for a few people in your area, we would like to hear from you. If you
+            are just hungry, there are kitchens taking subscriptions now.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Button as={Link} to="/discover" size="lg">
@@ -115,6 +139,9 @@ export default function AboutPage() {
               List your kitchen
             </Button>
           </div>
+          <p className="text-body-sm text-on-surface-variant mt-6">
+            Questions? <a href={`mailto:${COMPANY.email}`} className="text-terracotta hover:underline">{COMPANY.email}</a>
+          </p>
         </div>
       </Section>
     </>

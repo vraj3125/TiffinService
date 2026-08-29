@@ -5,6 +5,7 @@ import Badge from '../../components/ui/Badge.jsx'
 import EmptyState from '../../components/ui/EmptyState.jsx'
 import { Skeleton } from '../../components/ui/Skeleton.jsx'
 import { fetchProviderOrders } from '../../api/orders.js'
+import { useAuth } from '../../context/AuthContext.jsx'
 import { useToast } from '../../context/ToastContext.jsx'
 
 const statuses = [
@@ -16,12 +17,14 @@ const statuses = [
 const toneOf = (v) => statuses.find((s) => s.value === v)?.tone ?? 'neutral'
 
 export default function ProviderOrdersPage() {
+  const { user } = useAuth()
   const [orders, setOrders] = useState(null)
   const { showToast } = useToast()
 
   useEffect(() => {
-    fetchProviderOrders().then(setOrders)
-  }, [])
+    if (!user) return
+    fetchProviderOrders(user.uid).then(setOrders)
+  }, [user])
 
   const updateStatus = (id, status) => {
     setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)))

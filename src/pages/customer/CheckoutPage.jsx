@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { MapPin, Plus, CreditCard, QrCode, Wallet, CheckCircle2, ReceiptText, Clock, Home, Briefcase, ArrowRight, Sun, Moon } from 'lucide-react'
 import Button from '../../components/ui/Button.jsx'
@@ -6,24 +6,57 @@ import EmptyState from '../../components/ui/EmptyState.jsx'
 import { useCart } from '../../context/CartContext.jsx'
 import { useToast } from '../../context/ToastContext.jsx'
 import { placeOrder } from '../../api/orders.js'
-import { savedAddresses, paymentMethods } from '../../mockData.js'
+import { PAYMENT_OPTIONS, addAddress, fetchAddresses } from '../../api/account.js'
+import { useAuth } from '../../context/AuthContext.jsx'
 
 const timeSlotsByMeal = {
   lunch: ['12:30 PM – 1:30 PM', '1:30 PM – 2:30 PM'],
   dinner: ['7:30 PM – 8:30 PM', '8:30 PM – 9:30 PM'],
 }
-const paymentIcons = { UPI: QrCode, Card: CreditCard, Wallet: Wallet }
+const paymentIcons = { UPI: QrCode, Card: CreditCard, Cash: Wallet }
 const addressIcons = { Home, Work: Briefcase }
+
+const addressFieldClass =
+  'w-full min-h-[48px] rounded-DEFAULT border border-outline-variant bg-surface px-4 py-2.5 text-body-sm text-on-surface placeholder:text-outline focus:border-terracotta focus:ring-1 focus:ring-terracotta outline-none'
+
+const blankAddress = { label: 'Home', line: '', area: '', pincode: '' }
 
 export default function CheckoutPage() {
   const { checkoutItem, clearCheckout } = useCart()
   const { showToast } = useToast()
   const navigate = useNavigate()
 
-  const [addressId, setAddressId] = useState(savedAddresses.find((a) => a.isDefault)?.id)
+  const { user } = useAuth()
+  const [addresses, setAddresses] = useState([])
+  const [addressId, setAddressId] = useState(null)
+  const [draft, setDraft] = useState(null)
   const [slot, setSlot] = useState(timeSlotsByMeal[checkoutItem?.meal ?? 'lunch'][0])
-  const [paymentId, setPaymentId] = useState(paymentMethods.find((p) => p.isDefault)?.id)
+  const [paymentId, setPaymentId] = useState(PAYMENT_OPTIONS[0].id)
   const [placing, setPlacing] = useState(false)
+
+  // Addresses belong to the account, so a new customer arrives here with none
+  // and adds their first one inline rather than hitting a dead end.
+  useEffect(() => {
+    if (!user) return
+    fetchAddresses(user.uid).then((list) => {
+      setAddresses(list)
+      setAddressId(list.find((a) => a.isDefault)?.id ?? list[0]?.id ?? null)
+      if (!list.length) setDraft(blankAddress)
+    })
+  }, [user])
+
+  const saveDraft = async (e) => {
+    e.preventDefault()
+    if (!draft.line.trim() || !draft.area.trim() || !/^\d{6}$/.test(draft.pincode)) {
+      showToast('Add a street, an area and a 6-digit pincode', 'info')
+      return
+    }
+    const list = await addAddress(user.uid, draft)
+    setAddresses(list)
+    setAddressId(list[list.length - 1].id)
+    setDraft(null)
+    showToast('Address saved')
+  }
 
   if (!checkoutItem) {
     return (
@@ -43,8 +76,14 @@ export default function CheckoutPage() {
   const total = plan.price + gst
 
   const handlePlace = async () => {
+    if (!addressId) {
+      showToast('Add a delivery address first', 'info')
+      return
+    }
     setPlacing(true)
-    await placeOrder({ providerId: provider.id, providerName: provider.name, planId: plan.id, amount: total, meal })
+    // Recorded against this account, so it shows up in their orders and nobody
+    // else's.
+    await placeOrder(user.uid, { provider, plan, meal, amount: total })
     setPlacing(false)
     showToast(`Order placed with ${provider.name}! Your ${meal} starts soon.`)
     clearCheckout()
@@ -95,12 +134,78 @@ export default function CheckoutPage() {
               <h2 className="text-headline-md flex items-center gap-3">
                 <MapPin size={22} className="text-terracotta" /> Delivery Address
               </h2>
-              <button className="text-terracotta text-label-lg hover:underline flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => setDraft(draft ? null : blankAddress)}
+                className="text-terracotta text-label-lg hover:underline flex items-center gap-1"
+              >
                 <Plus size={18} /> Add New
               </button>
             </div>
+
+            {draft && (
+              <form
+                onSubmit={saveDraft}
+                className="mb-6 rounded-lg border border-outline-variant bg-surface-container-low p-6 space-y-4"
+              >
+                <div className="flex gap-2">
+                  {['Home', 'Work', 'Other'].map((label) => (
+                    <button
+                      key={label}
+                      type="button"
+                      onClick={() => setDraft({ ...draft, label })}
+                      className={`px-4 py-2 rounded-full text-label-md border-2 transition-colors ${
+                        draft.label === label
+                          ? 'border-terracotta text-terracotta bg-surface-container-lowest'
+                          : 'border-outline-variant text-on-surface-variant'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <input
+                  value={draft.line}
+                  onChange={(e) => setDraft({ ...draft, line: e.target.value })}
+                  placeholder="Flat / house no., building, street"
+                  className={addressFieldClass}
+                />
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <input
+                    value={draft.area}
+                    onChange={(e) => setDraft({ ...draft, area: e.target.value })}
+                    placeholder="Area / locality"
+                    className={addressFieldClass}
+                  />
+                  <input
+                    value={draft.pincode}
+                    onChange={(e) =>
+                      setDraft({ ...draft, pincode: e.target.value.replace(/\D/g, '').slice(0, 6) })
+                    }
+                    inputMode="numeric"
+                    placeholder="Pincode"
+                    className={addressFieldClass}
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <Button type="submit" size="sm">Save address</Button>
+                  {addresses.length > 0 && (
+                    <Button type="button" size="sm" variant="ghost" onClick={() => setDraft(null)}>
+                      Cancel
+                    </Button>
+                  )}
+                </div>
+              </form>
+            )}
+
+            {addresses.length === 0 && !draft && (
+              <p className="text-body-sm text-on-surface-variant mb-6">
+                No saved addresses yet. Add one to continue.
+              </p>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {savedAddresses.map((addr) => {
+              {addresses.map((addr) => {
                 const Icon = addressIcons[addr.label] ?? Home
                 const selected = addressId === addr.id
                 return (
@@ -159,7 +264,7 @@ export default function CheckoutPage() {
                 <Wallet size={22} className="text-terracotta" /> Payment Method
               </h2>
               <div className="flex flex-col gap-4">
-                {paymentMethods.map((pm) => {
+                {PAYMENT_OPTIONS.map((pm) => {
                   const Icon = paymentIcons[pm.type]
                   const selected = paymentId === pm.id
                   return (
@@ -173,8 +278,8 @@ export default function CheckoutPage() {
                         <div className={`w-6 h-6 rounded-full border-2 flex-shrink-0 transition-all ${selected ? 'border-[6px] border-terracotta' : 'border-outline-variant'}`} />
                         <Icon size={26} className="text-slate-neutral" />
                         <div className="flex-grow">
-                          <h4 className="text-label-lg text-on-surface">{pm.type === 'UPI' ? 'UPI (Google Pay, PhonePe)' : pm.type === 'Card' ? 'Credit / Debit Card' : 'TiffinConnect Wallet'}</h4>
-                          <p className="text-body-sm text-on-surface-variant">{pm.label}{pm.balance != null ? ` · Balance: ₹${pm.balance}` : ''}</p>
+                          <h4 className="text-label-lg text-on-surface">{pm.label}</h4>
+                          <p className="text-body-sm text-on-surface-variant">{pm.hint}</p>
                         </div>
                       </div>
                     </label>

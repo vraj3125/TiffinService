@@ -4,7 +4,7 @@ import Card from '../../components/ui/Card.jsx'
 import Badge from '../../components/ui/Badge.jsx'
 import { Skeleton } from '../../components/ui/Skeleton.jsx'
 import { fetchProviderStats } from '../../api/provider.js'
-import { fetchAllProviderReviews } from '../../api/reviews.js'
+import { fetchMyReviews } from '../../api/reviews.js'
 import { useAuth } from '../../context/AuthContext.jsx'
 
 export default function DashboardPage() {
@@ -12,19 +12,24 @@ export default function DashboardPage() {
   const [stats, setStats] = useState(null)
   const [reviews, setReviews] = useState([])
 
+  // This kitchen's own numbers -- a new provider sees zeros, not another
+  // kitchen's revenue.
   useEffect(() => {
-    fetchProviderStats().then(setStats)
-    fetchAllProviderReviews().then((r) => setReviews(r.filter((x) => x.providerId === 'p1').slice(0, 3)))
-  }, [])
+    if (!user) return
+    fetchProviderStats(user.uid).then(setStats)
+    fetchMyReviews(user.uid).then((r) => setReviews(r.slice(0, 3)))
+  }, [user])
 
-  const maxRevenue = stats ? Math.max(...stats.weekRevenue) : 1
+  // A brand-new kitchen has a flat zero week; keep the divisor above zero so
+  // the bar heights stay a number rather than NaN.
+  const maxRevenue = Math.max(1, ...(stats?.weekRevenue ?? []))
 
   const cards = stats
     ? [
         { label: "Today's Orders", value: stats.todayOrders, icon: ShoppingBag, tone: 'terracotta' },
         { label: "Today's Revenue", value: `₹${stats.todayRevenue.toLocaleString()}`, icon: IndianRupee, tone: 'leaf' },
         { label: 'Active Subscribers', value: stats.activeSubscribers, icon: Users, tone: 'mustard' },
-        { label: 'Average Rating', value: stats.avgRating.toFixed(1), icon: Star, tone: 'leaf' },
+        { label: 'Average Rating', value: stats.avgRating ? stats.avgRating.toFixed(1) : '—', icon: Star, tone: 'leaf' },
       ]
     : []
 
@@ -81,6 +86,11 @@ export default function DashboardPage() {
 
         <Card className="p-6">
           <h3 className="text-headline-md text-on-surface mb-4">Recent Reviews</h3>
+          {reviews.length === 0 && (
+            <p className="text-body-sm text-on-surface-variant">
+              No reviews yet. They appear here once customers rate their deliveries.
+            </p>
+          )}
           <div className="space-y-4">
             {reviews.map((r) => (
               <div key={r.id} className="pb-3 border-b border-surface-variant last:border-0 last:pb-0">

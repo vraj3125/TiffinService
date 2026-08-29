@@ -7,12 +7,14 @@ import Tabs from '../../components/ui/Tabs.jsx'
 import Modal from '../../components/ui/Modal.jsx'
 import { Input, Textarea, Select } from '../../components/ui/Input.jsx'
 import { Skeleton } from '../../components/ui/Skeleton.jsx'
-import { fetchMenuForProvider } from '../../api/providers.js'
+import { fetchMyMenu, saveMyMenu } from '../../api/provider.js'
+import { useAuth } from '../../context/AuthContext.jsx'
 import { useToast } from '../../context/ToastContext.jsx'
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
 export default function MenuManagementPage() {
+  const { user } = useAuth()
   const [menu, setMenu] = useState(null)
   const [activeDay, setActiveDay] = useState(DAYS[0])
   const [editing, setEditing] = useState(null) // { meal: 'lunch'|'dinner', dish }
@@ -20,17 +22,20 @@ export default function MenuManagementPage() {
   const [itemInput, setItemInput] = useState('')
   const { showToast } = useToast()
 
+  // This kitchen's own menu. A new provider gets a blank week to fill in.
   useEffect(() => {
-    fetchMenuForProvider('p1').then(setMenu)
-  }, [])
+    if (!user) return
+    fetchMyMenu(user.uid).then(setMenu)
+  }, [user])
 
   const openEditor = (meal) => {
-    const dish = menu[activeDay][meal]
+    // A day that has not been filled in yet has no dish, so start from blanks.
+    const dish = menu[activeDay]?.[meal]
     setForm({
-      items: dish.items,
+      items: dish?.items ?? [],
       description: '',
-      veg: dish.veg,
-      calories: dish.calories,
+      veg: dish?.veg ?? true,
+      calories: dish?.calories ?? '',
     })
     setItemInput('')
     setEditing({ meal })
@@ -52,17 +57,19 @@ export default function MenuManagementPage() {
       showToast('Add at least one item to this meal', 'info')
       return
     }
-    setMenu((prev) => ({
-      ...prev,
+    const next = {
+      ...menu,
       [activeDay]: {
-        ...prev[activeDay],
+        ...menu[activeDay],
         [editing.meal]: {
           items: form.items,
           veg: form.veg,
           calories: Number(form.calories) || 0,
         },
       },
-    }))
+    }
+    setMenu(next)
+    saveMyMenu(user.uid, next)
     showToast(`${editing.meal === 'lunch' ? 'Lunch' : 'Dinner'} menu updated for ${activeDay}`)
     setEditing(null)
   }
@@ -105,7 +112,9 @@ export default function MenuManagementPage() {
                     </button>
                     <button
                       onClick={() => {
-                        setMenu((prev) => ({ ...prev, [activeDay]: { ...prev[activeDay], [meal]: null } }))
+                        const next = { ...menu, [activeDay]: { ...menu[activeDay], [meal]: null } }
+                        setMenu(next)
+                        saveMyMenu(user.uid, next)
                         showToast(`${meal} removed for ${activeDay}`)
                       }}
                       className="p-1.5 text-on-surface-variant hover:text-error"

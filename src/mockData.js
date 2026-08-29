@@ -1,103 +1,118 @@
+// Marketplace catalogue: the kitchens customers can browse, their menus, plans
+// and public reviews. This is shop inventory, shared by everyone, and it is the
+// only thing that should live here.
+//
+// Anything belonging to a person -- their orders, addresses, subscriptions, or a
+// kitchen's own stats, menu and documents -- is per-account and lives in
+// src/lib/accountStore.js. Do not add that kind of seed data back to this file:
+// it is what made every new account open onto somebody else's records.
 // Central mock dataset for the whole app. Swap the api/* functions for real
 // network calls later — every screen only ever imports from api/, not here.
 
-export const AREAS = [
-  'Koramangala', 'Indiranagar', 'HSR Layout', 'Whitefield', 'Andheri West',
-  'Bandra', 'Powai', 'Baner', 'Kothrud', 'Gachibowli',
-]
+export { AREA_NAMES as AREAS } from './config/locations.js'
 
-export const CUISINE_TAGS = ['Gujarati', 'Punjabi', 'South Indian', 'Maharashtrian', 'Rajasthani', 'Bengali', 'North Indian', 'Jain']
+export const CUISINE_TAGS = ['Gujarati', 'Kathiawadi', 'Punjabi', 'North Indian', 'South Indian', 'Rajasthani', 'Jain', 'Maharashtrian']
 
 export const providers = [
   {
-    id: 'p1', name: 'Maa Ka Swaad Tiffins', area: 'Koramangala', pincode: '560034',
-    rating: 4.7, reviewCount: 214, priceRange: [110, 160], distance: 1.2,
-    cuisineTags: ['Punjabi', 'North Indian'], dietType: 'both', verified: true,
+    id: 'p1', name: 'Ba Ni Rasoi', area: 'Alkapuri', pincode: '390007',
+    lat: 22.3105, lng: 73.1732, radiusKm: 6,
+    rating: 4.7, reviewCount: 84, priceRange: [90, 130], distance: 1.2,
+    cuisineTags: ['Gujarati', 'Kathiawadi'], dietType: 'veg', verified: true,
     deliveryTime: ['lunch', 'dinner'],
     photos: ['https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=800', 'https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=800'],
-    tagline: 'Punjabi home food, just like ghar ka khana',
-    since: 2019, kitchenAddress: 'BTM 2nd Stage, Koramangala',
+    tagline: 'Everyday Gujarati thali, rotli straight off the tawa',
+    since: 2021, kitchenAddress: 'Near Jetalpur Road, Alkapuri',
   },
   {
-    id: 'p2', name: 'Shree Gujarati Rasoi', area: 'HSR Layout', pincode: '560102',
-    rating: 4.9, reviewCount: 342, priceRange: [100, 150], distance: 2.4,
+    id: 'p2', name: 'Shreeji Tiffin Seva', area: 'Sayajigunj', pincode: '390005',
+    lat: 22.3115, lng: 73.1836, radiusKm: 5,
+    rating: 4.8, reviewCount: 126, priceRange: [85, 120], distance: 2.1,
     cuisineTags: ['Gujarati', 'Jain'], dietType: 'veg', verified: true,
     deliveryTime: ['lunch', 'dinner'],
     photos: ['https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=800', 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=800'],
-    tagline: 'Authentic Gujarati thali with unlimited rotli',
-    since: 2017, kitchenAddress: 'Sector 2, HSR Layout',
+    tagline: 'Jain-friendly thali, no onion no garlic, unlimited rotli',
+    since: 2019, kitchenAddress: 'Opp. Sayaji Garden, Sayajigunj',
   },
   {
-    id: 'p3', name: 'Anna Poorna Meals', area: 'Indiranagar', pincode: '560038',
-    rating: 4.5, reviewCount: 178, priceRange: [90, 140], distance: 0.8,
-    cuisineTags: ['South Indian'], dietType: 'veg', verified: true,
+    id: 'p3', name: 'Kathiyawadi Chulo', area: 'Gotri', pincode: '390021',
+    lat: 22.3162, lng: 73.1352, radiusKm: 7,
+    rating: 4.6, reviewCount: 58, priceRange: [100, 150], distance: 3.4,
+    cuisineTags: ['Kathiawadi', 'Gujarati'], dietType: 'veg', verified: true,
+    deliveryTime: ['lunch', 'dinner'],
+    photos: ['https://images.unsplash.com/photo-1596797038530-2c107229654b?w=800', 'https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=800'],
+    tagline: 'Sev tameta, bajri rotlo and white butter, the Saurashtra way',
+    since: 2022, kitchenAddress: 'Gotri Main Road, near Sunpharma Circle',
+  },
+  {
+    id: 'p4', name: 'Annapurna Ghar Nu Bhojan', area: 'Manjalpur', pincode: '390011',
+    lat: 22.2731, lng: 73.1938, radiusKm: 5,
+    rating: 4.5, reviewCount: 71, priceRange: [80, 115], distance: 2.8,
+    cuisineTags: ['Gujarati', 'North Indian'], dietType: 'veg', verified: true,
     deliveryTime: ['lunch'],
-    photos: ['https://images.unsplash.com/photo-1626132647523-66f5bf380027?w=800', 'https://images.unsplash.com/photo-1585032226651-759b368d7246?w=800'],
-    tagline: 'Traditional South Indian meals on banana leaf style plates',
-    since: 2020, kitchenAddress: '100ft Road, Indiranagar',
-  },
-  {
-    id: 'p4', name: 'Punjabi Dhaba Tiffin', area: 'Whitefield', pincode: '560066',
-    rating: 4.3, reviewCount: 96, priceRange: [130, 190], distance: 3.6,
-    cuisineTags: ['Punjabi', 'North Indian'], dietType: 'both', verified: false,
-    deliveryTime: ['lunch', 'dinner'],
-    photos: ['https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=800', 'https://images.unsplash.com/photo-1631515243349-e0cb75fb8d3a?w=800'],
-    tagline: 'Butter-loaded dhaba style food, home delivered',
-    since: 2022, kitchenAddress: 'ITPL Main Road, Whitefield',
-  },
-  {
-    id: 'p5', name: "Aai's Kitchen", area: 'Powai', pincode: '400076',
-    rating: 4.8, reviewCount: 401, priceRange: [120, 170], distance: 1.9,
-    cuisineTags: ['Maharashtrian'], dietType: 'veg', verified: true,
-    deliveryTime: ['lunch', 'dinner'],
-    photos: ['https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=800', 'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=800'],
-    tagline: 'Simple Maharashtrian ghar ka jevan, made with love',
-    since: 2015, kitchenAddress: 'Hiranandani Gardens, Powai',
-  },
-  {
-    id: 'p6', name: 'Rajwadi Rasoi', area: 'Bandra', pincode: '400050',
-    rating: 4.6, reviewCount: 152, priceRange: [140, 200], distance: 2.1,
-    cuisineTags: ['Rajasthani'], dietType: 'veg', verified: true,
-    deliveryTime: ['lunch', 'dinner'],
-    photos: ['https://images.unsplash.com/photo-1601050690597-df0568f70950?w=800', 'https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=800'],
-    tagline: 'Royal Rajasthani thali, dal baati on weekends',
-    since: 2018, kitchenAddress: 'Linking Road, Bandra West',
-  },
-  {
-    id: 'p7', name: 'Kolkata Bhog', area: 'Andheri West', pincode: '400058',
-    rating: 4.4, reviewCount: 88, priceRange: [130, 180], distance: 4.2,
-    cuisineTags: ['Bengali'], dietType: 'both', verified: true,
-    deliveryTime: ['dinner'],
     photos: ['https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=800', 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=800'],
-    tagline: 'Fish curry, machher jhol & more — straight from Kolkata',
-    since: 2021, kitchenAddress: 'Versova, Andheri West',
+    tagline: 'Simple, low-oil home cooking for working days',
+    since: 2020, kitchenAddress: 'Manjalpur Naka, near Water Tank',
   },
   {
-    id: 'p8', name: 'Jain Bhojanalay', area: 'Baner', pincode: '411045',
-    rating: 4.9, reviewCount: 267, priceRange: [110, 150], distance: 1.5,
+    id: 'p5', name: 'Punjab Da Tiffin', area: 'Fatehgunj', pincode: '390002',
+    lat: 22.3213, lng: 73.1869, radiusKm: 6,
+    rating: 4.4, reviewCount: 43, priceRange: [110, 160], distance: 1.9,
+    cuisineTags: ['Punjabi', 'North Indian'], dietType: 'both', verified: true,
+    deliveryTime: ['lunch', 'dinner'],
+    photos: ['https://images.unsplash.com/photo-1596797038530-2c107229654b?w=800', 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=800'],
+    tagline: 'Dal makhani, rajma chawal and tandoori roti on request',
+    since: 2021, kitchenAddress: 'Fatehgunj Main Road, near Circle',
+  },
+  {
+    id: 'p6', name: 'Maa Amba Tiffin', area: 'Karelibaug', pincode: '390018',
+    lat: 22.3255, lng: 73.2107, radiusKm: 5,
+    rating: 4.6, reviewCount: 62, priceRange: [85, 125], distance: 3.1,
+    cuisineTags: ['Gujarati'], dietType: 'veg', verified: true,
+    deliveryTime: ['lunch', 'dinner'],
+    photos: ['https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=800', 'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=800'],
+    tagline: 'Two sabzi, dal bhaat and chaas with every tiffin',
+    since: 2018, kitchenAddress: 'Karelibaug, near VIP Road',
+  },
+  {
+    id: 'p7', name: 'Satvik Jain Rasoi', area: 'Akota', pincode: '390020',
+    lat: 22.2937, lng: 73.1701, radiusKm: 6,
+    rating: 4.9, reviewCount: 97, priceRange: [95, 140], distance: 2.2,
     cuisineTags: ['Jain', 'Gujarati'], dietType: 'veg', verified: true,
     deliveryTime: ['lunch', 'dinner'],
-    photos: ['https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=800', 'https://images.unsplash.com/photo-1626132647523-66f5bf380027?w=800'],
-    tagline: '100% Jain — no onion, no garlic, no root vegetables',
-    since: 2016, kitchenAddress: 'Baner Road, Pune',
+    photos: ['https://images.unsplash.com/photo-1601050690597-df0568f70950?w=800', 'https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=800'],
+    tagline: 'Strictly Jain kitchen, no root vegetables, sunset delivery option',
+    since: 2017, kitchenAddress: 'Akota Garden Road, Akota',
   },
   {
-    id: 'p9', name: 'Southern Spice Tiffins', area: 'Gachibowli', pincode: '500032',
-    rating: 4.2, reviewCount: 64, priceRange: [90, 130], distance: 2.8,
-    cuisineTags: ['South Indian'], dietType: 'both', verified: false,
+    id: 'p8', name: 'Dakshin Ruchi', area: 'Subhanpura', pincode: '390023',
+    lat: 22.3283, lng: 73.1587, radiusKm: 7,
+    rating: 4.5, reviewCount: 39, priceRange: [90, 130], distance: 3.8,
+    cuisineTags: ['South Indian'], dietType: 'veg', verified: true,
     deliveryTime: ['lunch', 'dinner'],
-    photos: ['https://images.unsplash.com/photo-1585032226651-759b368d7246?w=800', 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=800'],
-    tagline: 'Andhra style meals with extra spice on request',
-    since: 2023, kitchenAddress: 'DLF Cyber City, Gachibowli',
+    photos: ['https://images.unsplash.com/photo-1630383249896-424e482df921?w=800', 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=800'],
+    tagline: 'Sambar, rasam, poriyal and rice, cooked by a Chennai family',
+    since: 2022, kitchenAddress: 'Subhanpura, near Rajpath Club',
   },
   {
-    id: 'p10', name: 'Kothrud Ghar Bhojan', area: 'Kothrud', pincode: '411038',
-    rating: 4.6, reviewCount: 133, priceRange: [100, 145], distance: 0.6,
-    cuisineTags: ['Maharashtrian', 'North Indian'], dietType: 'both', verified: true,
+    id: 'p9', name: 'Sharda Tiffin Service', area: 'Nizampura', pincode: '390002',
+    lat: 22.3388, lng: 73.1830, radiusKm: 5,
+    rating: 4.3, reviewCount: 28, priceRange: [75, 110], distance: 4.2,
+    cuisineTags: ['Gujarati', 'North Indian'], dietType: 'veg', verified: false,
     deliveryTime: ['lunch'],
-    photos: ['https://images.unsplash.com/photo-1596797038530-2c107229654b?w=800', 'https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=800'],
-    tagline: 'Fresh, mild, and home-cooked — delivered hot',
-    since: 2020, kitchenAddress: 'Paud Road, Kothrud',
+    photos: ['https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=800', 'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=800'],
+    tagline: 'Budget student tiffin, delivered near the university',
+    since: 2023, kitchenAddress: 'Nizampura, near Gujarat Refinery Road',
+  },
+  {
+    id: 'p10', name: 'Rasoi Ghar Waghodia', area: 'Waghodia Road', pincode: '390019',
+    lat: 22.3126, lng: 73.2371, radiusKm: 8,
+    rating: 4.4, reviewCount: 34, priceRange: [85, 125], distance: 5.6,
+    cuisineTags: ['Gujarati', 'Rajasthani'], dietType: 'veg', verified: true,
+    deliveryTime: ['lunch', 'dinner'],
+    photos: ['https://images.unsplash.com/photo-1596797038530-2c107229654b?w=800', 'https://images.unsplash.com/photo-1630383249896-424e482df921?w=800'],
+    tagline: 'Gujarati and Marwari home food for the east-side estates',
+    since: 2021, kitchenAddress: 'Waghodia Road, near Ajwa Crossing',
   },
 ]
 
@@ -224,43 +239,14 @@ export const subscriptionPlans = providers.reduce((acc, p) => {
   return acc
 }, {})
 
-export const savedAddresses = [
-  { id: 'a1', label: 'Home', line: '204, Sunrise Apartments, 5th Cross', area: 'Koramangala', pincode: '560034', isDefault: true },
-  { id: 'a2', label: 'Work', line: 'WeWork, 3rd Floor, Prestige Tech Park', area: 'HSR Layout', pincode: '560102', isDefault: false },
-]
 
-export const paymentMethods = [
-  { id: 'pm1', type: 'UPI', label: 'vraj@okhdfcbank', isDefault: true },
-  { id: 'pm2', type: 'Card', label: 'Visa •••• 4821', isDefault: false },
-  { id: 'pm3', type: 'Wallet', label: 'Tiffinly Wallet', balance: 340, isDefault: false },
-]
 
-export const orders = [
-  { id: 'ORD1001', providerId: 'p1', providerName: 'Maa Ka Swaad Tiffins', date: '2026-08-27', meal: 'lunch', status: 'out_for_delivery', items: ['Rajma', 'Jeera Rice', 'Roti (4)'], amount: 140 },
-  { id: 'ORD1002', providerId: 'p2', providerName: 'Shree Gujarati Rasoi', date: '2026-08-27', meal: 'dinner', status: 'upcoming', items: ['Undhiyu', 'Puri (3)', 'Rice'], amount: 150 },
-  { id: 'ORD0998', providerId: 'p1', providerName: 'Maa Ka Swaad Tiffins', date: '2026-08-26', meal: 'lunch', status: 'delivered', items: ['Kadhi Pakora', 'Steamed Rice'], amount: 130 },
-  { id: 'ORD0991', providerId: 'p3', providerName: 'Anna Poorna Meals', date: '2026-08-25', meal: 'lunch', status: 'delivered', items: ['Sambar', 'Rice', 'Poriyal'], amount: 110 },
-  { id: 'ORD0980', providerId: 'p1', providerName: 'Maa Ka Swaad Tiffins', date: '2026-08-24', meal: 'lunch', status: 'skipped', items: ['Chole', 'Bhature (2)'], amount: 0 },
-  { id: 'ORD0972', providerId: 'p5', providerName: "Aai's Kitchen", date: '2026-08-22', meal: 'dinner', status: 'delivered', items: ['Pithla Bhakri', 'Thecha'], amount: 120 },
-]
 
-export const subscriptions = [
-  {
-    id: 'SUB01', providerId: 'p1', providerName: 'Maa Ka Swaad Tiffins', planType: 'Monthly', meal: 'lunch',
-    startDate: '2026-08-01', endDate: '2026-08-26', daysLeft: 5, status: 'active',
-    skippedDates: ['2026-08-24'], pausedUntil: null,
-  },
-  {
-    id: 'SUB02', providerId: 'p2', providerName: 'Shree Gujarati Rasoi', planType: 'Weekly', meal: 'dinner',
-    startDate: '2026-08-21', endDate: '2026-08-27', daysLeft: 0, status: 'expiring',
-    skippedDates: [], pausedUntil: null,
-  },
-]
 
 export const reviews = [
   { id: 'r1', providerId: 'p1', customerName: 'Ankit Sharma', rating: 5, comment: 'Tastes exactly like home food. The rajma chawal is my favorite!', date: '2026-08-20', photo: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=300' },
   { id: 'r2', providerId: 'p1', customerName: 'Priya Mehta', rating: 4, comment: 'Consistent quality, delivery is always on time.', date: '2026-08-15' },
-  { id: 'r3', providerId: 'p1', customerName: 'Rohan Gupta', rating: 5, comment: 'Best tiffin service in Koramangala, hands down.', date: '2026-08-10', photo: 'https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=300' },
+  { id: 'r3', providerId: 'p1', customerName: 'Rohan Gupta', rating: 5, comment: 'Best tiffin service in Alkapuri, hands down.', date: '2026-08-10', photo: 'https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=300' },
   { id: 'r4', providerId: 'p2', customerName: 'Meera Shah', rating: 5, comment: 'Unlimited rotli and the kadhi is perfect. Highly recommend for Gujaratis staying away from home.', date: '2026-08-18' },
   { id: 'r5', providerId: 'p2', customerName: 'Kunal Desai', rating: 5, comment: 'Undhiyu on weekends is a treat!', date: '2026-08-12', photo: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=300' },
   { id: 'r6', providerId: 'p3', customerName: 'Lakshmi Iyer', rating: 4, comment: 'Good sambar, wish portions were a bit bigger.', date: '2026-08-14' },
@@ -268,32 +254,6 @@ export const reviews = [
   { id: 'r8', providerId: 'p8', customerName: 'Nikita Jain', rating: 5, comment: 'Genuinely Jain-friendly, no compromises. Very trustworthy.', date: '2026-08-09' },
 ]
 
-export const providerStats = {
-  todayOrders: 42,
-  todayRevenue: 5320,
-  weekRevenue: [3200, 4100, 3800, 4600, 5000, 5320, 4700],
-  weekLabels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-  activeSubscribers: 118,
-  avgRating: 4.7,
-  monthRevenue: 128400,
-  monthOrders: 980,
-}
 
-export const providerOrders = [
-  { id: 'PORD01', customerName: 'Ankit Sharma', address: 'BTM Layout, 2nd Stage, near Water Tank', meal: 'lunch', items: ['Rajma', 'Jeera Rice', 'Roti (4)'], instructions: 'Less spicy please', status: 'preparing' },
-  { id: 'PORD02', customerName: 'Priya Mehta', address: '5th Block, Koramangala', meal: 'lunch', items: ['Rajma', 'Jeera Rice'], instructions: '', status: 'pending' },
-  { id: 'PORD03', customerName: 'Rohan Gupta', address: 'Sony World Signal, Koramangala', meal: 'lunch', items: ['Kadhi Pakora', 'Rice'], instructions: 'Extra papad', status: 'out_for_delivery' },
-  { id: 'PORD04', customerName: 'Divya Nair', address: 'Forum Mall Road, Koramangala', meal: 'dinner', items: ['Paneer Butter Masala', 'Roti (3)'], instructions: '', status: 'delivered' },
-  { id: 'PORD05', customerName: 'Karthik R', address: 'Jyoti Nivas College Road', meal: 'dinner', items: ['Mix Veg', 'Roti (3)', 'Rice'], instructions: 'No onion', status: 'pending' },
-]
 
-export const holidays = [
-  { date: '2026-08-30', note: 'Ganesh Chaturthi — kitchen closed' },
-  { date: '2026-09-05', note: 'Family function, no deliveries' },
-]
 
-export const verificationDocs = [
-  { id: 'doc1', name: 'FSSAI License', status: 'verified' },
-  { id: 'doc2', name: 'Kitchen Photos', status: 'verified' },
-  { id: 'doc3', name: 'Owner ID Proof', status: 'pending' },
-]

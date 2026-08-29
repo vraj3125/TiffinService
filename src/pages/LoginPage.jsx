@@ -17,6 +17,7 @@ import { useAuth } from '../context/AuthContext.jsx'
 import { useToast } from '../context/ToastContext.jsx'
 import { authErrorMessage } from '../lib/firebase.js'
 import { PARAM_KEY, decodeParams } from '../lib/secureParams.js'
+import { CITY, VADODARA_AREAS, NEARBY_TOWNS } from '../config/locations.js'
 
 const inputClass =
   'w-full min-h-[56px] rounded-DEFAULT border border-outline-variant bg-surface px-4 py-3 text-body-md text-on-surface placeholder:text-outline focus:border-terracotta focus:ring-1 focus:ring-terracotta outline-none transition-all'
@@ -39,7 +40,7 @@ export default function LoginPage() {
   const [method, setMethod] = useState('email') // 'email' | 'phone'
   const [otpSent, setOtpSent] = useState(false)
 
-  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' })
+  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '', area: '' })
   const [phone, setPhone] = useState('')
   const [otp, setOtp] = useState('')
 
@@ -89,6 +90,10 @@ export default function LoginPage() {
       return
     }
     if (mode === 'signup') {
+      if (role === 'provider' && !form.area) {
+        showToast('Choose the area your kitchen cooks in', 'info')
+        return
+      }
       if (form.password !== form.confirmPassword) {
         showToast('Passwords do not match', 'info')
         return
@@ -107,6 +112,7 @@ export default function LoginPage() {
           email: form.email,
           password: form.password,
           role,
+          area: role === 'provider' ? form.area : '',
         })
         // Account created but deliberately signed out -> back to the login tab.
         goToLoginTab()
@@ -447,6 +453,44 @@ export default function LoginPage() {
                           after signing up.
                         </p>
                       )}
+                    </div>
+                  )}
+
+                  {/* A kitchen has to say where it cooks before it can be listed.
+                      More delivery areas and a radius are set later, from the
+                      Plans & Areas screen. */}
+                  {mode === 'signup' && role === 'provider' && (
+                    <div>
+                      <label htmlFor="kitchen-area" className="block text-label-md text-on-surface-variant mb-2 ml-1">
+                        Where does your kitchen cook?
+                      </label>
+                      <select
+                        id="kitchen-area"
+                        value={form.area}
+                        onChange={update('area')}
+                        className={inputClass}
+                        required
+                      >
+                        <option value="">Select an area</option>
+                        <optgroup label={`${CITY.name} city`}>
+                          {VADODARA_AREAS.map((a) => (
+                            <option key={a.name} value={a.name}>
+                              {a.name} — {a.pincode}
+                            </option>
+                          ))}
+                        </optgroup>
+                        <optgroup label={`Around ${CITY.name}`}>
+                          {NEARBY_TOWNS.map((a) => (
+                            <option key={a.name} value={a.name}>
+                              {a.name} — {a.pincode}
+                            </option>
+                          ))}
+                        </optgroup>
+                      </select>
+                      <p className="text-body-sm text-on-surface-variant mt-2 ml-1">
+                        We currently serve {CITY.name} and the towns around it. You can add more
+                        delivery areas once your account is set up.
+                      </p>
                     </div>
                   )}
 

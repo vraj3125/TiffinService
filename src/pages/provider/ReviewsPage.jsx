@@ -3,14 +3,17 @@ import { Star, MessageSquareText } from 'lucide-react'
 import Card from '../../components/ui/Card.jsx'
 import EmptyState from '../../components/ui/EmptyState.jsx'
 import { Skeleton } from '../../components/ui/Skeleton.jsx'
-import { fetchAllProviderReviews } from '../../api/reviews.js'
+import { fetchMyReviews } from '../../api/reviews.js'
+import { useAuth } from '../../context/AuthContext.jsx'
 
 export default function ProviderReviewsPage() {
+  const { user } = useAuth()
   const [reviews, setReviews] = useState(null)
 
   useEffect(() => {
-    fetchAllProviderReviews().then((r) => setReviews(r.filter((x) => x.providerId === 'p1')))
-  }, [])
+    if (!user) return
+    fetchMyReviews(user.uid).then(setReviews)
+  }, [user])
 
   const avg = reviews?.length ? (reviews.reduce((a, r) => a + r.rating, 0) / reviews.length).toFixed(1) : null
 

@@ -1,5 +1,5 @@
 import LegalDoc from '../../components/layout/LegalDoc.jsx'
-import { COMPANY } from '../../config/company.js'
+import { COMPANY, fullAddress } from '../../config/company.js'
 
 const sections = [
   {
@@ -100,8 +100,11 @@ const sections = [
     id: 'contact',
     heading: 'Contact',
     body: [
-      `Data protection queries: ${COMPANY.privacyEmail}. Grievance Officer: ${COMPANY.grievanceOfficer}, ${COMPANY.grievanceEmail}.`,
-      `Post: ${COMPANY.legalName}, ${COMPANY.address.line1}, ${COMPANY.address.line2}, ${COMPANY.address.city} ${COMPANY.address.pin}, ${COMPANY.address.country}.`,
+      `Data protection queries: ${COMPANY.privacyEmail}.`,
+      COMPANY.grievanceOfficer
+        ? `Grievance Officer: ${COMPANY.grievanceOfficer}, ${COMPANY.grievanceEmail}.`
+        : `Complaints and escalations: ${COMPANY.grievanceEmail}.`,
+      `Post: ${fullAddress.join(', ')}.`,
     ],
   },
 ]

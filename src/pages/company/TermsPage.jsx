@@ -88,8 +88,10 @@ const sections = [
     id: 'grievance',
     heading: 'Grievance redressal',
     body: [
-      `Under the Consumer Protection (E-Commerce) Rules, 2020 and the IT Rules, 2021, our Grievance Officer is ${COMPANY.grievanceOfficer}, reachable at ${COMPANY.grievanceEmail} or by post at our registered office.`,
-      'We acknowledge complaints within 48 hours and aim to resolve them within 30 days. These terms are governed by Indian law, and the courts at Ahmedabad, Gujarat have exclusive jurisdiction.',
+      COMPANY.grievanceOfficer
+        ? `Under the Consumer Protection (E-Commerce) Rules, 2020 and the IT Rules, 2021, our Grievance Officer is ${COMPANY.grievanceOfficer}, reachable at ${COMPANY.grievanceEmail}.`
+        : `Complaints go to ${COMPANY.grievanceEmail} and are handled under the Consumer Protection (E-Commerce) Rules, 2020 and the IT Rules, 2021.`,
+      'We acknowledge complaints within 48 hours and aim to resolve them within 30 days. These terms are governed by Indian law, and the courts at Vadodara, Gujarat have exclusive jurisdiction.',
     ],
   },
 ]

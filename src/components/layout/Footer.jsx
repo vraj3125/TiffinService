@@ -11,6 +11,7 @@ import {
   Youtube,
   ArrowRight,
   BadgeCheck,
+  Clock,
 } from 'lucide-react'
 import { useToast } from '../../context/ToastContext.jsx'
 import { COMPANY, fullAddress } from '../../config/company.js'
@@ -42,7 +43,6 @@ const columns = [
     heading: 'Company',
     links: [
       { label: 'About us', to: '/about' },
-      { label: 'Careers', to: '/careers' },
       { label: 'Help centre', to: '/support' },
     ],
   },
@@ -56,6 +56,13 @@ const columns = [
   },
 ]
 
+// Only identifiers that have been filled in are shown at all.
+const statutory = [
+  COMPANY.fssai && `FSSAI Lic. ${COMPANY.fssai}`,
+  COMPANY.cin && `CIN ${COMPANY.cin}`,
+  COMPANY.gstin && `GSTIN ${COMPANY.gstin}`,
+].filter(Boolean)
+
 const linkClass =
   'text-body-sm text-on-surface-variant hover:text-terracotta transition-colors duration-200 w-fit'
 
@@ -63,14 +70,19 @@ export default function Footer() {
   const { showToast } = useToast()
   const [email, setEmail] = useState('')
 
+  // There is no mailing-list backend, so the subscribe button opens the
+  // visitor's mail app addressed to us. It genuinely reaches someone, which a
+  // form that silently swallows the address would not.
   const onSubscribe = (e) => {
     e.preventDefault()
     if (!email.includes('@')) {
       showToast('Enter a valid email address', 'info')
       return
     }
-    // No mailing list is wired up in this build.
-    showToast('Demo build -- the mailing list is not connected yet.', 'info')
+    const subject = encodeURIComponent('Subscribe me to the weekly menu email')
+    const body = encodeURIComponent(`Please add ${email} to the weekly menu list.`)
+    window.location.href = `mailto:${COMPANY.email}?subject=${subject}&body=${body}`
+    showToast('Opening your mail app to confirm the subscription.')
     setEmail('')
   }
 
@@ -89,11 +101,13 @@ export default function Footer() {
             <p className="text-body-sm text-on-surface-variant mb-6 max-w-xs">{COMPANY.tagline}</p>
 
             <ul className="space-y-3">
-              <li>
-                <a href={`tel:${COMPANY.phoneHref}`} className={`${linkClass} flex items-center gap-2.5`}>
-                  <Phone size={15} className="text-terracotta shrink-0" /> {COMPANY.phone}
-                </a>
-              </li>
+              {COMPANY.phone && (
+                <li>
+                  <a href={`tel:${COMPANY.phoneHref}`} className={`${linkClass} flex items-center gap-2.5`}>
+                    <Phone size={15} className="text-terracotta shrink-0" /> {COMPANY.phone}
+                  </a>
+                </li>
+              )}
               <li>
                 <a href={`mailto:${COMPANY.supportEmail}`} className={`${linkClass} flex items-center gap-2.5`}>
                   <Mail size={15} className="text-terracotta shrink-0" /> {COMPANY.supportEmail}
@@ -106,6 +120,10 @@ export default function Footer() {
                     <span key={line} className="block">{line}</span>
                   ))}
                 </address>
+              </li>
+              <li className="flex gap-2.5 text-body-sm text-on-surface-variant">
+                <Clock size={15} className="text-terracotta shrink-0 mt-0.5" />
+                <span>{COMPANY.supportHours}</span>
               </li>
             </ul>
           </div>
@@ -158,44 +176,49 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Statutory strip */}
-      <div className="border-t border-surface-variant bg-surface-container-low">
-        <div className="max-w-container-max mx-auto px-6 sm:px-margin-desktop py-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-body-sm text-on-surface-variant">
-            <span className="inline-flex items-center gap-1.5">
-              <BadgeCheck size={15} className="text-leaf-success" /> FSSAI Lic. {COMPANY.fssai}
-            </span>
-            <span>CIN {COMPANY.cin}</span>
-            <span>GSTIN {COMPANY.gstin}</span>
+      {/* Statutory strip -- only the identifiers that have actually been issued. */}
+      {(statutory.length > 0 || COMPANY.social.length > 0) && (
+        <div className="border-t border-surface-variant bg-surface-container-low">
+          <div className="max-w-container-max mx-auto px-6 sm:px-margin-desktop py-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-body-sm text-on-surface-variant">
+              {statutory.map((entry, i) => (
+                <span key={entry} className="inline-flex items-center gap-1.5">
+                  {i === 0 && <BadgeCheck size={15} className="text-leaf-success" />}
+                  {entry}
+                </span>
+              ))}
+            </div>
+            {COMPANY.social.length > 0 && (
+              <ul className="flex items-center gap-2">
+                {COMPANY.social.map((s) => {
+                  const Icon = socialIcons[s.icon]
+                  return (
+                    <li key={s.label}>
+                      <a
+                        href={s.href}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        aria-label={`${COMPANY.name} on ${s.label}`}
+                        className="w-9 h-9 rounded-full border border-outline-variant flex items-center justify-center text-on-surface-variant hover:text-terracotta hover:border-terracotta transition-colors"
+                      >
+                        <Icon size={16} />
+                      </a>
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
           </div>
-          <ul className="flex items-center gap-2">
-            {COMPANY.social.map((s) => {
-              const Icon = socialIcons[s.icon]
-              return (
-                <li key={s.label}>
-                  <a
-                    href={s.href}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    aria-label={`${COMPANY.name} on ${s.label}`}
-                    className="w-9 h-9 rounded-full border border-outline-variant flex items-center justify-center text-on-surface-variant hover:text-terracotta hover:border-terracotta transition-colors"
-                  >
-                    <Icon size={16} />
-                  </a>
-                </li>
-              )
-            })}
-          </ul>
         </div>
-      </div>
+      )}
 
       <div className="border-t border-surface-variant">
         <div className="max-w-container-max mx-auto px-6 sm:px-margin-desktop py-6 flex flex-col md:flex-row justify-between items-center gap-3 text-center md:text-left">
           <p className="text-body-sm text-on-surface-variant">
             &copy; {new Date().getFullYear()} {COMPANY.legalName}. {COMPANY.tagline}
           </p>
-          <p className="text-body-sm text-outline">
-            Demo build &mdash; no real orders, payments or company details.
+          <p className="text-body-sm text-on-surface-variant">
+            Made in Vadodara, Gujarat.
           </p>
         </div>
       </div>

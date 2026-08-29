@@ -74,7 +74,9 @@ const sections = [
     id: 'escalating',
     heading: 'If you disagree with a decision',
     body: [
-      `Reply to the refund decision email and ask for a review, or write to ${COMPANY.grievanceEmail}. Our Grievance Officer, ${COMPANY.grievanceOfficer}, responds within 30 days.`,
+      `Reply to the refund decision email and ask for a review, or write to ${COMPANY.grievanceEmail}${
+        COMPANY.grievanceOfficer ? `, addressed to our Grievance Officer, ${COMPANY.grievanceOfficer}` : ''
+      }. We respond within 30 days.`,
       'You retain every right available to you under the Consumer Protection Act, 2019; nothing in this policy takes those away.',
     ],
   },

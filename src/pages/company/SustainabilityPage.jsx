@@ -7,30 +7,30 @@ const pillars = [
   {
     icon: Recycle,
     title: 'Steel tiffins, swapped daily',
-    body: 'Kitchens on the reusable programme deliver in insulated steel carriers and collect yesterday\u2019s at the same time. One carrier replaces roughly 260 single-use containers a year.',
-    stat: '61%',
-    statLabel: 'of subscriptions now on reusable carriers',
+    body: 'Kitchens on the reusable programme deliver in insulated steel carriers and collect yesterday\u2019s at the same time. One carrier stands in for a single-use container on every delivery it makes.',
+    stat: 'Steel',
+    statLabel: 'Reusable carriers offered on every plan',
   },
   {
     icon: Bike,
     title: 'Nothing travels far',
-    body: 'A kitchen only appears to you if it is within about five kilometres. Short routes mean cycles and electric two-wheelers do most of the work, and food arrives hot without a heated bag.',
-    stat: '3.4 km',
-    statLabel: 'median delivery distance',
+    body: 'A kitchen only appears to you if your address is inside the radius it set, usually about five kilometres. Short routes mean cycles and electric two-wheelers do most of the work, and food arrives hot without a heated bag.',
+    stat: '5 km',
+    statLabel: 'Default delivery radius for a kitchen',
   },
   {
     icon: Utensils,
     title: 'Cooked to a headcount',
-    body: 'Subscriptions tell a kitchen exactly how many portions to make the night before. That is the single biggest reason home kitchens waste less food than restaurants do.',
-    stat: '~4%',
-    statLabel: 'average prepared-food waste',
+    body: 'Subscriptions close at 9 PM and tell a kitchen exactly how many portions to make. That is the single biggest reason home kitchens waste less food than restaurants do.',
+    stat: '9 PM',
+    statLabel: 'Cut-off, so the count is known before cooking',
   },
   {
     icon: Sprout,
     title: 'Bought that morning, locally',
-    body: 'Most partner kitchens shop daily at their neighbourhood market rather than holding cold storage. Seasonal menus follow what is actually in the mandi that week.',
-    stat: '12 hrs',
-    statLabel: 'typical time from market to plate',
+    body: 'Partner kitchens shop daily at their neighbourhood market rather than holding cold storage. Seasonal menus follow what is actually in the mandi that week.',
+    stat: 'Daily',
+    statLabel: 'Kitchens shop their own market each morning',
   },
 ]
 
@@ -66,9 +66,7 @@ export default function SustainabilityPage() {
             </div>
           ))}
         </div>
-        <p className="text-body-sm text-outline mt-6">
-          Figures are illustrative for this demo build and are not audited.
-        </p>
+
       </Section>
 
       <Section

@@ -13,6 +13,8 @@ import {
   updateProfile,
 } from 'firebase/auth'
 import { auth, isFirebaseConfigured } from '../lib/firebase.js'
+import { writeAccount } from '../lib/accountStore.js'
+import { findLocation, DEFAULT_RADIUS_KM } from '../config/locations.js'
 
 const AuthContext = createContext(null)
 
@@ -118,6 +120,10 @@ export function AuthProvider({ children }) {
       phone ||
       (resolvedRole === 'provider' ? 'Your Kitchen' : 'There')
 
+    if (resolvedRole === 'provider' && saved?.area) {
+      seedKitchen('demo', { name: resolvedName, area: saved.area })
+    }
+
     setUser({
       uid: 'demo',
       role: resolvedRole,
@@ -133,16 +139,37 @@ export function AuthProvider({ children }) {
   // --- email + password ----------------------------------------------------
   // Creates the account, then deliberately signs out so the user lands back on
   // the login screen, as requested.
-  const signupWithEmail = async ({ name, email, password, role }) => {
+  // A kitchen picks its area during signup, so seed its profile and first
+  // service zone from that rather than leaving both blank.
+  const seedKitchen = (uid, { name, area }) => {
+    if (!uid || !area) return
+    const place = findLocation(area)
+    writeAccount(uid, 'kitchenProfile', {
+      name: name || '',
+      area,
+      pincode: place?.pincode || '',
+      lat: place?.lat ?? null,
+      lng: place?.lng ?? null,
+      radiusKm: DEFAULT_RADIUS_KM,
+      owner: '',
+      address: '',
+      phone: '',
+      fssai: '',
+    })
+    writeAccount(uid, 'zones', [area])
+  }
+
+  const signupWithEmail = async ({ name, email, password, role, area }) => {
     if (!isFirebaseConfigured) {
       // No backend to create an account in -- remember it locally so the login
       // that follows knows who this is.
-      saveDemoAccount(email, { role, name })
+      saveDemoAccount(email, { role, name, area })
       return { verificationSent: false }
     }
     const cred = await createUserWithEmailAndPassword(auth, email, password)
     if (name) await updateProfile(cred.user, { displayName: name })
     persist(cred.user.uid, role, name)
+    if (role === 'provider') seedKitchen(cred.user.uid, { name, area })
 
     let verificationSent = false
     try {

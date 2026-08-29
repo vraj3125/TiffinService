@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { AlertTriangle } from 'lucide-react'
 import PageHero from './PageHero.jsx'
 import { COMPANY } from '../../config/company.js'
 
@@ -52,15 +51,6 @@ export default function LegalDoc({ eyebrow, title, summary, updated, sections })
               to {COMPANY.legalName} and all {COMPANY.name} services.
             </p>
 
-            <div className="flex gap-3 rounded-DEFAULT border border-mustard/40 bg-mustard/10 p-4 mb-10">
-              <AlertTriangle size={20} className="text-secondary shrink-0 mt-0.5" />
-              <p className="text-body-sm text-on-surface-variant">
-                <span className="font-semibold text-on-surface">Demo document.</span> This is
-                illustrative template wording written for a portfolio build, not legal advice, and it
-                has not been reviewed by a lawyer. Replace it with counsel-reviewed text before
-                operating a real service.
-              </p>
-            </div>
 
             <div className="space-y-12">
               {sections.map((s, i) => (

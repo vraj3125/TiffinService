@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
-import { Bike, ShieldCheck, Star } from 'lucide-react'
+import { Bike, MapPin, ShieldCheck, Star } from 'lucide-react'
 import Card from './ui/Card.jsx'
+import { DEFAULT_RADIUS_KM } from '../config/locations.js'
 
 export default function ProviderCard({ provider }) {
   return (
@@ -19,10 +20,15 @@ export default function ProviderCard({ provider }) {
           </div>
         </div>
         <div className="p-6 flex flex-col flex-grow">
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center gap-2 mb-1">
             <h3 className="text-headline-md text-on-surface leading-tight">{provider.name}</h3>
             {provider.verified && <ShieldCheck size={18} className="text-leaf-success shrink-0" />}
           </div>
+          {/* Where the kitchen is, and how far it will travel. */}
+          <p className="flex items-center gap-1.5 text-body-sm text-on-surface-variant mb-3">
+            <MapPin size={14} className="shrink-0" />
+            {provider.area} · delivers up to {provider.radiusKm ?? DEFAULT_RADIUS_KM} km
+          </p>
           <div className="flex flex-wrap items-center gap-2 text-on-surface-variant mb-4">
             {provider.cuisineTags.slice(0, 2).map((tag) => (
               <span key={tag} className="text-label-md bg-surface-container px-2 py-1 rounded-md text-terracotta">{tag}</span>

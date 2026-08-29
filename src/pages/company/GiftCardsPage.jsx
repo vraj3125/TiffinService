@@ -31,9 +31,20 @@ export default function GiftCardsPage() {
       showToast('Add a recipient email and an amount of at least 100 rupees', 'info')
       return
     }
-    // No payment gateway is wired up in this build, so say so plainly rather
-    // than pretending a card was issued.
-    showToast('Demo build -- gift cards are not live yet, so nothing was charged.', 'info')
+    // Gift cards are issued by hand while we are small, so this hands the
+    // order to the team by email rather than pretending to take a payment.
+    const subject = encodeURIComponent(`Gift card order - Rs ${value}`)
+    const body = encodeURIComponent(
+      [
+        `Amount: Rs ${value}`,
+        `Recipient: ${form.to || '(not given)'}`,
+        `Recipient email: ${form.email}`,
+        `From: ${form.from || '(not given)'}`,
+        `Message: ${form.message || '(none)'}`,
+      ].join('\n')
+    )
+    window.location.href = `mailto:${COMPANY.email}?subject=${subject}&body=${body}`
+    showToast('Opening your mail app so we can confirm the gift card and payment link.')
   }
 
   return (
@@ -136,10 +147,10 @@ export default function GiftCardsPage() {
             </div>
 
             <Button type="submit" size="lg" className="w-full mt-5">
-              Continue to payment <ArrowRight size={20} />
+              Request this gift card <ArrowRight size={20} />
             </Button>
-            <p className="text-body-sm text-outline text-center mt-3">
-              Demo build -- no payment is taken and no card is issued.
+            <p className="text-body-sm text-on-surface-variant text-center mt-3">
+              We confirm the order and send a payment link by email, usually within a few hours.
             </p>
           </form>
         </div>

@@ -11,7 +11,7 @@ const COMMISSION = 0.12
 const benefits = [
   { icon: IndianRupee, title: 'Flat 12% commission', body: 'No listing fee, no ad auction, no charge for being shown higher. What you price is what you are paid, minus one number you already know.' },
   { icon: CalendarRange, title: 'Cook to a known count', body: 'Subscriptions close the night before, so you shop and cook for an exact headcount instead of guessing and binning the difference.' },
-  { icon: Users, title: 'Regulars, not one-offs', body: 'The average subscriber stays 4.5 months. You are building a round, not chasing a fresh order every morning.' },
+  { icon: Users, title: 'Regulars, not one-offs', body: 'Subscriptions run by the week or the month, so you are building a regular round rather than chasing a fresh order every morning.' },
   { icon: LineChart, title: 'Weekly payouts', body: 'Every Tuesday for the week before, straight to your bank account, with a statement that reconciles to the paisa.' },
 ]
 
@@ -110,9 +110,8 @@ export default function PartnerPage() {
               <span className="text-label-lg text-on-background">You receive</span>
               <span className="font-display text-headline-lg text-leaf-success">&#8377;{inr(monthlyNet)}</span>
             </div>
-            <p className="text-body-sm text-outline mt-4">
-              Before your own ingredient and gas costs. Illustrative only -- this demo does not model
-              real payouts.
+            <p className="text-body-sm text-on-surface-variant mt-4">
+              Before your own ingredient and gas costs.
             </p>
           </div>
         </div>

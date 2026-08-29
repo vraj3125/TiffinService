@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ChevronLeft, ChevronRight, X } from 'lucide-react'
 import Card from '../../components/ui/Card.jsx'
 import Button from '../../components/ui/Button.jsx'
 import Modal from '../../components/ui/Modal.jsx'
 import { Textarea } from '../../components/ui/Input.jsx'
-import { holidays as initialHolidays } from '../../mockData.js'
+import { fetchHolidays, saveHolidays } from '../../api/provider.js'
+import { useAuth } from '../../context/AuthContext.jsx'
 import { useToast } from '../../context/ToastContext.jsx'
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
@@ -15,11 +16,27 @@ function toISO(y, m, d) {
 }
 
 export default function HolidayCalendarPage() {
-  const [cursor, setCursor] = useState(new Date(2026, 7, 1)) // August 2026
-  const [holidays, setHolidays] = useState(initialHolidays)
+  const { user } = useAuth()
+  // Open on the current month rather than a fixed one, and start with this
+  // kitchen's own closures -- none for a new provider.
+  const [cursor, setCursor] = useState(() => {
+    const now = new Date()
+    return new Date(now.getFullYear(), now.getMonth(), 1)
+  })
+  const [holidays, setHolidays] = useState([])
   const [pendingDate, setPendingDate] = useState(null)
   const [note, setNote] = useState('')
   const { showToast } = useToast()
+
+  useEffect(() => {
+    if (!user) return
+    fetchHolidays(user.uid).then(setHolidays)
+  }, [user])
+
+  const commit = (next) => {
+    setHolidays(next)
+    saveHolidays(user.uid, next)
+  }
 
   const year = cursor.getFullYear()
   const month = cursor.getMonth()
@@ -35,7 +52,7 @@ export default function HolidayCalendarPage() {
   const toggleDay = (day) => {
     const iso = toISO(year, month, day)
     if (holidayMap[iso]) {
-      setHolidays((h) => h.filter((x) => x.date !== iso))
+      commit(holidays.filter((x) => x.date !== iso))
       showToast('Holiday removed — deliveries resume on this day')
     } else {
       setPendingDate(iso)
@@ -44,7 +61,7 @@ export default function HolidayCalendarPage() {
   }
 
   const confirmHoliday = () => {
-    setHolidays((h) => [...h, { date: pendingDate, note: note || 'Marked as off-day' }])
+    commit([...holidays, { date: pendingDate, note: note || 'Marked as off-day' }])
     showToast(`Marked ${pendingDate} as a holiday`)
     setPendingDate(null)
   }

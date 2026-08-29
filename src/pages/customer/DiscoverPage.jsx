@@ -7,7 +7,9 @@ import EmptyState from '../../components/ui/EmptyState.jsx'
 import Button from '../../components/ui/Button.jsx'
 import { Select } from '../../components/ui/Input.jsx'
 import { fetchProviders } from '../../api/providers.js'
-import { AREAS, CUISINE_TAGS } from '../../mockData.js'
+import { CUISINE_TAGS } from '../../mockData.js'
+import LocationPicker from '../../components/ui/LocationPicker.jsx'
+import { CITY } from '../../config/locations.js'
 
 const defaultFilters = {
   area: '', cuisine: [], dietType: 'any', maxPrice: 250, deliveryTime: 'any', minRating: 0,
@@ -77,7 +79,9 @@ export default function DiscoverPage() {
             <h1 className="font-display text-display-md sm:text-display-lg text-on-surface mb-2">Explore Providers</h1>
             <div className="flex items-center text-on-surface-variant gap-2 cursor-pointer hover:text-terracotta transition-colors group" onClick={() => setShowFilters(true)}>
               <MapPin size={18} className="group-hover:scale-110 transition-transform" />
-              <span className="text-headline-md">{filters.area || 'All areas near you'}</span>
+              <span className="text-headline-md">
+                {filters.area || `All of ${CITY.name}`}
+              </span>
               <ChevronDown size={16} />
             </div>
           </div>
@@ -150,11 +154,19 @@ export default function DiscoverPage() {
 
             <div className="space-y-6">
               <div>
-                <h4 className="text-label-lg text-on-surface mb-2">Area</h4>
-                <Select value={filters.area} onChange={(e) => setFilters({ ...filters, area: e.target.value })}>
-                  <option value="">All areas</option>
-                  {AREAS.map((a) => <option key={a} value={a}>{a}</option>)}
-                </Select>
+                <h4 className="text-label-lg text-on-surface mb-2">Deliver to</h4>
+                {/* Choosing an area also brings in kitchens from further out
+                    whose own delivery radius still reaches it. */}
+                <LocationPicker
+                  id="discover-area"
+                  value={filters.area}
+                  placeholder={`Your area in ${CITY.name}`}
+                  onSelect={(place) => setFilters({ ...filters, area: place.name })}
+                  onClear={() => setFilters({ ...filters, area: '' })}
+                />
+                <p className="text-body-sm text-on-surface-variant mt-2">
+                  Shows kitchens in your area, plus any nearby ones that deliver to it.
+                </p>
               </div>
 
               <div>

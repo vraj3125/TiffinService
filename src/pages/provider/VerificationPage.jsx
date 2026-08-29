@@ -5,28 +5,46 @@ import Button from '../../components/ui/Button.jsx'
 import Badge from '../../components/ui/Badge.jsx'
 import { Input, Textarea } from '../../components/ui/Input.jsx'
 import { Skeleton } from '../../components/ui/Skeleton.jsx'
-import { fetchVerificationDocs } from '../../api/provider.js'
+import {
+  fetchKitchenProfile,
+  fetchVerificationDocs,
+  saveKitchenProfile,
+  saveVerificationDocs,
+} from '../../api/provider.js'
 import { useToast } from '../../context/ToastContext.jsx'
 import { useAuth } from '../../context/AuthContext.jsx'
 
 export default function VerificationPage() {
   const { user } = useAuth()
   const [docs, setDocs] = useState(null)
+  const [profile, setProfile] = useState(null)
   const { showToast } = useToast()
 
+  // This kitchen's own paperwork -- nothing is pre-filled or pre-verified.
   useEffect(() => {
-    fetchVerificationDocs().then(setDocs)
-  }, [])
+    if (!user) return
+    fetchVerificationDocs(user.uid).then(setDocs)
+    fetchKitchenProfile(user.uid).then((p) => setProfile({ ...p, name: p.name || user.name || '' }))
+  }, [user])
 
-  const overallStatus = docs?.every((d) => d.status === 'verified') ? 'verified' : docs?.some((d) => d.status === 'pending') ? 'pending' : 'pending'
+  const overallStatus = docs?.every((d) => d.status === 'verified')
+    ? 'verified'
+    : docs?.some((d) => d.status !== 'missing')
+      ? 'pending'
+      : 'missing'
 
   const uploadDoc = (id) => {
-    setDocs((ds) => ds.map((d) => (d.id === id ? { ...d, status: 'pending' } : d)))
+    const next = docs.map((d) => (d.id === id ? { ...d, status: 'pending' } : d))
+    setDocs(next)
+    saveVerificationDocs(user.uid, next)
     showToast('Document uploaded — under review')
   }
 
-  const saveBusiness = (e) => {
+  const field = (key) => (e) => setProfile({ ...profile, [key]: e.target.value })
+
+  const saveBusiness = async (e) => {
     e.preventDefault()
+    await saveKitchenProfile(user.uid, profile)
     showToast('Business details saved')
   }
 
@@ -39,7 +57,11 @@ export default function VerificationPage() {
         </div>
         {docs && (
           <Badge tone={overallStatus === 'verified' ? 'verified' : 'pending'} icon={overallStatus === 'verified' ? ShieldCheck : Clock}>
-            {overallStatus === 'verified' ? 'Verified' : 'Verification Pending'}
+            {overallStatus === 'verified'
+              ? 'Verified'
+              : overallStatus === 'pending'
+                ? 'Verification Pending'
+                : 'Not Submitted'}
           </Badge>
         )}
       </div>
@@ -47,14 +69,18 @@ export default function VerificationPage() {
       <div className="grid md:grid-cols-2 gap-gutter">
         <Card className="p-6">
           <h3 className="text-headline-md text-on-surface mb-4">Business Details</h3>
-          <form onSubmit={saveBusiness} className="space-y-4">
-            <Input label="Business name" defaultValue={user?.name} />
-            <Input label="Owner name" defaultValue="Sunita Sharma" />
-            <Input label="FSSAI license number" defaultValue="12345678901234" />
-            <Textarea label="Kitchen address" rows={2} defaultValue="BTM 2nd Stage, Koramangala, Bengaluru - 560034" />
-            <Input label="Contact phone" defaultValue="+91 98765 43210" />
-            <Button type="submit">Save Details</Button>
-          </form>
+          {!profile ? (
+            <Skeleton className="h-72 w-full" />
+          ) : (
+            <form onSubmit={saveBusiness} className="space-y-4">
+              <Input label="Business name" value={profile.name} onChange={field('name')} placeholder="e.g. Narushi Kitchen" />
+              <Input label="Owner name" value={profile.owner || ''} onChange={field('owner')} placeholder="Your full name" />
+              <Input label="FSSAI license number" value={profile.fssai} onChange={field('fssai')} placeholder="14-digit licence number" />
+              <Textarea label="Kitchen address" rows={2} value={profile.address || ''} onChange={field('address')} placeholder="Street, area, city, pincode" />
+              <Input label="Contact phone" value={profile.phone} onChange={field('phone')} placeholder="+91 98765 43210" />
+              <Button type="submit">Save Details</Button>
+            </form>
+          )}
         </Card>
 
         <div className="space-y-6">
@@ -72,7 +98,11 @@ export default function VerificationPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge tone={doc.status === 'verified' ? 'verified' : 'pending'}>
-                        {doc.status === 'verified' ? 'Verified' : 'Pending'}
+                        {doc.status === 'verified'
+                          ? 'Verified'
+                          : doc.status === 'pending'
+                            ? 'Pending'
+                            : 'Not uploaded'}
                       </Badge>
                       <button onClick={() => uploadDoc(doc.id)} className="text-on-surface-variant hover:text-terracotta">
                         <UploadCloud size={16} />
@@ -86,10 +116,10 @@ export default function VerificationPage() {
 
           <Card className="p-6">
             <h3 className="text-headline-md text-on-surface mb-3">Kitchen Photos</h3>
+            <p className="text-body-sm text-on-surface-variant mb-3">
+              No photos yet. Add a few of your cooking and storage areas.
+            </p>
             <div className="grid grid-cols-3 gap-2 mb-3">
-              {['https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=200', 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=200'].map((src) => (
-                <img key={src} src={src} alt="Kitchen" className="w-full h-20 object-cover rounded-lg" />
-              ))}
               <button
                 onClick={() => showToast('Photo upload simulated')}
                 className="h-20 rounded-lg border-2 border-dashed border-outline-variant flex items-center justify-center text-on-surface-variant hover:border-terracotta/50 hover:text-terracotta"

@@ -51,8 +51,20 @@ export default function SupportPage() {
       showToast('Add your email and a short description so we can help', 'info')
       return
     }
-    // Nothing is wired to a ticketing backend in this build.
-    showToast('Demo build -- this form is not connected, so no ticket was created.', 'info')
+    // Support runs out of a mailbox rather than a ticketing system, so send the
+    // message there instead of dropping it.
+    const subject = encodeURIComponent(`${form.topic}${form.orderId ? ` - ${form.orderId}` : ''}`)
+    const body = encodeURIComponent(
+      [
+        `Name: ${form.name || '(not given)'}`,
+        `Email: ${form.email}`,
+        `Order: ${form.orderId || '(none)'}`,
+        '',
+        form.message,
+      ].join('\n')
+    )
+    window.location.href = `mailto:${COMPANY.supportEmail}?subject=${subject}&body=${body}`
+    showToast('Opening your mail app so the team gets the full details.')
   }
 
   return (
@@ -202,8 +214,8 @@ export default function SupportPage() {
               <Button type="submit" size="lg">
                 <Send size={18} /> Send message
               </Button>
-              <p className="text-body-sm text-outline">
-                Demo build -- this form is not connected to a ticketing system.
+              <p className="text-body-sm text-on-surface-variant">
+                Goes straight to {COMPANY.supportEmail}. We reply within 4 hours.
               </p>
             </div>
           </form>

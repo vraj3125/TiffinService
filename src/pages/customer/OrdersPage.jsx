@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, PackageSearch, CheckCircle2, PauseCircle, Calendar } from 'lucide-react'
+import { Plus, PackageSearch, CheckCircle2, PauseCircle, PlayCircle, Calendar } from 'lucide-react'
 import Button from '../../components/ui/Button.jsx'
 import EmptyState from '../../components/ui/EmptyState.jsx'
 import { Skeleton } from '../../components/ui/Skeleton.jsx'
 import Modal from '../../components/ui/Modal.jsx'
-import { fetchOrders, fetchSubscriptions } from '../../api/orders.js'
+import { fetchOrders, fetchSubscriptions, skipMeal, updateSubscription } from '../../api/orders.js'
+import { useAuth } from '../../context/AuthContext.jsx'
 import { useToast } from '../../context/ToastContext.jsx'
 
 const statusStyle = {
@@ -19,6 +20,7 @@ const statusLabel = {
 }
 
 export default function OrdersPage() {
+  const { user } = useAuth()
   const [orders, setOrders] = useState([])
   const [subs, setSubs] = useState([])
   const [loading, setLoading] = useState(true)
@@ -26,20 +28,38 @@ export default function OrdersPage() {
   const { showToast } = useToast()
   const navigate = useNavigate()
 
+  // Scoped to the signed-in account -- a new account has nothing here yet.
   useEffect(() => {
-    Promise.all([fetchOrders(), fetchSubscriptions()]).then(([o, s]) => {
+    if (!user) return
+    let live = true
+    setLoading(true)
+    Promise.all([fetchOrders(user.uid), fetchSubscriptions(user.uid)]).then(([o, s]) => {
+      if (!live) return
       setOrders(o)
       setSubs(s)
       setLoading(false)
     })
-  }, [])
+    return () => {
+      live = false
+    }
+  }, [user])
 
-  const handleSkip = (date) => {
-    setSubs((prev) =>
-      prev.map((s) => (s.id === skipModal.id ? { ...s, skippedDates: [...s.skippedDates, date] } : s))
+  // Pausing now persists to the account instead of only raising a toast.
+  const handlePauseToggle = async (sub) => {
+    const paused = sub.status === 'paused'
+    setSubs(await updateSubscription(user.uid, sub.id, { status: paused ? 'active' : 'paused' }))
+    showToast(
+      paused
+        ? `Subscription with ${sub.providerName} resumed.`
+        : `Subscription with ${sub.providerName} paused. Resume anytime from this page.`
     )
-    showToast(`Meal skipped for ${date}. You won't be charged for that day.`)
+  }
+
+  const handleSkip = async (date) => {
+    const id = skipModal.id
     setSkipModal(null)
+    setSubs(await skipMeal(user.uid, id, date))
+    showToast(`Meal skipped for ${date}. You won't be charged for that day.`)
   }
 
   return (
@@ -98,10 +118,18 @@ export default function OrdersPage() {
                       <Calendar size={14} /> Skip a meal
                     </Button>
                     <button
-                      onClick={() => showToast(`Subscription with ${sub.providerName} paused. Resume anytime from this page.`)}
+                      onClick={() => handlePauseToggle(sub)}
                       className="flex items-center gap-1.5 text-body-sm text-on-surface-variant hover:text-terracotta transition-colors"
                     >
-                      <PauseCircle size={16} /> Pause
+                      {sub.status === 'paused' ? (
+                        <>
+                          <PlayCircle size={16} /> Resume
+                        </>
+                      ) : (
+                        <>
+                          <PauseCircle size={16} /> Pause
+                        </>
+                      )}
                     </button>
                   </div>
                 </article>
@@ -147,7 +175,9 @@ export default function OrdersPage() {
                     </td>
                     <td className="py-5 px-6">
                       <div className="text-label-lg text-on-surface">{o.providerName}</div>
-                      <div className="text-on-surface-variant">{o.items.join(', ')}</div>
+                      <div className="text-on-surface-variant">
+                        {o.items?.length ? o.items.join(', ') : `${o.planType} plan`}
+                      </div>
                     </td>
                     <td className="py-5 px-6">
                       <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-label-md ${statusStyle[o.status]}`}>
