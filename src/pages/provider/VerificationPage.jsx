@@ -1,5 +1,15 @@
 import { useEffect, useState } from 'react'
-import { ShieldCheck, Clock, UploadCloud, FileCheck2, MapPin, Trash2, Store } from 'lucide-react'
+import {
+  ShieldCheck,
+  Clock,
+  UploadCloud,
+  FileCheck2,
+  MapPin,
+  Trash2,
+  Store,
+  CheckCircle2,
+  Circle,
+} from 'lucide-react'
 import Card from '../../components/ui/Card.jsx'
 import Button from '../../components/ui/Button.jsx'
 import Badge from '../../components/ui/Badge.jsx'
@@ -75,6 +85,36 @@ export default function VerificationPage() {
 
   const field = (key) => (e) => setProfile({ ...profile, [key]: e.target.value })
 
+  const checklist = [
+    {
+      label: 'Business and owner name',
+      done: Boolean(profile?.name && profile?.owner),
+      hint: 'Fill in Business Details and save.',
+    },
+    {
+      label: 'FSSAI licence number',
+      done: Boolean(profile?.fssai),
+      hint: 'The 14-digit number on your registration certificate.',
+    },
+    {
+      label: 'Contact phone',
+      done: Boolean(profile?.phone),
+      hint: 'How we and your customers reach the kitchen.',
+    },
+    {
+      label: 'At least one kitchen location',
+      done: Boolean(branches?.length),
+      hint: 'Add the area you cook in, below.',
+    },
+    {
+      label: 'Documents uploaded',
+      done: Boolean(docs?.every((d) => d.status !== 'missing')),
+      hint: 'Licence, kitchen photos and ID proof.',
+    },
+  ]
+  const done = checklist.filter((c) => c.done).length
+  const remaining = checklist.length - done
+
   const saveBusiness = async (e) => {
     e.preventDefault()
     await saveKitchenProfile(user.uid, profile)
@@ -99,122 +139,163 @@ export default function VerificationPage() {
         )}
       </div>
 
-      <div className="grid md:grid-cols-2 gap-gutter">
-        <Card className="p-6">
-          <h3 className="text-headline-md text-on-surface mb-4">Business Details</h3>
-          {!profile ? (
-            <Skeleton className="h-72 w-full" />
-          ) : (
-            <form onSubmit={saveBusiness} className="space-y-4">
-              <Input label="Business name" value={profile.name} onChange={field('name')} placeholder="e.g. Narushi Kitchen" />
-              <Input label="Owner name" value={profile.owner || ''} onChange={field('owner')} placeholder="Your full name" />
-              <Input label="FSSAI license number" value={profile.fssai} onChange={field('fssai')} placeholder="14-digit licence number" />
-              <Textarea label="Kitchen address" rows={2} value={profile.address || ''} onChange={field('address')} placeholder="Street, area, city, pincode" />
-              <Input label="Contact phone" value={profile.phone} onChange={field('phone')} placeholder="+91 98765 43210" />
-              <Button type="submit">Save Details</Button>
-            </form>
-          )}
-        </Card>
-
-        <Card className="p-6 md:col-span-2">
-          <div className="flex items-start justify-between gap-3 mb-1 flex-wrap">
-            <h3 className="text-headline-md text-on-surface flex items-center gap-2">
-              <Store size={20} className="text-terracotta" /> Kitchen Locations
-            </h3>
-            {branches?.length > 1 && (
-              <Badge tone="info">{branches.length} branches</Badge>
+      <div className="grid lg:grid-cols-12 gap-gutter items-start">
+        {/* Details and locations carry the weight; documents sit alongside
+            rather than under, so the right-hand column is never empty. */}
+        <div className="lg:col-span-7 space-y-6">
+          <Card className="p-6">
+            <h3 className="text-headline-md text-on-surface mb-4">Business Details</h3>
+            {!profile ? (
+              <Skeleton className="h-72 w-full" />
+            ) : (
+              <form onSubmit={saveBusiness} className="space-y-4">
+                <Input label="Business name" value={profile.name} onChange={field('name')} placeholder="e.g. Narushi Kitchen" />
+                <Input label="Owner name" value={profile.owner || ''} onChange={field('owner')} placeholder="Your full name" />
+                <Input label="FSSAI license number" value={profile.fssai} onChange={field('fssai')} placeholder="14-digit licence number" />
+                <Textarea label="Kitchen address" rows={2} value={profile.address || ''} onChange={field('address')} placeholder="Street, area, city, pincode" />
+                <Input label="Contact phone" value={profile.phone} onChange={field('phone')} placeholder="+91 98765 43210" />
+                <Button type="submit">Save Details</Button>
+              </form>
             )}
-          </div>
-          <p className="text-body-sm text-on-surface-variant mb-5">
-            Add every place you cook from. Each branch has its own delivery radius, and a customer
-            sees you if any one of them reaches their address.
-          </p>
+          </Card>
 
-          {!branches ? (
-            <Skeleton className="h-40 w-full" />
-          ) : (
-            <>
-              {branches.length === 0 && (
-                <p className="text-body-sm text-on-surface-variant mb-4">
-                  No kitchen locations yet. Add the area you cook in to start taking orders.
-                </p>
+          <Card className="p-6">
+            <div className="flex items-start justify-between gap-3 mb-1 flex-wrap">
+              <h3 className="text-headline-md text-on-surface flex items-center gap-2">
+                <Store size={20} className="text-terracotta" /> Kitchen Locations
+              </h3>
+              {branches?.length > 1 && (
+                <Badge tone="info">{branches.length} branches</Badge>
               )}
+            </div>
+            <p className="text-body-sm text-on-surface-variant mb-5">
+              Add every place you cook from. Each branch has its own delivery radius, and a customer
+              sees you if any one of them reaches their address.
+            </p>
 
-              <div className="space-y-4 mb-6">
-                {branches.map((b, i) => (
-                  <div key={b.id} className="rounded-DEFAULT border border-outline-variant p-5">
-                    <div className="flex items-start justify-between gap-3 mb-4">
-                      <div className="flex items-start gap-2.5">
-                        <MapPin size={18} className="text-terracotta shrink-0 mt-1" />
-                        <div>
-                          <p className="text-label-lg text-on-surface">
-                            {b.area}
-                            {b.pincode ? ` — ${b.pincode}` : ''}
-                          </p>
-                          <p className="text-body-sm text-on-surface-variant">
-                            {i === 0 ? 'Main kitchen' : 'Branch'}
-                          </p>
+            {!branches ? (
+              <Skeleton className="h-40 w-full" />
+            ) : (
+              <>
+                {branches.length === 0 && (
+                  <p className="text-body-sm text-on-surface-variant mb-4">
+                    No kitchen locations yet. Add the area you cook in to start taking orders.
+                  </p>
+                )}
+
+                <div className="space-y-4 mb-6">
+                  {branches.map((b, i) => (
+                    <div key={b.id} className="rounded-DEFAULT border border-outline-variant p-5">
+                      <div className="flex items-start justify-between gap-3 mb-4">
+                        <div className="flex items-start gap-2.5">
+                          <MapPin size={18} className="text-terracotta shrink-0 mt-1" />
+                          <div>
+                            <p className="text-label-lg text-on-surface">
+                              {b.area}
+                              {b.pincode ? ` — ${b.pincode}` : ''}
+                            </p>
+                            <p className="text-body-sm text-on-surface-variant">
+                              {i === 0 ? 'Main kitchen' : 'Branch'}
+                            </p>
+                          </div>
                         </div>
+                        <button
+                          onClick={() => removeBranch(b.id)}
+                          aria-label={`Remove ${b.area}`}
+                          className="p-1.5 text-on-surface-variant hover:text-error shrink-0"
+                        >
+                          <Trash2 size={16} />
+                        </button>
                       </div>
-                      <button
-                        onClick={() => removeBranch(b.id)}
-                        aria-label={`Remove ${b.area}`}
-                        className="p-1.5 text-on-surface-variant hover:text-error shrink-0"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
 
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      <Input
-                        label="Name this branch"
-                        value={b.label}
-                        onChange={(e) => updateBranch(b.id, { label: e.target.value })}
-                        placeholder={i === 0 ? 'Main kitchen' : `${b.area} branch`}
-                      />
-                      <Input
-                        label="Street address"
-                        value={b.address}
-                        onChange={(e) => updateBranch(b.id, { address: e.target.value })}
-                        placeholder="Building, street, landmark"
-                      />
-                    </div>
-
-                    <div className="mt-4">
-                      <div className="flex justify-between mb-2">
-                        <label htmlFor={`radius-${b.id}`} className="text-label-md text-on-surface-variant">
-                          Delivers up to
-                        </label>
-                        <span className="text-label-lg text-terracotta">
-                          {b.radiusKm ?? DEFAULT_RADIUS_KM} km
-                        </span>
+                      <div className="grid sm:grid-cols-2 gap-4">
+                        <Input
+                          label="Name this branch"
+                          value={b.label}
+                          onChange={(e) => updateBranch(b.id, { label: e.target.value })}
+                          placeholder={i === 0 ? 'Main kitchen' : `${b.area} branch`}
+                        />
+                        <Input
+                          label="Street address"
+                          value={b.address}
+                          onChange={(e) => updateBranch(b.id, { address: e.target.value })}
+                          placeholder="Building, street, landmark"
+                        />
                       </div>
-                      <input
-                        id={`radius-${b.id}`}
-                        type="range"
-                        min="1"
-                        max={MAX_RADIUS_KM}
-                        step="1"
-                        value={b.radiusKm ?? DEFAULT_RADIUS_KM}
-                        onChange={(e) => updateBranch(b.id, { radiusKm: Number(e.target.value) })}
-                        className="w-full accent-terracotta"
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
 
-              <LocationPicker
-                id="add-branch"
-                label={branches.length ? 'Add another kitchen location' : 'Where do you cook?'}
-                placeholder={`Search an area in ${CITY.name}`}
-                onSelect={addBranch}
+                      <div className="mt-4">
+                        <div className="flex justify-between mb-2">
+                          <label htmlFor={`radius-${b.id}`} className="text-label-md text-on-surface-variant">
+                            Delivers up to
+                          </label>
+                          <span className="text-label-lg text-terracotta">
+                            {b.radiusKm ?? DEFAULT_RADIUS_KM} km
+                          </span>
+                        </div>
+                        <input
+                          id={`radius-${b.id}`}
+                          type="range"
+                          min="1"
+                          max={MAX_RADIUS_KM}
+                          step="1"
+                          value={b.radiusKm ?? DEFAULT_RADIUS_KM}
+                          onChange={(e) => updateBranch(b.id, { radiusKm: Number(e.target.value) })}
+                          className="w-full accent-terracotta"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <LocationPicker
+                  id="add-branch"
+                  label={branches.length ? 'Add another kitchen location' : 'Where do you cook?'}
+                  placeholder={`Search an area in ${CITY.name}`}
+                  onSelect={addBranch}
+                />
+              </>
+            )}
+          </Card>
+        </div>
+
+        <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-32">
+          {/* What is still standing between this kitchen and its first order. */}
+          <Card className="p-6">
+            <h3 className="text-headline-md text-on-surface mb-1">Before you go live</h3>
+            <p className="text-body-sm text-on-surface-variant mb-4">
+              {remaining === 0
+                ? 'Everything is in. We review new kitchens within 24-48 hours.'
+                : `${remaining} ${remaining === 1 ? 'thing' : 'things'} left to finish.`}
+            </p>
+
+            <div className="h-1.5 w-full rounded-full bg-surface-variant overflow-hidden mb-5">
+              <div
+                className="h-full bg-leaf-success transition-all duration-500"
+                style={{ width: `${Math.round((done / checklist.length) * 100)}%` }}
               />
-            </>
-          )}
-        </Card>
+            </div>
 
-        <div className="space-y-6">
+            <ul className="space-y-3">
+              {checklist.map((item) => (
+                <li key={item.label} className="flex items-start gap-3">
+                  {item.done ? (
+                    <CheckCircle2 size={18} className="text-leaf-success shrink-0 mt-0.5" />
+                  ) : (
+                    <Circle size={18} className="text-outline-variant shrink-0 mt-0.5" />
+                  )}
+                  <div>
+                    <p className={`text-label-lg ${item.done ? 'text-on-surface-variant line-through' : 'text-on-surface'}`}>
+                      {item.label}
+                    </p>
+                    {!item.done && (
+                      <p className="text-body-sm text-on-surface-variant">{item.hint}</p>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </Card>
+
           <Card className="p-6">
             <h3 className="text-headline-md text-on-surface mb-4">Verification Documents</h3>
             {!docs ? (
