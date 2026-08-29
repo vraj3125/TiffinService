@@ -5,6 +5,7 @@ import Button from '../components/ui/Button.jsx'
 import { ProviderCardSkeleton } from '../components/ui/Skeleton.jsx'
 import { fetchFeaturedProviders } from '../api/providers.js'
 import { AREAS } from '../mockData.js'
+import { securePath } from '../lib/secureParams.js'
 
 const steps = [
   { icon: Compass, title: '1. Search & Discover', desc: 'Enter your zip code to find highly-rated home chefs and artisanal kitchens operating in your local area.' },
@@ -175,7 +176,7 @@ export default function LandingPage() {
             <div className="flex-shrink-0 w-full md:w-auto">
               <Button
                 as="a"
-                href="/login?tab=signup&role=provider"
+                href={securePath('/login', { tab: 'signup', role: 'provider' })}
                 size="lg"
                 className="w-full md:w-auto !bg-white !text-terracotta hover:!bg-surface-container-low"
               >

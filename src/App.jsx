@@ -5,6 +5,18 @@ import ProtectedRoute from './components/layout/ProtectedRoute.jsx'
 import LandingPage from './pages/LandingPage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 
+import AboutPage from './pages/company/AboutPage.jsx'
+import CareersPage from './pages/company/CareersPage.jsx'
+import FoodSafetyPage from './pages/company/FoodSafetyPage.jsx'
+import GiftCardsPage from './pages/company/GiftCardsPage.jsx'
+import HowItWorksPage from './pages/company/HowItWorksPage.jsx'
+import PartnerPage from './pages/company/PartnerPage.jsx'
+import PrivacyPage from './pages/company/PrivacyPage.jsx'
+import RefundsPage from './pages/company/RefundsPage.jsx'
+import SupportPage from './pages/company/SupportPage.jsx'
+import SustainabilityPage from './pages/company/SustainabilityPage.jsx'
+import TermsPage from './pages/company/TermsPage.jsx'
+
 import DiscoverPage from './pages/customer/DiscoverPage.jsx'
 import ProviderDetailPage from './pages/customer/ProviderDetailPage.jsx'
 import CheckoutPage from './pages/customer/CheckoutPage.jsx'
@@ -26,6 +38,19 @@ export default function App() {
       <Route element={<AppLayout />}>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
+
+        {/* Public content pages -- every footer link resolves to one of these. */}
+        <Route path="/how-it-works" element={<HowItWorksPage />} />
+        <Route path="/gift-cards" element={<GiftCardsPage />} />
+        <Route path="/food-safety" element={<FoodSafetyPage />} />
+        <Route path="/partner" element={<PartnerPage />} />
+        <Route path="/sustainability" element={<SustainabilityPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/careers" element={<CareersPage />} />
+        <Route path="/support" element={<SupportPage />} />
+        <Route path="/terms" element={<TermsPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/refunds" element={<RefundsPage />} />
 
         <Route path="/discover" element={<DiscoverPage />} />
         <Route path="/providers/:id" element={<ProviderDetailPage />} />

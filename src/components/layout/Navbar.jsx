@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { UtensilsCrossed, Menu, X, User, LogOut } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext.jsx'
+import { securePath } from '../../lib/secureParams.js'
 
 const customerLinks = [
   { to: '/discover', label: 'Explore' },
@@ -75,7 +76,7 @@ export default function Navbar() {
                   Sign In
                 </Link>
                 <Link
-                  to="/login?tab=signup&role=provider"
+                  to={securePath('/login', { tab: 'signup', role: 'provider' })}
                   className="bg-terracotta text-on-primary text-label-lg px-6 py-3 rounded-full hover:bg-primary transition-colors shadow-sm hover:shadow-md hover:-translate-y-0.5 duration-200"
                 >
                   Join as Provider
@@ -124,7 +125,7 @@ export default function Navbar() {
                 Sign In
               </Link>
               <Link
-                to="/login?tab=signup"
+                to={securePath('/login', { tab: 'signup' })}
                 onClick={() => setOpen(false)}
                 className="flex-1 text-center bg-terracotta text-white text-label-lg px-4 py-2.5 rounded-full"
               >

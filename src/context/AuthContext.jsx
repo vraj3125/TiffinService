@@ -48,6 +48,30 @@ function readName(uid) {
   }
 }
 
+// Demo mode has no Firebase to remember an account, so a signup used to vanish
+// the moment it finished -- logging back in fell through to a stock name. Keep
+// the demo signup keyed by email so the name you typed survives the round trip.
+// Same caveat as the role above: localStorage, not a security boundary.
+const demoKey = (email) => `tc:demo:${String(email).trim().toLowerCase()}`
+
+function saveDemoAccount(email, { role, name }) {
+  if (!email) return
+  try {
+    localStorage.setItem(demoKey(email), JSON.stringify({ role, name }))
+  } catch {
+    /* private browsing */
+  }
+}
+
+function readDemoAccount(email) {
+  if (!email) return null
+  try {
+    return JSON.parse(localStorage.getItem(demoKey(email)) || 'null')
+  } catch {
+    return null
+  }
+}
+
 function toAppUser(fbUser, fallbackRole = 'customer') {
   const role = readRole(fbUser.uid) || fallbackRole
   const name =
@@ -82,16 +106,28 @@ export function AuthProvider({ children }) {
   }, [])
 
   // --- demo fallback: keeps the app clickable before keys are pasted --------
-  const demoLogin = ({ role, name, email }) => {
+  const demoLogin = ({ role, name, email, phone }) => {
+    // Prefer what the person actually typed. Falling back to a stock business
+    // name meant signing in as "narushi" greeted you as someone else entirely.
+    const saved = readDemoAccount(email)
+    const resolvedRole = role || saved?.role || 'customer'
+    const resolvedName =
+      name?.trim() ||
+      saved?.name ||
+      email?.split('@')[0] ||
+      phone ||
+      (resolvedRole === 'provider' ? 'Your Kitchen' : 'There')
+
     setUser({
       uid: 'demo',
-      role,
-      name: name || (role === 'customer' ? 'Vraj Prajapati' : 'Maa Ka Swaad Tiffins'),
+      role: resolvedRole,
+      name: resolvedName,
       email: email || '',
-      phone: '',
+      phone: phone || '',
       photoURL: '',
       emailVerified: true,
     })
+    return resolvedRole
   }
 
   // --- email + password ----------------------------------------------------
@@ -99,6 +135,9 @@ export function AuthProvider({ children }) {
   // the login screen, as requested.
   const signupWithEmail = async ({ name, email, password, role }) => {
     if (!isFirebaseConfigured) {
+      // No backend to create an account in -- remember it locally so the login
+      // that follows knows who this is.
+      saveDemoAccount(email, { role, name })
       return { verificationSent: false }
     }
     const cred = await createUserWithEmailAndPassword(auth, email, password)
@@ -119,8 +158,10 @@ export function AuthProvider({ children }) {
 
   const loginWithEmail = async ({ email, password, role }) => {
     if (!isFirebaseConfigured) {
-      demoLogin({ role, email })
-      return { role }
+      // Honour the role the account signed up with, not the tab that happens to
+      // be selected -- otherwise a provider lands on the customer side.
+      const resolved = demoLogin({ role: readDemoAccount(email)?.role || role, email })
+      return { role: resolved }
     }
     const cred = await signInWithEmailAndPassword(auth, email, password)
     const resolved = readRole(cred.user.uid) || role
@@ -178,15 +219,15 @@ export function AuthProvider({ children }) {
     }
   }
 
-  const verifyOtp = async (code, { role, name } = {}) => {
+  const verifyOtp = async (code, { role, name, phone } = {}) => {
     if (!isFirebaseConfigured) {
       if (code !== '123456') {
         const e = new Error('Demo mode: use OTP 123456')
         e.code = 'auth/invalid-verification-code'
         throw e
       }
-      demoLogin({ role, name: name || 'Mobile User' })
-      return { role }
+      const resolved = demoLogin({ role, name, phone })
+      return { role: resolved }
     }
     if (!confirmationRef.current) {
       const e = new Error('Request an OTP first.')

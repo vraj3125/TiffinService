@@ -12,24 +12,34 @@ import {
 } from 'lucide-react'
 import Button from '../components/ui/Button.jsx'
 import GoogleIcon from '../components/ui/GoogleIcon.jsx'
+import IndiaFlag from '../components/ui/IndiaFlag.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useToast } from '../context/ToastContext.jsx'
 import { authErrorMessage } from '../lib/firebase.js'
+import { PARAM_KEY, decodeParams } from '../lib/secureParams.js'
 
 const inputClass =
   'w-full min-h-[56px] rounded-DEFAULT border border-outline-variant bg-surface px-4 py-3 text-body-md text-on-surface placeholder:text-outline focus:border-terracotta focus:ring-1 focus:ring-terracotta outline-none transition-all'
 
 const RESEND_SECONDS = 30
 
+// TiffinConnect operates in India only, so the dial code is fixed rather than
+// being a free-text field -- that also removes the "+91 typed twice" mistake.
+const DIAL_CODE = '+91'
+const CC_DIGITS = '91'
+
 export default function LoginPage() {
   const [params] = useSearchParams()
-  const [mode, setMode] = useState(params.get('tab') === 'signup' ? 'signup' : 'login')
-  const [role, setRole] = useState(params.get('role') === 'provider' ? 'provider' : 'customer')
+  // Intent arrives as one opaque token (?d=...) rather than readable tab/role
+  // pairs -- see lib/secureParams.js. A missing or tampered token decodes to {},
+  // which lands on the plain customer login.
+  const intent = decodeParams(params.get(PARAM_KEY))
+  const [mode, setMode] = useState(intent.tab === 'signup' ? 'signup' : 'login')
+  const [role, setRole] = useState(intent.role === 'provider' ? 'provider' : 'customer')
   const [method, setMethod] = useState('email') // 'email' | 'phone'
   const [otpSent, setOtpSent] = useState(false)
 
   const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' })
-  const [countryCode, setCountryCode] = useState('+91')
   const [phone, setPhone] = useState('')
   const [otp, setOtp] = useState('')
 
@@ -149,27 +159,26 @@ export default function LoginPage() {
   }
 
   // --- phone / OTP ---------------------------------------------------------
-  // People naturally paste "+91 98765 43210" into the number box even though the
-  // country code has its own field. Strip anything that would double up the
-  // prefix rather than sending Firebase a malformed number.
-  const ccDigits = countryCode.replace(/\D/g, '')
-
+  // People still paste "+91 98765 43210" out of habit, so absorb the prefix
+  // instead of sending Firebase a malformed number.
   const localDigits = (raw) => {
     let d = raw.replace(/\D/g, '')
     d = d.replace(/^0+/, '') // trunk prefix, e.g. 09876543210
-    // Only strip the country code when what remains is still a full number,
-    // so a genuine 10-digit number that happens to start with 91 survives.
-    if (ccDigits && d.length > 10 && d.startsWith(ccDigits)) d = d.slice(ccDigits.length)
-    return d.slice(0, 12)
+    // Only strip the country code when a full number remains, so a genuine
+    // 10-digit number that happens to start with 91 survives.
+    if (d.length > 10 && d.startsWith(CC_DIGITS)) d = d.slice(CC_DIGITS.length)
+    return d.slice(0, 10)
   }
 
   const phoneDigits = localDigits(phone)
-  const fullPhone = `${countryCode}${phoneDigits}`
+  const fullPhone = `${DIAL_CODE}${phoneDigits}`
+  // Indian mobile numbers are 10 digits starting 6-9.
+  const phoneValid = /^[6-9]\d{9}$/.test(phoneDigits)
 
   const onSendOtp = async (e) => {
     e?.preventDefault()
-    if (phoneDigits.length < 8) {
-      showToast('Enter your full mobile number without the country code', 'info')
+    if (!phoneValid) {
+      showToast('Enter a 10-digit Indian mobile number', 'info')
       return
     }
     setBusy('otp')
@@ -197,7 +206,7 @@ export default function LoginPage() {
     }
     setBusy('verify')
     try {
-      const { role: resolved } = await verifyOtp(otp, { role, name: form.name })
+      const { role: resolved } = await verifyOtp(otp, { role, name: form.name, phone: fullPhone })
       showToast(`Mobile verified. You are logged in as a ${resolved}.`)
       navigate(landFor(resolved))
     } catch (err) {
@@ -224,83 +233,20 @@ export default function LoginPage() {
         <div className="bg-surface-container-lowest rounded-xl ambient-shadow-lg border border-surface-variant p-8 md:p-12 w-full">
           <div className="text-center mb-8">
             <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-surface-container flex items-center justify-center">
-              {method === 'phone' && otpSent ? (
-                <ShieldCheck size={32} className="text-terracotta" />
-              ) : (
-                <Utensils size={32} className="text-terracotta" />
-              )}
+              <Utensils size={32} className="text-terracotta" />
             </div>
             <h1 className="text-headline-lg text-on-surface mb-2">
-              {method === 'phone' && otpSent
-                ? 'Verify your mobile'
-                : mode === 'login'
-                  ? 'Welcome back'
-                  : 'Create your account'}
+              {mode === 'login' ? 'Welcome back' : 'Create your account'}
             </h1>
             <p className="text-body-sm text-on-surface-variant">
-              {method === 'phone' && otpSent ? (
-                <>
-                  Enter the 6-digit code sent to{' '}
-                  <span className="text-on-surface font-semibold">{fullPhone}</span>
-                </>
-              ) : !isFirebaseConfigured ? (
-                'Demo mode — add Firebase keys to enable real accounts.'
-              ) : mode === 'login' ? (
-                'Log in to order or manage your kitchen.'
-              ) : (
-                'Sign up and we will take you to the login screen.'
-              )}
+              {!isFirebaseConfigured
+                ? 'Demo mode — add Firebase keys to enable real accounts.'
+                : mode === 'login'
+                  ? 'Log in to order or manage your kitchen.'
+                  : 'Sign up and we will take you to the login screen.'}
             </p>
           </div>
 
-          {method === 'phone' && otpSent ? (
-            /* OTP verification takes over the whole card */
-            <form onSubmit={onVerifyOtp} className="space-y-5">
-              <div>
-                <label className="block text-label-md text-on-surface-variant mb-2 ml-1">
-                  One-time password
-                </label>
-                <input
-                  ref={otpInputRef}
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                  inputMode="numeric"
-                  autoComplete="one-time-code"
-                  placeholder="000000"
-                  className={`${inputClass} text-center text-headline-lg tracking-[0.5em] font-semibold`}
-                />
-              </div>
-
-              <Button type="submit" className="w-full" size="lg" disabled={busy === 'verify'}>
-                {busy === 'verify' ? (
-                  <>Verifying {busyIcon}</>
-                ) : (
-                  <>
-                    Verify and continue <ArrowRight size={20} />
-                  </>
-                )}
-              </Button>
-
-              <div className="flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={resetPhoneFlow}
-                  className="text-on-surface-variant hover:text-terracotta text-label-md inline-flex items-center gap-1"
-                >
-                  <ArrowLeft size={16} /> Change number
-                </button>
-                <button
-                  type="button"
-                  onClick={onSendOtp}
-                  disabled={secondsLeft > 0 || busy === 'otp'}
-                  className="text-terracotta hover:underline text-label-md disabled:text-on-surface-variant disabled:no-underline disabled:cursor-not-allowed"
-                >
-                  {secondsLeft > 0 ? `Resend in ${secondsLeft}s` : 'Resend OTP'}
-                </button>
-              </div>
-            </form>
-          ) : (
-            <>
               <div className="flex bg-surface-variant rounded-full p-1 mb-6">
                 <button
                   onClick={() => setMode('login')}
@@ -348,63 +294,137 @@ export default function LoginPage() {
               </div>
 
               {method === 'phone' ? (
-                <form onSubmit={onSendOtp} className="space-y-5">
-                  <div>
-                    <label className="block text-label-md text-on-surface-variant mb-2 ml-1">
-                      Mobile number
-                    </label>
-                    <div className="flex gap-2">
-                      <input
-                        value={countryCode}
-                        onChange={(e) => setCountryCode(e.target.value)}
-                        className={`${inputClass} w-20 text-center px-2`}
-                        aria-label="Country code"
-                      />
-                      <div className="relative flex-1">
-                        <Smartphone
-                          size={18}
-                          className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant"
-                        />
-                        <input
-                          value={phone}
-                          onChange={(e) => setPhone(localDigits(e.target.value))}
-                          inputMode="numeric"
-                          autoComplete="tel-national"
-                          placeholder="9876543210"
-                          className={`${inputClass} pl-12`}
-                        />
+                <div className="space-y-5">
+                  <form onSubmit={onSendOtp} className="space-y-5">
+                    <div>
+                      <label className="block text-label-md text-on-surface-variant mb-2 ml-1">
+                        Mobile number
+                      </label>
+                      <div className="flex gap-2">
+                        <div className="flex items-center gap-2 shrink-0 min-h-[56px] px-3 rounded-DEFAULT border border-outline-variant bg-surface-container-low">
+                          <IndiaFlag />
+                          <span className="text-body-md text-on-surface font-semibold">
+                            {DIAL_CODE}
+                          </span>
+                        </div>
+                        <div className="relative flex-1">
+                          <Smartphone
+                            size={18}
+                            className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant"
+                          />
+                          <input
+                            value={phone}
+                            onChange={(e) => setPhone(localDigits(e.target.value))}
+                            disabled={otpSent}
+                            inputMode="numeric"
+                            autoComplete="tel-national"
+                            placeholder="9876543210"
+                            className={`${inputClass} pl-12 disabled:opacity-60`}
+                          />
+                        </div>
                       </div>
-                    </div>
-                    <p className="text-body-sm text-on-surface-variant mt-2 ml-1">
-                      {phoneDigits.length >= 8 ? (
-                        <>
-                          Sending to{' '}
-                          <span className="text-on-surface font-semibold">{fullPhone}</span>
-                        </>
-                      ) : (
-                        'Enter your number without the country code — we will text you a 6-digit code.'
+                      {!otpSent && (
+                        <p className="text-body-sm text-on-surface-variant mt-2 ml-1">
+                          {phoneValid ? (
+                            <>
+                              We will text a 6-digit code to{' '}
+                              <span className="text-on-surface font-semibold">{fullPhone}</span>
+                            </>
+                          ) : (
+                            'Enter your 10-digit number — no country code needed.'
+                          )}
+                        </p>
                       )}
-                    </p>
-                  </div>
+                    </div>
 
-                  <Button type="submit" className="w-full" size="lg" disabled={busy === 'otp'}>
-                    {busy === 'otp' ? (
-                      <>Sending OTP {busyIcon}</>
-                    ) : (
-                      <>
-                        Send OTP <ArrowRight size={20} />
-                      </>
+                    {!otpSent && (
+                      <Button
+                        type="submit"
+                        className="w-full"
+                        size="lg"
+                        disabled={busy === 'otp' || !phoneValid}
+                      >
+                        {busy === 'otp' ? (
+                          <>Sending OTP {busyIcon}</>
+                        ) : (
+                          <>
+                            Send OTP <ArrowRight size={20} />
+                          </>
+                        )}
+                      </Button>
                     )}
-                  </Button>
+                  </form>
+
+                  {/* OTP appears below the number rather than replacing the card,
+                      so the number being verified stays on screen. */}
+                  {otpSent && (
+                    <form
+                      onSubmit={onVerifyOtp}
+                      className="space-y-4 rounded-DEFAULT border border-outline-variant bg-surface-container-low p-5"
+                    >
+                      <div className="flex items-center gap-2">
+                        <ShieldCheck size={18} className="text-leaf-success shrink-0" />
+                        <p className="text-label-md text-on-surface">
+                          Code sent to <span className="font-semibold">{fullPhone}</span>
+                        </p>
+                      </div>
+
+                      <input
+                        ref={otpInputRef}
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                        inputMode="numeric"
+                        autoComplete="one-time-code"
+                        placeholder="000000"
+                        className={`${inputClass} text-center text-headline-lg tracking-[0.5em] font-semibold`}
+                      />
+
+                      <Button
+                        type="submit"
+                        className="w-full"
+                        size="lg"
+                        disabled={busy === 'verify' || otp.length < 6}
+                      >
+                        {busy === 'verify' ? (
+                          <>Verifying {busyIcon}</>
+                        ) : (
+                          <>
+                            Verify and continue <ArrowRight size={20} />
+                          </>
+                        )}
+                      </Button>
+
+                      <div className="flex items-center justify-between">
+                        <button
+                          type="button"
+                          onClick={resetPhoneFlow}
+                          className="text-on-surface-variant hover:text-terracotta text-label-md inline-flex items-center gap-1"
+                        >
+                          <ArrowLeft size={16} /> Change number
+                        </button>
+                        <button
+                          type="button"
+                          onClick={onSendOtp}
+                          disabled={secondsLeft > 0 || busy === 'otp'}
+                          className="text-terracotta hover:underline text-label-md disabled:text-on-surface-variant disabled:no-underline disabled:cursor-not-allowed"
+                        >
+                          {secondsLeft > 0 ? `Resend in ${secondsLeft}s` : 'Resend OTP'}
+                        </button>
+                      </div>
+                    </form>
+                  )}
 
                   <button
                     type="button"
-                    onClick={() => setMethod('email')}
+                    onClick={() => {
+                      resetPhoneFlow()
+                      setMethod('email')
+                    }}
                     className="w-full text-on-surface-variant hover:text-terracotta text-label-md inline-flex items-center justify-center gap-1"
                   >
                     <ArrowLeft size={16} /> Use email instead
                   </button>
-                </form>
+                </div>
               ) : (
                 <form onSubmit={onSubmitEmail} className="space-y-5">
                   {mode === 'signup' && (
@@ -578,8 +598,6 @@ export default function LoginPage() {
                   </>
                 )}
               </p>
-            </>
-          )}
 
           <p className="mt-6 text-center text-body-sm text-on-surface-variant max-w-[85%] mx-auto leading-relaxed">
             By continuing, you agree to TiffinConnect&apos;s{' '}
