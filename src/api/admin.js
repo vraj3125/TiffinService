@@ -9,6 +9,10 @@
 // decision is a server-side write. Keeping the shape close to that now means
 // the swap is mechanical.
 
+export { STATUS, statusLabel, ACTIONS, ACTION_META } from '../shared/verification.js'
+import { STATUS, statusLabel, ACTIONS, ACTION_META } from '../shared/verification.js'
+import { apiFetch, useApi } from '../lib/apiClient.js'
+
 const KEY = 'tc:admin:applications'
 
 // The queue stores file METADATA, never the bytes.
@@ -89,47 +93,16 @@ const delay = (ms = 250) => new Promise((res) => setTimeout(res, ms))
 // `rejected` has always meant "changes requested" -- the kitchen fixes it and
 // resubmits. Two states were missing either side of that: an application that is
 // refused outright, and a kitchen that was approved and later has to come down.
-export const STATUS = {
-  draft: 'draft',
-  submitted: 'submitted',
-  approved: 'approved',
-  rejected: 'rejected',
-  declined: 'declined',
-  suspended: 'suspended',
-}
-
-export const statusLabel = {
-  draft: 'Not submitted',
-  submitted: 'Awaiting review',
-  approved: 'Approved',
-  rejected: 'Changes requested',
-  declined: 'Declined',
-  suspended: 'Suspended',
-}
 
 // What an admin may do next, given where the application stands. Every action
 // is reversible: reopening returns an application to the queue rather than
 // destroying the record of why a decision was made.
-export const ACTIONS = {
-  [STATUS.submitted]: ['approve', 'changes', 'decline'],
-  [STATUS.rejected]: ['approve', 'editNote', 'decline', 'reopen'],
-  [STATUS.approved]: ['suspend'],
-  [STATUS.declined]: ['reopen'],
-  [STATUS.suspended]: ['reinstate', 'reopen'],
-  [STATUS.draft]: [],
-}
-
-export const ACTION_META = {
-  approve: { label: 'Approve kitchen', to: STATUS.approved, tone: 'primary', needsNote: false },
-  changes: { label: 'Request changes', to: STATUS.rejected, tone: 'warning', needsNote: true },
-  decline: { label: 'Decline application', to: STATUS.declined, tone: 'danger', needsNote: true, confirm: true },
-  suspend: { label: 'Suspend kitchen', to: STATUS.suspended, tone: 'danger', needsNote: true, confirm: true },
-  reinstate: { label: 'Reinstate kitchen', to: STATUS.approved, tone: 'primary', needsNote: false, confirm: true },
-  reopen: { label: 'Reopen for review', to: STATUS.submitted, tone: 'secondary', needsNote: false },
-  editNote: { label: 'Edit note', to: STATUS.rejected, tone: 'secondary', needsNote: true },
-}
 
 export async function submitApplication(uid, payload) {
+  if (useApi) {
+    const { application } = await apiFetch('/applications', { method: 'POST', body: payload })
+    return application
+  }
   await delay()
   const list = readAll()
   const now = new Date().toISOString()
@@ -165,18 +138,41 @@ export async function submitApplication(uid, payload) {
 }
 
 export async function listApplications() {
+  if (useApi) {
+    const { applications } = await apiFetch('/applications')
+    return applications
+  }
   await delay()
   // The list does not need file bytes -- only the review screen does.
   return readAll().sort((a, b) => String(b.submittedAt).localeCompare(String(a.submittedAt)))
 }
 
 export async function getApplication(uid) {
+  if (useApi) {
+    try {
+      const { application } = await apiFetch(`/applications/${uid}`)
+      return application
+    } catch (err) {
+      // No application yet is a normal state, not a failure.
+      if (err.status === 404) return null
+      throw err
+    }
+  }
   await delay(120)
   return hydrate(readAll().find((a) => a.uid === uid)) || null
 }
 
 /** The full record, with document and photo bytes, for the review screen. */
 export async function getApplicationForReview(uid) {
+  if (useApi) {
+    try {
+      const { application } = await apiFetch(`/applications/${uid}`)
+      return application
+    } catch (err) {
+      if (err.status === 404) return null
+      throw err
+    }
+  }
   await delay(120)
   return hydrate(readAll().find((a) => a.uid === uid)) || null
 }
@@ -187,6 +183,19 @@ export async function getApplicationForReview(uid) {
  * @param {string} action one of ACTION_META
  */
 export async function decideApplication(uid, action, reviewNote = '', by = 'Admin') {
+  if (useApi) {
+    const { application, docStatus } = await apiFetch(`/applications/${uid}`, {
+      method: 'PATCH',
+      body: { action, reviewNote },
+    })
+    // The kitchen's own document badges still live in their browser until step
+    // 4 moves them too, so mirror the outcome when it is this browser.
+    const ownDocs = accountRead(uid, 'documents', [])
+    if (ownDocs.length) {
+      accountWrite(uid, 'documents', ownDocs.map((d) => (d.file ? { ...d, status: docStatus } : d)))
+    }
+    return application
+  }
   await delay()
   const meta = ACTION_META[action]
   if (!meta) throw new Error(`Unknown action: ${action}`)

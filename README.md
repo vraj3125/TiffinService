@@ -13,6 +13,7 @@ Copy `.env.example` to `.env.local` and fill in your Firebase keys first. Locati
 search works with no API key at all.
 
 - **[FEATURES.md](FEATURES.md)** — what the platform does, in full
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** — deploying with the MongoDB backend
 - **[TESTING.md](TESTING.md)** — test accounts and scripted walkthroughs
 - **[AUTH_SETUP.md](AUTH_SETUP.md)** — Firebase authentication setup
 
