@@ -229,3 +229,174 @@ Worth knowing so you don't chase these as bugs:
 - **Email delivery to the `@test.in` addresses.** They are not real mailboxes, so
   verification and reset emails go nowhere. Use an address you control if you
   want to test those.
+
+---
+
+# 8. Copy-paste example data
+
+Fill-in values for every field. Pincodes below are the real ones the app uses,
+so the location picker will match them.
+
+## 8.1 Kitchen profiles
+
+Business Profile → **Business Details**. FSSAI numbers are 14 digits and
+invented — fine for testing, never for a live listing.
+
+| # | Business name | Owner name | FSSAI licence | Contact phone |
+|---|---|---|---|---|
+| K1 | Narushi Tiffin | Nisha Rathod | `10024031000401` | `+91 98250 41001` |
+| K2 | Ba Ni Thali | Hansa Patel | `10024031000402` | `+91 98250 41002` |
+| K3 | Shreeji Rasoi | Jayesh Shah | `10024031000403` | `+91 98250 41003` |
+| K4 | Punjab Da Tadka | Gurmeet Singh | `10024031000404` | `+91 98250 41004` |
+| K5 | Amba Home Kitchen | Bhavna Solanki | `10024031000405` | `+91 98250 41005` |
+| K6 | Dakshin Ghar | Lakshmi Iyer | `10024031000406` | `+91 98250 41006` |
+| K7 | Manjalpur Meals | Ramesh Chauhan | `10024031000407` | `+91 98250 41007` |
+| K8 | Padra Tiffin Seva | Dinesh Parmar | `10024031000408` | `+91 98250 41008` |
+
+**Kitchen addresses**
+
+| # | Address |
+|---|---|
+| K1 | 12, Sunrise Residency, Gotri Main Road, Vadodara 390021 |
+| K2 | 4, Jetalpur Road, Near Sardar Estate, Alkapuri, Vadodara 390007 |
+| K3 | 21, Kothi Char Rasta, Sayajigunj, Vadodara 390005 |
+| K4 | 7, Fatehgunj Main Road, Opp. Circle, Vadodara 390002 |
+| K5 | 33, VIP Road, Karelibaug, Vadodara 390018 |
+| K6 | 9, Rajpath Club Road, Subhanpura, Vadodara 390023 |
+| K7 | 15, Manjalpur Naka, Near Water Tank, Vadodara 390011 |
+| K8 | 2, Station Road, Padra, Vadodara 391440 |
+
+## 8.2 Kitchen locations (branches)
+
+**Kitchen Locations** card. K2 and K4 get a second branch to test multi-branch
+matching — a customer in the second area should find them.
+
+| # | Branch 1 (name · area · radius) | Branch 2 |
+|---|---|---|
+| K1 | Main kitchen · Gotri · **6 km** | — |
+| K2 | Main kitchen · Alkapuri · **5 km** | Karelibaug branch · Karelibaug · **4 km** |
+| K3 | Main kitchen · Sayajigunj · **7 km** | — |
+| K4 | Main kitchen · Fatehgunj · **5 km** | Gorwa branch · Gorwa · **5 km** |
+| K5 | Main kitchen · Karelibaug · **4 km** | — |
+| K6 | Main kitchen · Subhanpura · **8 km** | — |
+| K7 | Main kitchen · Manjalpur · **5 km** | — |
+| K8 | Main kitchen · Padra · **3 km** | — |
+
+K8's 3 km radius from Padra deliberately reaches nothing in the city — useful for
+checking that the radius filter actually excludes.
+
+## 8.3 Weekly menu
+
+Menu screen, per day, lunch and dinner. Two days is enough to test; fill more if
+you want the week to look complete.
+
+**K1 / K2 / K5 — Gujarati**
+
+| Day | Meal | Items | Veg | kcal |
+|---|---|---|---|---|
+| Monday | Lunch | Rotli, Dal, Bhaat, Bataka nu Shaak, Chaas | Yes | 620 |
+| Monday | Dinner | Thepla, Kadhi, Khichdi, Athanu | Yes | 560 |
+| Tuesday | Lunch | Rotli, Sev Tameta nu Shaak, Dal, Bhaat | Yes | 590 |
+| Tuesday | Dinner | Bhakri, Ringan no Olo, Chaas | Yes | 540 |
+
+**K3 — Jain** (no onion, no garlic, no root vegetables)
+
+| Day | Meal | Items | Veg | kcal |
+|---|---|---|---|---|
+| Monday | Lunch | Rotli, Toor Dal, Bhaat, Dudhi nu Shaak | Yes | 570 |
+| Monday | Dinner | Khichdi, Kadhi, Papad | Yes | 500 |
+
+**K4 — Punjabi**
+
+| Day | Meal | Items | Veg | kcal |
+|---|---|---|---|---|
+| Monday | Lunch | Rajma, Jeera Rice, Roti (4), Salad | Yes | 710 |
+| Monday | Dinner | Dal Makhani, Roti (3), Jeera Rice | Yes | 680 |
+
+**K6 — South Indian**
+
+| Day | Meal | Items | Veg | kcal |
+|---|---|---|---|---|
+| Monday | Lunch | Sambar, Rice, Beans Poriyal, Rasam, Curd | Yes | 600 |
+| Monday | Dinner | Lemon Rice, Coconut Chutney, Papad | Yes | 520 |
+
+## 8.4 Subscription plans
+
+Plans & Areas → **Add a plan**. Duration must start with a number — the app reads
+the plan length from it.
+
+| Plan type | Duration | Price (₹) | Meals/day | Description |
+|---|---|---|---|---|
+| One-Time | `1 day` | 120 | 1 | Try before you subscribe |
+| Weekly | `7 days` | 700 | 1 | Seven lunches or dinners, cancel anytime |
+| Monthly | `26 days` | 2400 | 1 | Best value, skip up to 4 days |
+| Monthly (2 meals) | `26 days` | 4300 | 2 | Lunch and dinner every day |
+
+Vary prices per kitchen so the revenue chart is not flat — e.g. K4 (Punjabi) at
+₹850 weekly, K8 (Padra) at ₹600.
+
+## 8.5 Customer profiles
+
+Profile screen after signup.
+
+| # | Full name | Phone | City | Saved address |
+|---|---|---|---|---|
+| C1 | Vraj Prajapati | `+91 99040 51001` | Vadodara | Home · 204, Shivalik Flats, Jetalpur Road · Alkapuri · `390007` |
+| C2 | Ananya Desai | `+91 99040 51002` | Vadodara | Home · 11, Gotri Sevasi Road · Gotri · `390021` |
+| C3 | Rohan Patel | `+91 99040 51003` | Vadodara | Work · 8, VIP Road, Near Genda Circle · Karelibaug · `390018` |
+| C4 | Meera Shah | `+91 99040 51004` | Vadodara | Home · 30, Akota Garden Road · Akota · `390020` |
+| C5 | Kunal Joshi | `+91 99040 51005` | Vadodara | Home · 5, Manjalpur Naka · Manjalpur · `390011` |
+| C6 | Priya Mehta | `+91 99040 51006` | Vadodara | Home · 17, Kothi Char Rasta · Sayajigunj · `390005` |
+| C7 | Nikita Jain | `+91 99040 51007` | Vadodara | Home · 3, Fatehgunj Main Road · Fatehgunj · `390002` |
+| C8 | Sanjay Rao | — | — | *(leave empty)* |
+
+## 8.6 Orders to place
+
+This spread gives every admin screen something real: three payment methods, both
+meals, four plan types, and one paused and one skipped subscription.
+
+| Customer | Kitchen | Plan | Meal | Payment | Then do |
+|---|---|---|---|---|---|
+| C1 | K3 Shreeji Rasoi | Monthly | Lunch | UPI | — |
+| C1 | K2 Ba Ni Thali | Weekly | Dinner | UPI | **Pause** it |
+| C2 | K1 Narushi Tiffin | Monthly | Lunch | UPI | **Skip** tomorrow |
+| C3 | K5 Amba Home Kitchen | Weekly | Lunch | Card | — |
+| C4 | K2 Ba Ni Thali | Monthly (2 meals) | Lunch | Cash | — |
+| C5 | K7 Manjalpur Meals | One-Time | Dinner | Cash | — |
+| C6 | K3 Shreeji Rasoi | Weekly | Lunch | Card | — |
+| C6 | K6 Dakshin Ghar | One-Time | Dinner | UPI | — |
+| C7 | K4 Punjab Da Tadka | Weekly | Lunch | UPI | — |
+| C8 | *none* | — | — | — | leave empty |
+
+The two Cash orders stay **Awaiting delivery** on the Payments page until the
+order is marked delivered — that is the pending-payment count on the dashboard.
+
+## 8.7 Admin notes
+
+Wording to paste when the action needs a note.
+
+| Action | Kitchen | Note |
+|---|---|---|
+| Request changes | K5 | `The FSSAI licence photo is too blurry to read the number. Please re-upload page 1 of the certificate in good light.` |
+| Decline | K6 | `The address given is a commercial unit, not a home kitchen. We only list home kitchens on TiffinConnect.` |
+| Suspend | K7 | `Two customers reported stomach upset after the 14th. Suspending while we investigate; we will be in touch within 48 hours.` |
+| Edit note | K5 | `The FSSAI licence photo is unreadable. Please re-upload a clear photo of page 1 showing the 14-digit number.` |
+| Reinstate | K7 | *(no note needed — confirm only)* |
+| Reopen | K6 | *(no note needed)* |
+
+## 8.8 Documents to upload
+
+Any PDF or image works. To tell them apart in the review screen, rename three
+files first:
+
+```
+fssai-licence.pdf      → FSSAI License
+kitchen-photos.jpg     → Kitchen Photos
+owner-aadhaar.pdf      → Owner ID Proof
+```
+
+For **K5**, upload a deliberately blurry or wrong image as the licence so the
+"request changes" scenario has a genuine reason behind it.
+
+Kitchen photos: any two or three food or kitchen images. They are downscaled to
+900 px automatically, so file size does not matter.
