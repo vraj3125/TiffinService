@@ -1,4 +1,8 @@
-import { PageHeader, Panel } from '../../components/admin/AdminUI.jsx'
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { PageHeader, Panel, StatusPill } from '../../components/admin/AdminUI.jsx'
+import { collectAccounts } from '../../api/adminStats.js'
+import { listApplications, statusLabel } from '../../api/admin.js'
 import { ADMIN_EMAILS } from '../../config/admin.js'
 import { CITY } from '../../config/locations.js'
 import { COMPANY } from '../../config/company.js'
@@ -17,6 +21,20 @@ const Row = ({ label, value, note }) => (
 // Read-only: every value here comes from an environment variable or a config
 // file, so changing one means changing the deployment, not clicking a toggle.
 export default function AdminSettingsPage() {
+  // "I submitted but the admin cannot see it" is hard to debug blind, so show
+  // what this browser actually holds.
+  const [accounts, setAccounts] = useState([])
+  const [apps, setApps] = useState([])
+
+  useEffect(() => {
+    setAccounts(collectAccounts())
+    listApplications().then(setApps)
+  }, [])
+
+  const providers = accounts.filter((a) => a.role === 'provider')
+  const submittedUids = new Set(apps.map((a) => a.uid))
+  const notSubmitted = providers.filter((p) => !submittedUids.has(p.uid))
+
   return (
     <>
       <PageHeader
@@ -46,6 +64,65 @@ export default function AdminSettingsPage() {
             note="No backend connected. Data does not sync between devices." />
         </Panel>
       </div>
+
+      <Panel className="p-6 mt-6">
+        <h2 className="text-headline-md text-on-surface mb-1">What this browser holds</h2>
+        <p className="text-body-sm text-on-surface-variant mb-5">
+          The queue only sees accounts created in this browser. If a kitchen is missing, check here
+          first.
+        </p>
+
+        <div className="grid gap-4 sm:grid-cols-3 mb-6">
+          <div className="rounded-DEFAULT border border-outline-variant p-4">
+            <p className="font-display text-headline-lg text-on-surface">{accounts.length}</p>
+            <p className="text-body-sm text-on-surface-variant">Accounts in this browser</p>
+          </div>
+          <div className="rounded-DEFAULT border border-outline-variant p-4">
+            <p className="font-display text-headline-lg text-on-surface">{providers.length}</p>
+            <p className="text-body-sm text-on-surface-variant">Kitchen accounts</p>
+          </div>
+          <div className="rounded-DEFAULT border border-outline-variant p-4">
+            <p className="font-display text-headline-lg text-on-surface">{apps.length}</p>
+            <p className="text-body-sm text-on-surface-variant">Applications in the queue</p>
+          </div>
+        </div>
+
+        {notSubmitted.length > 0 && (
+          <div className="rounded-DEFAULT border border-mustard/40 bg-mustard/10 p-4 mb-5">
+            <p className="text-label-lg text-on-surface mb-1">
+              {notSubmitted.length} kitchen{notSubmitted.length > 1 ? 's have' : ' has'} an account
+              but has not submitted
+            </p>
+            <p className="text-body-sm text-on-surface-variant mb-2">
+              Their profile is incomplete, or they never pressed “Submit for verification” — the
+              button stays disabled until the checklist reaches 5 of 5.
+            </p>
+            <ul className="text-body-sm text-on-surface-variant">
+              {notSubmitted.map((p) => (
+                <li key={p.uid}>· {p.kitchenProfile?.name || p.name}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {apps.length > 0 && (
+          <ul className="space-y-2 mb-6">
+            {apps.map((a) => (
+              <li key={a.uid} className="flex items-center justify-between gap-3 rounded-DEFAULT border border-outline-variant p-3">
+                <span className="text-body-sm text-on-surface">{a.kitchenName}</span>
+                <span className="flex items-center gap-3">
+                  <StatusPill tone={a.status === 'approved' ? 'success' : 'pending'}>
+                    {statusLabel[a.status]}
+                  </StatusPill>
+                  <Link to="/admin/kitchens" className="text-label-md text-terracotta hover:underline">
+                    Open
+                  </Link>
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Panel>
 
       <Panel className="p-6 mt-6">
         <h2 className="text-headline-md text-on-surface mb-2">Before this handles real applications</h2>

@@ -51,6 +51,9 @@ export default function VerificationPage() {
   const [saved, setSaved] = useState(null)
   const [application, setApplication] = useState(null)
   const [submitting, setSubmitting] = useState(false)
+  // A failed submit used to be a toast that vanished in three seconds, which is
+  // how an application could silently never reach the admin.
+  const [submitError, setSubmitError] = useState(null)
   const { showToast } = useToast()
 
   // This kitchen's own paperwork -- nothing is pre-filled or pre-verified.
@@ -234,6 +237,7 @@ export default function VerificationPage() {
       return
     }
     setSubmitting(true)
+    setSubmitError(null)
     try {
       const entry = await submitApplication(user.uid, {
         kitchenName: saved.name,
@@ -248,6 +252,7 @@ export default function VerificationPage() {
       setApplication(entry)
       showToast('Sent for verification. We review new kitchens within 24-48 hours.')
     } catch (err) {
+      setSubmitError(err.message)
       showToast(err.message, 'error')
     } finally {
       setSubmitting(false)
@@ -459,6 +464,13 @@ export default function VerificationPage() {
               <div className="rounded-DEFAULT border border-error/40 bg-error-container/40 p-4 mb-5">
                 <p className="text-label-md text-on-error-container mb-1">What needs changing</p>
                 <p className="text-body-sm text-on-surface-variant">{application.reviewNote}</p>
+              </div>
+            )}
+
+            {submitError && (
+              <div className="rounded-DEFAULT border border-error/40 bg-error-container/40 p-4 mb-4">
+                <p className="text-label-md text-on-error-container mb-1">Not sent</p>
+                <p className="text-body-sm text-on-surface-variant">{submitError}</p>
               </div>
             )}
 

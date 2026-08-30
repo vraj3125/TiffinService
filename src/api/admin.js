@@ -11,6 +11,62 @@
 
 const KEY = 'tc:admin:applications'
 
+// The queue stores file METADATA, never the bytes.
+//
+// Documents and photos are data URLs -- a PDF can be 1.5 MB and a submission
+// carries three of them plus photos. Copying all of that into the shared queue
+// duplicated several megabytes on top of the provider's own copy and blew the
+// ~5 MB localStorage budget, so the write threw and the application never
+// reached the admin at all.
+//
+// Instead the queue keeps the description of each file and the bytes are read
+// back from the provider's own namespace when a reviewer opens the application.
+// One copy, and it mirrors what a real backend does: the queue holds a
+// reference, object storage holds the file.
+const stripFiles = (documents = []) =>
+  documents.map((d) => ({
+    ...d,
+    file: d.file ? { name: d.file.name, type: d.file.type, size: d.file.size } : null,
+  }))
+
+const stripPhotos = (photos = []) => photos.map((p) => ({ id: p.id, name: p.name }))
+
+const accountRead = (uid, name, fallback) => {
+  try {
+    const raw = localStorage.getItem(`tc:data:${uid}:${name}`)
+    return raw === null ? fallback : JSON.parse(raw)
+  } catch {
+    return fallback
+  }
+}
+
+const accountWrite = (uid, name, value) => {
+  try {
+    localStorage.setItem(`tc:data:${uid}:${name}`, JSON.stringify(value))
+  } catch {
+    /* the decision itself still stands */
+  }
+}
+
+/** Put the file bytes back, reading them from the kitchen's own account. */
+const hydrate = (entry) => {
+  if (!entry) return entry
+  const ownDocs = accountRead(entry.uid, 'documents', [])
+  const ownPhotos = accountRead(entry.uid, 'kitchenPhotos', [])
+
+  return {
+    ...entry,
+    documents: (entry.documents || []).map((d) => {
+      const own = ownDocs.find((o) => o.id === d.id)
+      return own?.file ? { ...d, file: own.file } : d
+    }),
+    photos: (entry.photos || []).map((p) => {
+      const own = ownPhotos.find((o) => o.id === p.id)
+      return own?.src ? { ...p, src: own.src } : p
+    }),
+  }
+}
+
 const readAll = () => {
   try {
     return JSON.parse(localStorage.getItem(KEY) || '[]')
@@ -83,6 +139,8 @@ export async function submitApplication(uid, payload) {
     ...(existing || {}),
     uid,
     ...payload,
+    documents: stripFiles(payload.documents),
+    photos: stripPhotos(payload.photos),
     status: STATUS.submitted,
     submittedAt: now,
     // A resubmission clears the previous decision but keeps the trail.
@@ -108,13 +166,19 @@ export async function submitApplication(uid, payload) {
 
 export async function listApplications() {
   await delay()
-  // Newest submission first.
+  // The list does not need file bytes -- only the review screen does.
   return readAll().sort((a, b) => String(b.submittedAt).localeCompare(String(a.submittedAt)))
 }
 
 export async function getApplication(uid) {
   await delay(120)
-  return readAll().find((a) => a.uid === uid) || null
+  return hydrate(readAll().find((a) => a.uid === uid)) || null
+}
+
+/** The full record, with document and photo bytes, for the review screen. */
+export async function getApplicationForReview(uid) {
+  await delay(120)
+  return hydrate(readAll().find((a) => a.uid === uid)) || null
 }
 
 /**
@@ -152,5 +216,16 @@ export async function decideApplication(uid, action, reviewNote = '', by = 'Admi
     ],
   }
   writeAll(list.map((a) => (a.uid === uid ? updated : a)))
+
+  // Push the outcome onto the kitchen's own documents. Without this the admin
+  // approved the application but the provider's badges stayed on "Pending",
+  // because the decision only ever lived in the queue.
+  const docStatus =
+    meta.to === STATUS.approved ? 'verified' : meta.to === STATUS.submitted ? 'pending' : 'rejected'
+  const ownDocs = accountRead(uid, 'documents', [])
+  if (ownDocs.length) {
+    accountWrite(uid, 'documents', ownDocs.map((d) => (d.file ? { ...d, status: docStatus } : d)))
+  }
+
   return updated
 }

@@ -7,7 +7,7 @@ import {
 import DataTable from '../../components/admin/DataTable.jsx'
 import Button from '../../components/ui/Button.jsx'
 import ApplicationReview from './ApplicationReview.jsx'
-import { STATUS, listApplications, statusLabel } from '../../api/admin.js'
+import { STATUS, getApplicationForReview, listApplications, statusLabel } from '../../api/admin.js'
 import { fetchKitchenPerformance } from '../../api/adminStats.js'
 import { ShieldCheck, ShieldX, Clock } from 'lucide-react'
 
@@ -42,6 +42,8 @@ export default function KitchensPage() {
   const [apps, setApps] = useState(null)
   const [performance, setPerformance] = useState([])
   const [openUid, setOpenUid] = useState(null)
+  // Loaded on demand, because the list deliberately holds no file bytes.
+  const [reviewing, setReviewing] = useState(null)
 
   const load = useCallback(() => {
     listApplications().then(setApps)
@@ -72,7 +74,15 @@ export default function KitchensPage() {
       }))
   }, [apps, performance, config.status])
 
-  const open = (apps || []).find((a) => a.uid === openUid) || null
+  useEffect(() => {
+    if (!openUid) {
+      setReviewing(null)
+      return
+    }
+    let live = true
+    getApplicationForReview(openUid).then((a) => live && setReviewing(a))
+    return () => { live = false }
+  }, [openUid])
 
   const onDecided = (updated) => {
     setApps((list) => list.map((a) => (a.uid === updated.uid ? updated : a)))
@@ -221,7 +231,7 @@ export default function KitchensPage() {
 
       {!config.status && <LocalDataNote what="Order and revenue columns" />}
 
-      <ApplicationReview application={open} onClose={() => setOpenUid(null)} onDecided={onDecided} />
+      <ApplicationReview application={reviewing} onClose={() => setOpenUid(null)} onDecided={onDecided} />
     </>
   )
 }
