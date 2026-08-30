@@ -14,7 +14,7 @@ import {
   signOut,
   updateProfile,
 } from 'firebase/auth'
-import { auth, isFirebaseConfigured } from '../lib/firebase.js'
+import { auth, authReady, isFirebaseConfigured } from '../lib/firebase.js'
 import { writeAccount } from '../lib/accountStore.js'
 import { findLocation, DEFAULT_RADIUS_KM } from '../config/locations.js'
 import { isAdminEmail } from '../config/admin.js'
@@ -107,10 +107,29 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     if (!isFirebaseConfigured) return
-    return onAuthStateChanged(auth, (fbUser) => {
-      setUser(fbUser ? toAppUser(fbUser) : null)
+
+    // If Firebase never answers -- bad config, blocked network -- stop showing a
+    // spinner forever and let the app render signed-out.
+    const bail = setTimeout(() => setLoading(false), 8000)
+
+    const unsubscribe = onAuthStateChanged(auth, (fbUser) => {
+      clearTimeout(bail)
+      if (fbUser) {
+        const appUser = toAppUser(fbUser)
+        // Re-persist on restore so a refresh keeps the role and name rather
+        // than quietly demoting a provider to customer.
+        persist(appUser.uid, appUser.role, appUser.name)
+        setUser(appUser)
+      } else {
+        setUser(null)
+      }
       setLoading(false)
     })
+
+    return () => {
+      clearTimeout(bail)
+      unsubscribe()
+    }
   }, [])
 
   // --- demo fallback: keeps the app clickable before keys are pasted --------
@@ -178,6 +197,7 @@ export function AuthProvider({ children }) {
       saveDemoAccount(email, { role, name, area })
       return { verificationSent: false }
     }
+    await authReady
     const cred = await createUserWithEmailAndPassword(auth, email, password)
     if (name) await updateProfile(cred.user, { displayName: name })
     persist(cred.user.uid, role, name)
@@ -202,6 +222,7 @@ export function AuthProvider({ children }) {
       const resolved = demoLogin({ role: readDemoAccount(email)?.role || role, email })
       return { role: resolved }
     }
+    await authReady
     const cred = await signInWithEmailAndPassword(auth, email, password)
     const resolved = readRole(cred.user.uid) || role
     persist(cred.user.uid, resolved, cred.user.displayName)
@@ -247,6 +268,7 @@ export function AuthProvider({ children }) {
     }
     const provider = new GoogleAuthProvider()
     provider.setCustomParameters({ prompt: 'select_account' })
+    await authReady
     const cred = await signInWithPopup(auth, provider)
     const resolved = readRole(cred.user.uid) || role
     persist(cred.user.uid, resolved, cred.user.displayName)

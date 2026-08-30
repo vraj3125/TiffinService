@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Eye, FileCheck2, FileWarning, MapPin, ShieldCheck, ShieldX } from 'lucide-react'
+import { FileWarning, MapPin, ShieldCheck, ShieldX } from 'lucide-react'
+import FilePreview from '../../components/ui/FilePreview.jsx'
 import Modal from '../../components/ui/Modal.jsx'
 import Button from '../../components/ui/Button.jsx'
 import Badge from '../../components/ui/Badge.jsx'
@@ -120,36 +121,22 @@ export default function ApplicationReview({ application, onClose, onDecided }) {
             Documents
           </h4>
           <div className="space-y-2">
-            {(a.documents || []).map((d) => (
-              <div
-                key={d.id}
-                className="flex items-center justify-between gap-3 rounded-DEFAULT border border-outline-variant p-3"
-              >
-                <div className="flex items-center gap-2.5 min-w-0">
-                  {d.file ? (
-                    <FileCheck2 size={16} className="text-leaf-success shrink-0" />
-                  ) : (
-                    <FileWarning size={16} className="text-error shrink-0" />
-                  )}
-                  <div className="min-w-0">
+            {(a.documents || []).map((d) =>
+              d.file ? (
+                <FilePreview key={d.id} file={d.file} label={d.name} />
+              ) : (
+                <div
+                  key={d.id}
+                  className="flex items-center gap-2.5 rounded-DEFAULT border border-error/40 bg-error-container/20 p-3"
+                >
+                  <FileWarning size={16} className="text-error shrink-0" />
+                  <div>
                     <p className="text-label-lg text-on-surface">{d.name}</p>
-                    <p className="text-body-sm text-on-surface-variant truncate">
-                      {d.file ? d.file.name : 'Not supplied'}
-                    </p>
+                    <p className="text-body-sm text-on-surface-variant">Not supplied</p>
                   </div>
                 </div>
-                {d.file && (
-                  <a
-                    href={d.file.src}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    className="text-label-md text-terracotta hover:underline inline-flex items-center gap-1.5 shrink-0"
-                  >
-                    <Eye size={14} /> Open
-                  </a>
-                )}
-              </div>
-            ))}
+              )
+            )}
           </div>
           {missingDocs.length > 0 && (
             <p className="text-body-sm text-error mt-2">
@@ -165,13 +152,12 @@ export default function ApplicationReview({ application, onClose, onDecided }) {
             </h4>
             <div className="grid grid-cols-3 gap-2">
               {a.photos.map((p) => (
-                <a key={p.id} href={p.src} target="_blank" rel="noreferrer noopener">
-                  <img
-                    src={p.src}
-                    alt={p.name || 'Kitchen'}
-                    className="w-full h-20 object-cover rounded-lg border border-outline-variant"
-                  />
-                </a>
+                <img
+                  key={p.id}
+                  src={p.src}
+                  alt={p.name || 'Kitchen'}
+                  className="w-full h-24 object-cover rounded-lg border border-outline-variant"
+                />
               ))}
             </div>
           </section>

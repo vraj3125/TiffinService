@@ -33,6 +33,7 @@ import {
 } from '../../api/provider.js'
 import LocationPicker from '../../components/ui/LocationPicker.jsx'
 import { MAX_PHOTOS, compressImage, readDocument } from '../../lib/imageFile.js'
+import FilePreview from '../../components/ui/FilePreview.jsx'
 import { STATUS, getApplication, submitApplication, statusLabel } from '../../api/admin.js'
 import { CITY, DEFAULT_RADIUS_KM, MAX_RADIUS_KM } from '../../config/locations.js'
 import { useToast } from '../../context/ToastContext.jsx'
@@ -527,24 +528,22 @@ export default function VerificationPage() {
                       </label>
 
                       {doc.file && (
-                        <>
-                          <a
-                            href={doc.file.src}
-                            target="_blank"
-                            rel="noreferrer noopener"
-                            className="text-label-md text-on-surface-variant hover:text-terracotta inline-flex items-center gap-1.5"
-                          >
-                            <Eye size={14} /> View
-                          </a>
-                          <button
-                            onClick={() => removeDoc(doc.id)}
-                            className="text-label-md text-on-surface-variant hover:text-error inline-flex items-center gap-1.5"
-                          >
-                            <Trash2 size={14} /> Remove
-                          </button>
-                        </>
+                        <button
+                          onClick={() => removeDoc(doc.id)}
+                          className="text-label-md text-on-surface-variant hover:text-error inline-flex items-center gap-1.5"
+                        >
+                          <Trash2 size={14} /> Remove
+                        </button>
                       )}
                     </div>
+
+                    {/* Same preview the reviewer sees, so a provider can check
+                        they uploaded the right page before submitting. */}
+                    {doc.file && (
+                      <div className="mt-3">
+                        <FilePreview file={doc.file} label={doc.name} />
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

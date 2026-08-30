@@ -18,14 +18,26 @@ export const isFirebaseConfigured = Boolean(
 
 let auth = null
 
+// Resolves once persistence is actually configured. setPersistence is async: a
+// sign-in that races ahead of it can be stored in memory only, which logs the
+// user out on the next refresh. Every sign-in awaits this first.
+let authReady = Promise.resolve()
+
 if (isFirebaseConfigured) {
   const app = initializeApp(config)
   auth = getAuth(app)
-  // Keep the session across reloads/tabs instead of the in-memory default.
-  setPersistence(auth, browserLocalPersistence).catch(() => {})
+  // Keep the session across reloads and tabs instead of only in memory.
+  authReady = setPersistence(auth, browserLocalPersistence).catch((err) => {
+    // Swallowing this used to hide the cause of surprise logouts. Say it out
+    // loud -- it happens when the browser blocks site data.
+    console.warn(
+      '[auth] Persistent sessions unavailable, you will be signed out on refresh:',
+      err?.code || err?.message || err
+    )
+  })
 }
 
-export { auth }
+export { auth, authReady }
 
 // Firebase error codes are not something a customer should ever read.
 const messages = {
