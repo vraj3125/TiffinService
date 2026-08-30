@@ -1,16 +1,19 @@
 import { useEffect, useState } from 'react'
-import { ShoppingBag, IndianRupee, Users, Star, TrendingUp } from 'lucide-react'
+import { ShoppingBag, IndianRupee, Users, Star, TrendingUp, ShieldAlert } from 'lucide-react'
 import Card from '../../components/ui/Card.jsx'
 import Badge from '../../components/ui/Badge.jsx'
 import { Skeleton } from '../../components/ui/Skeleton.jsx'
 import { fetchProviderStats } from '../../api/provider.js'
 import { fetchMyReviews } from '../../api/reviews.js'
 import { useAuth } from '../../context/AuthContext.jsx'
+import { Link } from 'react-router-dom'
+import { STATUS, getApplication } from '../../api/admin.js'
 
 export default function DashboardPage() {
   const { user } = useAuth()
   const [stats, setStats] = useState(null)
   const [reviews, setReviews] = useState([])
+  const [application, setApplication] = useState(null)
 
   // This kitchen's own numbers -- a new provider sees zeros, not another
   // kitchen's revenue.
@@ -18,7 +21,31 @@ export default function DashboardPage() {
     if (!user) return
     fetchProviderStats(user.uid).then(setStats)
     fetchMyReviews(user.uid).then((r) => setReviews(r.slice(0, 3)))
+    getApplication(user.uid).then(setApplication)
   }, [user])
+
+  // A kitchen is not listed to customers until it has been approved, so say
+  // where it stands rather than showing an empty dashboard with no explanation.
+  const approved = application?.status === STATUS.approved
+  const banner = approved
+    ? null
+    : application?.status === STATUS.submitted
+      ? {
+          tone: 'pending',
+          title: 'Your kitchen is being verified',
+          body: 'We review new kitchens within 24-48 hours. You can keep setting up your menu and plans in the meantime — customers will see you the moment you are approved.',
+        }
+      : application?.status === STATUS.rejected
+        ? {
+            tone: 'error',
+            title: 'We need a change before approving',
+            body: application.reviewNote || 'Open your Business Profile for details.',
+          }
+        : {
+            tone: 'pending',
+            title: 'Finish setting up to start taking orders',
+            body: 'Add your business details, kitchen location and documents, then send them for verification. Customers cannot see your kitchen until it is approved.',
+          }
 
   // A brand-new kitchen has a flat zero week; keep the divisor above zero so
   // the bar heights stay a number rather than NaN.
@@ -43,6 +70,31 @@ export default function DashboardPage() {
     <div className="max-w-container-max mx-auto px-6 sm:px-margin-desktop pb-section-gap">
       <h1 className="text-headline-lg text-on-surface mb-1">Welcome back, {user?.name}</h1>
       <p className="text-body-md text-on-surface-variant mb-8">Here's how your tiffin business is doing today.</p>
+
+      {banner && (
+        <div
+          className={`mb-8 rounded-lg border p-6 flex flex-col sm:flex-row sm:items-center gap-4 ${
+            banner.tone === 'error'
+              ? 'border-error/40 bg-error-container/30'
+              : 'border-mustard/40 bg-mustard/10'
+          }`}
+        >
+          <ShieldAlert
+            size={24}
+            className={`shrink-0 ${banner.tone === 'error' ? 'text-error' : 'text-secondary'}`}
+          />
+          <div className="flex-1">
+            <h2 className="text-label-lg text-on-surface mb-1">{banner.title}</h2>
+            <p className="text-body-sm text-on-surface-variant">{banner.body}</p>
+          </div>
+          <Link
+            to="/provider/verification"
+            className="shrink-0 text-label-lg text-terracotta hover:underline whitespace-nowrap"
+          >
+            Open Business Profile
+          </Link>
+        </div>
+      )}
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-gutter mb-8">
         {!stats

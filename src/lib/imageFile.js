@@ -64,3 +64,29 @@ export async function compressImage(file) {
 }
 
 export const approxKb = (dataUrl) => Math.round((dataUrl.length * 3) / 4 / 1024)
+
+// --- verification documents -------------------------------------------------
+//
+// Documents may be a photo of a certificate or a PDF. Images go through the
+// same downscale as kitchen photos; PDFs are kept as-is but capped, because a
+// data URL in localStorage is the only place to put them until there is a
+// backend to upload to.
+
+const DOC_TYPES = [...ACCEPTED, 'application/pdf']
+const MAX_PDF_BYTES = 1.5 * 1024 * 1024
+
+export async function readDocument(file) {
+  if (!DOC_TYPES.includes(file.type)) {
+    throw new Error(`${file.name} must be a PDF, JPEG, PNG or WebP.`)
+  }
+
+  if (file.type === 'application/pdf') {
+    if (file.size > MAX_PDF_BYTES) {
+      throw new Error(`${file.name} is over 1.5 MB. Compress the PDF or upload a photo instead.`)
+    }
+    return { name: file.name, type: file.type, size: file.size, src: await readAsDataUrl(file) }
+  }
+
+  const src = await compressImage(file)
+  return { name: file.name, type: 'image/jpeg', size: Math.round((src.length * 3) / 4), src }
+}

@@ -17,6 +17,7 @@ import {
 import { auth, isFirebaseConfigured } from '../lib/firebase.js'
 import { writeAccount } from '../lib/accountStore.js'
 import { findLocation, DEFAULT_RADIUS_KM } from '../config/locations.js'
+import { isAdminEmail } from '../config/admin.js'
 
 const AuthContext = createContext(null)
 
@@ -87,6 +88,9 @@ function toAppUser(fbUser, fallbackRole = 'customer') {
     uid: fbUser.uid,
     role,
     name,
+    // Convenience for the UI only -- see config/admin.js on why this is not a
+    // security boundary.
+    isAdmin: isAdminEmail(fbUser.email),
     email: fbUser.email || '',
     phone: fbUser.phoneNumber || '',
     photoURL: fbUser.photoURL || '',
@@ -130,6 +134,7 @@ export function AuthProvider({ children }) {
       uid: 'demo',
       role: resolvedRole,
       name: resolvedName,
+      isAdmin: isAdminEmail(email),
       email: email || '',
       phone: phone || '',
       photoURL: '',

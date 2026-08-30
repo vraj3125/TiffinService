@@ -20,10 +20,11 @@ export const emptyMenu = () =>
   }, {})
 
 // The documents every kitchen has to supply, all unsubmitted to begin with.
+// status: missing -> pending (uploaded, awaiting review) -> verified | rejected
 const REQUIRED_DOCS = [
-  { id: 'doc1', name: 'FSSAI License', status: 'missing' },
-  { id: 'doc2', name: 'Kitchen Photos', status: 'missing' },
-  { id: 'doc3', name: 'Owner ID Proof', status: 'missing' },
+  { id: 'doc1', name: 'FSSAI License', hint: 'Registration or licence certificate', status: 'missing', file: null },
+  { id: 'doc2', name: 'Kitchen Photos', hint: 'Cooking and storage areas', status: 'missing', file: null },
+  { id: 'doc3', name: 'Owner ID Proof', hint: 'Aadhaar, PAN or driving licence', status: 'missing', file: null },
 ]
 
 const EMPTY_STATS = {
@@ -87,7 +88,13 @@ export async function fetchVerificationDocs(uid) {
 
 export async function saveVerificationDocs(uid, docs) {
   await delay(150)
-  return writeAccount(uid, 'documents', docs)
+  // Documents carry file data, so a full store is a real possibility here.
+  try {
+    localStorage.setItem(`tc:data:${uid}:documents`, JSON.stringify(docs))
+  } catch {
+    throw new Error('Storage is full. Remove a kitchen photo or upload a smaller file.')
+  }
+  return docs
 }
 
 export async function fetchMyMenu(uid) {

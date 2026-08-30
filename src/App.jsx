@@ -6,6 +6,7 @@ import LandingPage from './pages/LandingPage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx'
 import ResetPasswordPage from './pages/ResetPasswordPage.jsx'
+import AdminDashboardPage from './pages/admin/AdminDashboardPage.jsx'
 
 import AboutPage from './pages/company/AboutPage.jsx'
 import FoodSafetyPage from './pages/company/FoodSafetyPage.jsx'
@@ -143,6 +144,15 @@ export default function App() {
           element={
             <ProtectedRoute role="provider">
               <ProviderReviewsPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminDashboardPage />
             </ProtectedRoute>
           }
         />

@@ -16,6 +16,12 @@ export default function ProtectedRoute({ role, children }) {
   }
 
   if (!user) return <Navigate to="/login" replace />
+
+  // Admin is a flag on the account rather than one of the two app roles.
+  if (role === 'admin') {
+    return user.isAdmin ? children : <Navigate to="/" replace />
+  }
+
   if (role && user.role !== role) {
     return <Navigate to={user.role === 'provider' ? '/provider/dashboard' : '/discover'} replace />
   }

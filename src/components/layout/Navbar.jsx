@@ -25,7 +25,10 @@ export default function Navbar() {
   const [open, setOpen] = useState(false)
   const navigate = useNavigate()
 
-  const links = user?.role === 'provider' ? providerLinks : user?.role === 'customer' ? customerLinks : []
+  const baseLinks =
+    user?.role === 'provider' ? providerLinks : user?.role === 'customer' ? customerLinks : []
+  // Admins get one extra entry rather than a separate navigation.
+  const links = user?.isAdmin ? [...baseLinks, { to: '/admin', label: 'Verification' }] : baseLinks
 
   const handleLogout = async () => {
     await logout()
