@@ -83,7 +83,8 @@ export default function CheckoutPage() {
     setPlacing(true)
     // Recorded against this account, so it shows up in their orders and nobody
     // else's.
-    await placeOrder(user.uid, { provider, plan, meal, amount: total })
+    const method = PAYMENT_OPTIONS.find((p) => p.id === paymentId)?.type || 'UPI'
+    await placeOrder(user.uid, { provider, plan, meal, amount: total, paymentMethod: method })
     setPlacing(false)
     showToast(`Order placed with ${provider.name}! Your ${meal} starts soon.`)
     clearCheckout()

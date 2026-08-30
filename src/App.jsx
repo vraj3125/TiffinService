@@ -6,7 +6,17 @@ import LandingPage from './pages/LandingPage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx'
 import ResetPasswordPage from './pages/ResetPasswordPage.jsx'
-import AdminDashboardPage from './pages/admin/AdminDashboardPage.jsx'
+import AdminLayout from './components/admin/AdminLayout.jsx'
+import AdminHomePage from './pages/admin/AdminHomePage.jsx'
+import KitchensPage from './pages/admin/KitchensPage.jsx'
+import CustomersPage from './pages/admin/CustomersPage.jsx'
+import AdminOrdersPage from './pages/admin/AdminOrdersPage.jsx'
+import SubscriptionsPage from './pages/admin/SubscriptionsPage.jsx'
+import PaymentsPage from './pages/admin/PaymentsPage.jsx'
+import AdminReviewsPage from './pages/admin/AdminReviewsPage.jsx'
+import AnalyticsPage from './pages/admin/AnalyticsPage.jsx'
+import LocationsPage from './pages/admin/LocationsPage.jsx'
+import AdminSettingsPage from './pages/admin/AdminSettingsPage.jsx'
 
 import AboutPage from './pages/company/AboutPage.jsx'
 import FoodSafetyPage from './pages/company/FoodSafetyPage.jsx'
@@ -148,16 +158,30 @@ export default function App() {
           }
         />
 
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute role="admin">
-              <AdminDashboardPage />
-            </ProtectedRoute>
-          }
-        />
-
         <Route path="*" element={<LandingPage />} />
+      </Route>
+
+      {/* The admin console has its own shell -- sidebar and topbar instead of
+          the customer navbar and footer. */}
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute role="admin">
+            <AdminLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<AdminHomePage />} />
+        <Route path="kitchens" element={<KitchensPage />} />
+        <Route path="kitchens/:view" element={<KitchensPage />} />
+        <Route path="customers" element={<CustomersPage />} />
+        <Route path="orders" element={<AdminOrdersPage />} />
+        <Route path="subscriptions" element={<SubscriptionsPage />} />
+        <Route path="payments" element={<PaymentsPage />} />
+        <Route path="reviews" element={<AdminReviewsPage />} />
+        <Route path="analytics" element={<AnalyticsPage />} />
+        <Route path="locations" element={<LocationsPage />} />
+        <Route path="settings" element={<AdminSettingsPage />} />
       </Route>
     </Routes>
   )

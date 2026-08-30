@@ -38,7 +38,7 @@ export async function fetchProviderOrders(uid) {
   return readAccount(uid, 'kitchenOrders', [])
 }
 
-export async function placeOrder(uid, { provider, plan, meal, amount, items = [] }) {
+export async function placeOrder(uid, { provider, plan, meal, amount, items = [], paymentMethod = 'UPI' }) {
   await delay(500)
   const stamp = Date.now()
   const days = planDays(plan)
@@ -51,6 +51,9 @@ export async function placeOrder(uid, { provider, plan, meal, amount, items = []
     meal,
     status: 'upcoming',
     planType: plan.type,
+    // Recorded so the payments view reports what was actually chosen rather
+    // than assuming one method.
+    paymentMethod,
     items,
     amount,
   }
