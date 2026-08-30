@@ -1,13 +1,49 @@
 import { useEffect, useState } from 'react'
-import { FileWarning, MapPin, ShieldCheck, ShieldX } from 'lucide-react'
+import { AlertTriangle, FileWarning, History, MapPin, RotateCcw, ShieldCheck, ShieldX, Ban, PlayCircle, Pencil } from 'lucide-react'
 import FilePreview from '../../components/ui/FilePreview.jsx'
 import Modal from '../../components/ui/Modal.jsx'
 import Button from '../../components/ui/Button.jsx'
 import Badge from '../../components/ui/Badge.jsx'
 import { Textarea } from '../../components/ui/Input.jsx'
 import { useToast } from '../../context/ToastContext.jsx'
-import { STATUS, decideApplication } from '../../api/admin.js'
+import { ACTIONS, ACTION_META, STATUS, decideApplication, statusLabel } from '../../api/admin.js'
 import { DEFAULT_RADIUS_KM } from '../../config/locations.js'
+
+const ICONS = {
+  approve: ShieldCheck, changes: ShieldX, decline: Ban,
+  suspend: AlertTriangle, reinstate: PlayCircle, reopen: RotateCcw, editNote: Pencil,
+}
+
+const TOASTS = {
+  approve: (n) => `${n} approved — they can start taking orders.`,
+  changes: (n) => `Sent back to ${n} with your note.`,
+  decline: (n) => `${n} declined. They cannot resubmit.`,
+  suspend: (n) => `${n} suspended and removed from search.`,
+  reinstate: (n) => `${n} reinstated and live again.`,
+  reopen: (n) => `${n} is back in the review queue.`,
+  editNote: (n) => `Note to ${n} updated.`,
+}
+
+// Wording for the actions that are hard to walk back.
+const CONFIRM = {
+  decline: {
+    title: 'Decline this application?',
+    body: 'The kitchen will be told it was declined and cannot resubmit. You can reopen it later if that turns out to be wrong.',
+  },
+  suspend: {
+    title: 'Suspend this kitchen?',
+    body: 'It comes out of search immediately and stops taking new subscriptions. Existing customers are not cancelled automatically.',
+  },
+  reinstate: {
+    title: 'Reinstate this kitchen?',
+    body: 'It goes back into search and can take subscriptions again.',
+  },
+}
+
+const BUTTON_VARIANT = { primary: 'primary', warning: 'secondary', danger: 'secondary', secondary: 'ghost' }
+
+const when = (iso) =>
+  iso ? new Date(iso).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }) : ''
 
 const Row = ({ label, value }) => (
   <div className="flex justify-between gap-6 py-2.5 border-b border-surface-variant/70 last:border-0">
@@ -22,6 +58,8 @@ export default function ApplicationReview({ application, onClose, onDecided }) {
   const { showToast } = useToast()
   const [note, setNote] = useState('')
   const [busy, setBusy] = useState(null)
+  // Destructive actions ask first -- see CONFIRM below for the wording.
+  const [confirm, setConfirm] = useState(null)
 
   useEffect(() => {
     setNote(application?.reviewNote || '')
@@ -30,31 +68,74 @@ export default function ApplicationReview({ application, onClose, onDecided }) {
   if (!application) return null
 
   const a = application
-  const decided = a.status === STATUS.approved || a.status === STATUS.rejected
   const missingDocs = (a.documents || []).filter((d) => !d.file)
+  const available = ACTIONS[a.status] || []
 
-  const decide = async (decision) => {
-    if (decision === STATUS.rejected && !note.trim()) {
-      showToast('Say what needs changing so they can fix it', 'info')
+  const run = async (action) => {
+    const meta = ACTION_META[action]
+    if (meta.needsNote && !note.trim()) {
+      showToast('Add a note explaining this decision', 'info')
       return
     }
-    setBusy(decision)
+    setBusy(action)
     try {
+      // Documents follow the outcome so the kitchen's own screen matches.
       const documents = (a.documents || []).map((d) =>
-        d.file ? { ...d, status: decision === STATUS.approved ? 'verified' : 'rejected' } : d
+        d.file
+          ? { ...d, status: meta.to === STATUS.approved ? 'verified' : meta.to === STATUS.submitted ? 'pending' : 'rejected' }
+          : d
       )
-      const updated = await decideApplication(a.uid, decision, note.trim())
+      const updated = await decideApplication(a.uid, action, note.trim())
       onDecided({ ...updated, documents })
-      showToast(
-        decision === STATUS.approved
-          ? `${a.kitchenName} approved — they can start taking orders.`
-          : `Sent back to ${a.kitchenName} with your note.`
-      )
+      showToast(TOASTS[action] ? TOASTS[action](a.kitchenName) : `${meta.label} done.`)
+      setConfirm(null)
     } catch (err) {
       showToast(err.message, 'error')
     } finally {
       setBusy(null)
     }
+  }
+
+  const trigger = (action) =>
+    ACTION_META[action].confirm ? setConfirm(action) : run(action)
+
+  // Second modal rather than window.confirm, so the wording can explain what
+  // actually happens and the action stays cancellable.
+  if (confirm) {
+    const meta = ACTION_META[confirm]
+    const copy = CONFIRM[confirm]
+    return (
+      <Modal
+        open
+        onClose={() => setConfirm(null)}
+        title={copy.title}
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setConfirm(null)} disabled={Boolean(busy)}>
+              Cancel
+            </Button>
+            <Button
+              variant={meta.tone === 'danger' ? 'danger' : 'primary'}
+              onClick={() => run(confirm)}
+              disabled={Boolean(busy)}
+            >
+              {meta.label}
+            </Button>
+          </>
+        }
+      >
+        <p className="text-body-md text-on-surface-variant mb-4">{copy.body}</p>
+        <p className="text-body-sm text-on-surface">
+          Kitchen: <span className="font-semibold">{a.kitchenName}</span>
+        </p>
+        {note.trim() && (
+          <div className="mt-4 rounded-DEFAULT border border-outline-variant bg-surface-container-low p-3">
+            <p className="text-label-md text-on-surface-variant mb-1">They will be told</p>
+            <p className="text-body-sm text-on-surface-variant">{note.trim()}</p>
+          </div>
+        )}
+      </Modal>
+    )
   }
 
   return (
@@ -63,22 +144,27 @@ export default function ApplicationReview({ application, onClose, onDecided }) {
       onClose={onClose}
       title={a.kitchenName}
       footer={
-        decided ? (
+        available.length === 0 ? (
           <Button variant="ghost" onClick={onClose}>Close</Button>
         ) : (
-          <>
-            <Button
-              variant="secondary"
-              onClick={() => decide(STATUS.rejected)}
-              disabled={Boolean(busy)}
-              className="!border-error !text-error hover:!bg-error-container/30"
-            >
-              <ShieldX size={18} /> Request changes
-            </Button>
-            <Button onClick={() => decide(STATUS.approved)} disabled={Boolean(busy)}>
-              <ShieldCheck size={18} /> Approve
-            </Button>
-          </>
+          <div className="flex flex-wrap justify-end gap-2">
+            {available.map((action) => {
+              const meta = ACTION_META[action]
+              const Icon = ICONS[action]
+              return (
+                <Button
+                  key={action}
+                  size="sm"
+                  variant={BUTTON_VARIANT[meta.tone]}
+                  onClick={() => trigger(action)}
+                  disabled={Boolean(busy)}
+                  className={meta.tone === 'danger' ? '!border-error !text-error hover:!bg-error-container/30' : ''}
+                >
+                  <Icon size={16} /> {meta.label}
+                </Button>
+              )
+            })}
+          </div>
         )
       }
     >
@@ -164,25 +250,56 @@ export default function ApplicationReview({ application, onClose, onDecided }) {
         )}
 
         <section>
-          {decided ? (
-            <div className="rounded-DEFAULT border border-outline-variant bg-surface-container-low p-4">
-              <Badge tone={a.status === STATUS.approved ? 'success' : 'danger'}>
-                {a.status === STATUS.approved ? 'Approved' : 'Changes requested'}
+          <div className="rounded-DEFAULT border border-outline-variant bg-surface-container-low p-4 mb-4">
+            <div className="flex items-center justify-between gap-3 mb-1">
+              <span className="text-label-md text-on-surface-variant">Current status</span>
+              <Badge
+                tone={
+                  a.status === STATUS.approved ? 'success'
+                    : a.status === STATUS.declined || a.status === STATUS.suspended ? 'danger'
+                    : 'pending'
+                }
+              >
+                {statusLabel[a.status]}
               </Badge>
-              {a.reviewNote && (
-                <p className="text-body-sm text-on-surface-variant mt-2">{a.reviewNote}</p>
-              )}
             </div>
-          ) : (
+            {a.reviewNote && (
+              <p className="text-body-sm text-on-surface-variant mt-2">{a.reviewNote}</p>
+            )}
+          </div>
+
+          {available.some((x) => ACTION_META[x].needsNote) && (
             <Textarea
               label="Note to the kitchen"
               rows={3}
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="Required when requesting changes — say exactly what to fix."
+              placeholder="Required when requesting changes, declining or suspending — say exactly what is wrong."
             />
           )}
         </section>
+
+        {(a.history || []).length > 0 && (
+          <section>
+            <h4 className="text-label-md uppercase tracking-[0.14em] text-terracotta mb-3 flex items-center gap-1.5">
+              <History size={13} /> Decision history
+            </h4>
+            <ol className="space-y-3 border-l border-outline-variant/70 ml-1.5">
+              {[...a.history].reverse().map((h, i) => (
+                <li key={h.at + i} className="relative pl-5">
+                  <span className="absolute -left-[4.5px] top-1.5 w-2 h-2 rounded-full bg-outline-variant" />
+                  <p className="text-body-sm text-on-surface">
+                    {h.label} <span className="text-outline">· {h.by}</span>
+                  </p>
+                  <p className="text-body-sm text-outline">{when(h.at)}</p>
+                  {h.note && (
+                    <p className="text-body-sm text-on-surface-variant mt-1 italic">&ldquo;{h.note}&rdquo;</p>
+                  )}
+                </li>
+              ))}
+            </ol>
+          </section>
+        )}
       </div>
     </Modal>
   )

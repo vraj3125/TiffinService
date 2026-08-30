@@ -13,6 +13,7 @@ Copy `.env.example` to `.env.local` and fill in your Firebase keys first. Locati
 search works with no API key at all.
 
 - **[FEATURES.md](FEATURES.md)** — what the platform does, in full
+- **[TESTING.md](TESTING.md)** — test accounts and scripted walkthroughs
 - **[AUTH_SETUP.md](AUTH_SETUP.md)** — Firebase authentication setup
 
 Built with React 18, Vite, React Router, Tailwind CSS and Firebase Auth.

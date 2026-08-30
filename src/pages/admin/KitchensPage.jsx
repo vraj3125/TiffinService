@@ -15,6 +15,8 @@ const TONE = {
   [STATUS.approved]: 'success',
   [STATUS.submitted]: 'pending',
   [STATUS.rejected]: 'warning',
+  [STATUS.declined]: 'error',
+  [STATUS.suspended]: 'error',
   [STATUS.draft]: 'neutral',
 }
 

@@ -231,6 +231,8 @@ export async function fetchPlatformStats() {
     kitchensApproved: approved,
     kitchensPending: pending,
     kitchensChanges: changes,
+    kitchensDeclined: apps.filter((a) => a.status === STATUS.declined).length,
+    kitchensSuspended: apps.filter((a) => a.status === STATUS.suspended).length,
     subscriptionsActive: subs.filter((s) => s.status === 'active').length,
     subscriptionsPaused: subs.filter((s) => s.status === 'paused').length,
     ordersToday: todays.length,
@@ -266,6 +268,14 @@ export async function fetchNeedsAttention() {
       label: 'Applications waiting on the kitchen',
       detail: 'Changes were requested and have not been resubmitted.',
       to: '/admin/kitchens/changes',
+    },
+    {
+      id: 'suspended',
+      severity: 'serious',
+      count: apps.filter((a) => a.status === STATUS.suspended).length,
+      label: 'Kitchens suspended',
+      detail: 'Taken out of search and not accepting new subscriptions.',
+      to: '/admin/kitchens',
     },
     {
       id: 'payments',

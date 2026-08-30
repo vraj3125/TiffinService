@@ -35,12 +35,24 @@ export default function DashboardPage() {
           title: 'Your kitchen is being verified',
           body: 'We review new kitchens within 24-48 hours. You can keep setting up your menu and plans in the meantime — customers will see you the moment you are approved.',
         }
-      : application?.status === STATUS.rejected
+      : application?.status === STATUS.suspended
         ? {
             tone: 'error',
-            title: 'We need a change before approving',
-            body: application.reviewNote || 'Open your Business Profile for details.',
+            title: 'Your kitchen is suspended',
+            body: application.reviewNote || 'Contact support to resolve this.',
           }
+        : application?.status === STATUS.declined
+          ? {
+              tone: 'error',
+              title: 'Your application was declined',
+              body: application.reviewNote || 'Contact support if you think this is wrong.',
+            }
+          : application?.status === STATUS.rejected
+            ? {
+                tone: 'error',
+                title: 'We need a change before approving',
+                body: application.reviewNote || 'Open your Business Profile for details.',
+              }
         : {
             tone: 'pending',
             title: 'Finish setting up to start taking orders',

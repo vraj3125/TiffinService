@@ -185,6 +185,10 @@ export default function VerificationPage() {
   const reviewed = application?.status === STATUS.approved
   const awaiting = application?.status === STATUS.submitted
   const rejected = application?.status === STATUS.rejected
+  const declined = application?.status === STATUS.declined
+  const suspended = application?.status === STATUS.suspended
+  // A declined application is closed: only an admin can reopen it.
+  const canSubmit = !declined && !suspended
 
   // done  -> saved on the account, ready to submit
   // state -> what the badge says: 'todo' | 'saved' | 'review' | 'verified'
@@ -401,13 +405,17 @@ export default function VerificationPage() {
             <p className="text-body-sm text-on-surface-variant mb-4">
               {reviewed
                 ? 'Approved. Your kitchen is live and can take subscriptions.'
-                : awaiting
-                  ? 'Everything is with us. We review new kitchens within 24-48 hours.'
-                  : rejected
-                    ? 'We need a change before we can approve this.'
-                    : remaining === 0
-                      ? 'All filled in. Send it over when you are ready.'
-                      : `${remaining} ${remaining === 1 ? 'thing' : 'things'} left to finish.`}
+                : suspended
+                  ? 'Your kitchen is suspended and is not visible to customers.'
+                  : declined
+                    ? 'This application was declined. Contact support if you think that is wrong.'
+                    : awaiting
+                      ? 'Everything is with us. We review new kitchens within 24-48 hours.'
+                      : rejected
+                        ? 'We need a change before we can approve this.'
+                        : remaining === 0
+                          ? 'All filled in. Send it over when you are ready.'
+                          : `${remaining} ${remaining === 1 ? 'thing' : 'things'} left to finish.`}
             </p>
 
             <div className="h-1.5 w-full rounded-full bg-surface-variant overflow-hidden mb-5">
@@ -447,14 +455,14 @@ export default function VerificationPage() {
               ))}
             </ul>
 
-            {rejected && application?.reviewNote && (
+            {(rejected || declined || suspended) && application?.reviewNote && (
               <div className="rounded-DEFAULT border border-error/40 bg-error-container/40 p-4 mb-5">
                 <p className="text-label-md text-on-error-container mb-1">What needs changing</p>
                 <p className="text-body-sm text-on-surface-variant">{application.reviewNote}</p>
               </div>
             )}
 
-            {!reviewed && (
+            {!reviewed && canSubmit && (
               <Button
                 className="w-full"
                 size="lg"
